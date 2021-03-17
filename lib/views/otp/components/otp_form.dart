@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:wemoove/components/defaultButton.dart';
+import 'package:wemoove/helper/BouncingTransition.dart';
+import 'package:wemoove/views/search/SearchScreen.dart';
 
 import '../../../constants.dart';
 import '../../../size_config.dart';
@@ -127,7 +129,9 @@ class _OtpFormState extends State<OtpForm> {
             text: "Continue",
             color: kPrimaryAlternateColor,
             textColor: kPrimaryColor,
-            press: () {},
+            press: () {
+              Navigate.to(context, SearchScreen());
+            },
           )
         ],
       ),

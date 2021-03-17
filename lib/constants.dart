@@ -86,3 +86,20 @@ OutlineInputBorder noOutlineInputBorder() {
     borderSide: BorderSide.none,
   );
 }
+
+InputDecoration getInputDecoration(
+  String hint,
+) {
+  return InputDecoration(
+      filled: true,
+      fillColor: kprimarywhiteshade,
+      hintStyle: TextStyle(fontSize: 18, color: Colors.black),
+      hintText: hint.isNotEmpty ? hint : "Hint",
+      contentPadding:
+          EdgeInsets.symmetric(vertical: getProportionateScreenWidth(15)),
+      border: outlineInputBorder(),
+      focusedBorder: noOutlineInputBorder(),
+      enabledBorder: noOutlineInputBorder(),
+      //prefixIcon: Icon(LineAwesomeIcons.search),
+      counterText: "");
+}

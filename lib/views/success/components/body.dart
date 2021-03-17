@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:wemoove/helper/BouncingTransition.dart';
+import 'package:wemoove/views/ReservationDetailScreen/ReservationDetailScreen.dart';
 
 import '../../../constants.dart';
 import '../../../size_config.dart';
@@ -125,22 +127,27 @@ class Body extends StatelessWidget {
                   SizedBox(
                     height: 20,
                   ),
-                  Container(
-                      height: 80,
-                      //width: SizeConfig.screenWidth * 0.7,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: kPrimaryAlternateColor,
-                      ),
-                      child: Center(
-                        child: Text(
-                          "View Reservation",
-                          style: TextStyle(
-                              color: kPrimaryColor,
-                              fontWeight: FontWeight.w500,
-                              fontSize: 20),
+                  InkWell(
+                    child: Container(
+                        height: 80,
+                        //width: SizeConfig.screenWidth * 0.7,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: kPrimaryAlternateColor,
                         ),
-                      )),
+                        child: Center(
+                          child: Text(
+                            "View Reservation",
+                            style: TextStyle(
+                                color: kPrimaryColor,
+                                fontWeight: FontWeight.w500,
+                                fontSize: 20),
+                          ),
+                        )),
+                    onTap: () {
+                      Navigate.to(context, ReservationDetailScreen());
+                    },
+                  ),
                 ],
               ),
             ),

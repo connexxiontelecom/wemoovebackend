@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:responsive_framework/responsive_wrapper.dart';
 import 'package:responsive_framework/utils/scroll_behavior.dart';
-import 'package:wemoove/routes.dart';
 import 'package:wemoove/theme.dart';
-import 'package:wemoove/views/ReservationDetailScreen/ReservationDetailScreen.dart';
+import 'package:wemoove/views/signup/SignUpScreen.dart';
 
 void main() {
   runApp(WeMoove());
@@ -30,10 +29,10 @@ class WeMoove extends StatelessWidget {
 
       debugShowCheckedModeBanner: false,
       theme: theme(),
-      // home: SplashScreen(),
+      home: SignUpScreen(),
       // We use routeName so that we dont need to remember the name
-      initialRoute: ReservationDetailScreen.routeName, //SplashScreen.routeName,
-      routes: routes,
+      //initialRoute: SplashScreen.routeName,
+      //routes: routes,
     );
   }
 }

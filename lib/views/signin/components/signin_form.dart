@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:wemoove/components/defaultButton.dart';
 import 'package:wemoove/components/form_error.dart';
-import 'package:wemoove/helper/keyboard.dart';
+import 'package:wemoove/helper/BouncingTransition.dart';
+import 'package:wemoove/views/search/SearchScreen.dart';
 
 import '../../../constants.dart';
 import '../../../size_config.dart';
@@ -72,12 +73,13 @@ class _SignFormState extends State<SignForm> {
             text: "Continue",
             textColor: kPrimaryColor,
             press: () {
-              if (_formKey.currentState.validate()) {
+              /*if (_formKey.currentState.validate()) {
                 _formKey.currentState.save();
                 // if all are valid then go to success screen
                 KeyboardUtil.hideKeyboard(context);
                 //Navigator.pushNamed(context, LoginSuccessScreen.routeName);
-              }
+              }*/
+              Navigate.to(context, SearchScreen());
             },
           ),
         ],

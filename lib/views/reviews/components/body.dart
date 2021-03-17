@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 
 import '../../../constants.dart';
 import '../../../size_config.dart';
@@ -71,53 +72,92 @@ class Body extends StatelessWidget {
                             SizedBox(
                               height: 20,
                             ),
-                            Container(
-                              height: 100,
-                              width: 100,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(50),
-                                  color: kPrimaryColor),
-                              child: Padding(
-                                padding: const EdgeInsets.all(10),
-                                child: Center(
-                                  child: Icon(
-                                    Icons.check,
-                                    size: getProportionateScreenHeight(50),
-                                    color: kprimarywhite,
-                                  ),
-                                ),
-                              ),
+                            Text("How was your ride",
+                                style: TextStyle(
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.bold,
+                                    color: kPrimaryAlternateColor)),
+                            SizedBox(
+                              height: 20,
                             ),
-                            Text(
-                              "Done!",
-                              style: (TextStyle(
-                                  fontSize: 50,
-                                  fontWeight: FontWeight.w500,
-                                  color: kPrimaryAlternateColor)),
+                            Center(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    LineAwesomeIcons.star_1,
+                                    size: getProportionateScreenHeight(35),
+                                    color: kPrimaryColor,
+                                  ),
+                                  Icon(
+                                    LineAwesomeIcons.star_1,
+                                    size: getProportionateScreenHeight(35),
+                                    color: kPrimaryColor,
+                                  ),
+                                  Icon(
+                                    LineAwesomeIcons.star_1,
+                                    size: getProportionateScreenHeight(35),
+                                    color: kPrimaryColor,
+                                  ),
+                                  Icon(
+                                    LineAwesomeIcons.star_1,
+                                    size: getProportionateScreenHeight(35),
+                                    color: kPrimaryColor,
+                                  ),
+                                  Icon(
+                                    LineAwesomeIcons.star_1,
+                                    size: getProportionateScreenHeight(35),
+                                    color: kPrimaryColor,
+                                  ),
+                                ],
+                              ),
                             ),
                             SizedBox(
-                              height: getProportionateScreenHeight(10),
+                              height: 30,
                             ),
-                            Text(
-                              "Your reservation has been sent to the Driver, You will be notified upon acceptance by the driver.",
-                              style: TextStyle(
-                                fontSize: 18,
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Container(
+                                height: 1,
+                                width: double.infinity,
+                                color: kTextColor.withOpacity(0.2),
                               ),
-                              textAlign: TextAlign.center,
                             ),
                             SizedBox(
                               height: 20,
                             ),
-                            Text(
-                              "Thank you!",
-                              style: TextStyle(
-                                fontWeight: FontWeight.w500,
-                                fontSize: 18,
-                              ),
-                              textAlign: TextAlign.center,
+                            Text("Additional feedback",
+                                style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                    color: kPrimaryAlternateColor)),
+                            SizedBox(
+                              height: getProportionateScreenHeight(10),
                             ),
                             SizedBox(
-                              height: getProportionateScreenHeight(80),
+                              height: 20,
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Container(
+                                height: 200,
+                                width: double.infinity,
+                                decoration: BoxDecoration(
+                                    color: kprimarywhiteshade,
+                                    borderRadius: BorderRadius.circular(10)),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: TextFormField(
+                                    maxLines: null,
+                                    decoration:
+                                        getInputDecoration("Leave a comment"),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            SizedBox(
+                              height: getProportionateScreenHeight(10),
                             ),
                           ],
                         ),
@@ -134,7 +174,7 @@ class Body extends StatelessWidget {
                       ),
                       child: Center(
                         child: Text(
-                          "View Reservation",
+                          "Submit",
                           style: TextStyle(
                               color: kPrimaryColor,
                               fontWeight: FontWeight.w500,

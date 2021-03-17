@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wemoove/helper/BouncingTransition.dart';
 import 'package:wemoove/views/signup/SignUpScreen.dart';
 
 import '../../../components/defaultButton.dart';
@@ -63,7 +64,8 @@ class _BodyState extends State<Body> {
                     DefaultButton(
                       text: "Get Started",
                       press: () {
-                        Navigator.pushNamed(context, SignUpScreen.routeName);
+                        //Navigator.pushNamed(context, SignUpScreen.routeName);
+                        Navigate.to(context, SignUpScreen());
                       },
                     ),
                     Spacer(),

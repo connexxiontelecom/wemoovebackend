@@ -1,8 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
-import 'package:wemoove/helper/BouncingTransition.dart';
-import 'package:wemoove/views/success/SuccessScreen.dart';
 
 import '../../../constants.dart';
 import '../../../size_config.dart';
@@ -39,19 +37,13 @@ class _BodyState extends State<Body> {
                     height: getProportionateScreenHeight(30),
                     //width: getProportionateScreenWidth(235),
                   ),
-                  CircleAvatar(
-                      radius: 25,
-                      //child: Image.asset("assets/images/sample.jpg")
-                      backgroundImage: AssetImage(
-                          "assets/images/portrait.jpg") //NetworkImage(globals.user.avatar)
-                      ),
                 ],
               ),
             ),
           ),
         ),
         Positioned.fill(
-          top: getProportionateScreenHeight(140),
+          top: getProportionateScreenHeight(110),
           left: 15,
           right: 15,
           child: SingleChildScrollView(
@@ -59,6 +51,9 @@ class _BodyState extends State<Body> {
               padding: const EdgeInsets.all(8.0),
               child: Column(
                 children: [
+                  SizedBox(
+                    height: 20,
+                  ),
                   Container(
                       //height: getProportionateScreenHeight(120),
                       decoration: BoxDecoration(
@@ -75,54 +70,22 @@ class _BodyState extends State<Body> {
                   SizedBox(
                     height: 20,
                   ),
-                  Row(
-                    children: [
-                      InkWell(
-                        child: Container(
-                          height: 50,
-                          width: 50,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            color: kPrimaryAlternateColor,
-                          ),
-                          child: Icon(
-                            LineAwesomeIcons.arrow_left,
-                            color: kPrimaryColor,
-                            size: 30,
-                          ),
+                  Padding(
+                    padding: const EdgeInsets.all(0.0),
+                    child: Container(
+                        height: 60,
+                        //width: SizeConfig.screenWidth * 0.7,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: kPrimaryAlternateColor,
                         ),
-                        onTap: () {
-                          Navigate.pop(context);
-                        },
-                      ),
-                      SizedBox(
-                        width: 20,
-                      ),
-                      Expanded(
-                        child: InkWell(
-                          child: Container(
-                              height: 50,
-                              //width: SizeConfig.screenWidth * 0.7,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                color: kPrimaryAlternateColor,
-                              ),
-                              child: Center(
-                                child: Text(
-                                  "Save My Space",
-                                  style: TextStyle(
-                                      color: kPrimaryColor,
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 20),
-                                ),
-                              )),
-                          onTap: () {
-                            Navigate.to(context, SuccessScreen());
-                          },
-                        ),
-                      ),
-                    ],
-                  )
+                        child: Center(
+                            child: Icon(
+                          LineAwesomeIcons.arrow_left,
+                          size: 35,
+                          color: kPrimaryColor,
+                        ))),
+                  ),
                 ],
               ),
             ),
@@ -166,69 +129,13 @@ class Details extends StatelessWidget {
             height: 30,
           ),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                "Departure Time",
-                style: TextStyle(
-                    fontWeight: FontWeight.w500,
-                    fontSize: 20,
-                    color: kPrimaryAlternateColor),
-              ),
-              Container(
-                height: 50,
-                width: 110,
-                decoration: BoxDecoration(
-                  color: kPrimaryAlternateColor,
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(10),
-                  child: Text(
-                    "4:30 pm",
-                    style: TextStyle(
-                        color: kPrimaryColor,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          SizedBox(
-            height: 30,
-          ),
-          Container(
-            height: 1,
-            width: double.infinity,
-            color: kTextColor.withOpacity(0.2),
-          ),
-          SizedBox(
-            height: 10,
-          ),
-          Text(
-            "Rider",
-            style: TextStyle(
-                fontWeight: FontWeight.w500,
-                fontSize: 20,
-                color: kPrimaryAlternateColor),
-          ),
-          SizedBox(
-            height: 20,
-          ),
-          Row(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                height: 150,
-                width: 150,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  image: DecorationImage(
-                      image: AssetImage("assets/images/driver.jpg"),
-                      fit: BoxFit.cover),
-                ),
+              CircleAvatar(
+                radius: 50.0,
+                backgroundImage: AssetImage("assets/images/driver.jpg"),
+                backgroundColor: Colors.transparent,
               ),
               SizedBox(
                 width: 10,
@@ -244,50 +151,8 @@ class Details extends StatelessWidget {
                         color: kPrimaryAlternateColor,
                         fontSize: 20),
                   ),
-                  Row(
-                    children: [
-                      Icon(
-                        LineAwesomeIcons.star_1,
-                        color: kPrimaryColor,
-                      ),
-                      Text(
-                        "4.9",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                            color: kPrimaryAlternateColor),
-                      ),
-                    ],
-                  ),
                   SizedBox(
                     height: 5,
-                  ),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Icon(
-                            LineAwesomeIcons.users,
-                            size: 30,
-                          ),
-                          Text(
-                            "Passengers",
-                            style: TextStyle(
-                              fontSize: 18,
-                            ),
-                          )
-                        ],
-                      ),
-                      Text(
-                        "23,123,342",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                            color: kTextColor),
-                      )
-                    ],
                   ),
                   SizedBox(
                     height: 10,
@@ -309,15 +174,7 @@ class Details extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "Brand:",
-                            style: TextStyle(fontSize: 18),
-                          ),
-                          Text(
-                            "Color:",
-                            style: TextStyle(fontSize: 18),
-                          ),
-                          Text(
-                            "Model:",
+                            "Toyota Corolla :",
                             style: TextStyle(fontSize: 18),
                           ),
                         ],
@@ -330,17 +187,7 @@ class Details extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "Toyota Corolla",
-                            style: TextStyle(
-                                color: kPrimaryAlternateColor, fontSize: 18),
-                          ),
-                          Text(
-                            "Silver",
-                            style: TextStyle(
-                                color: kPrimaryAlternateColor, fontSize: 18),
-                          ),
-                          Text(
-                            "2010",
+                            "Silver ",
                             style: TextStyle(
                                 color: kPrimaryAlternateColor, fontSize: 18),
                           ),
@@ -363,82 +210,43 @@ class Details extends StatelessWidget {
           SizedBox(
             height: 10,
           ),
-          Text(
-            "Seat",
-            style: TextStyle(
-                fontWeight: FontWeight.w500,
-                fontSize: 20,
-                color: kPrimaryAlternateColor),
-          ),
-          SizedBox(
-            height: 10,
-          ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
+              Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "N",
+                    "Reserved",
                     style: TextStyle(
-                      fontSize: 20,
+                      fontSize: 18,
                     ),
                   ),
                   Text(
-                    "300",
+                    "1 seat(s)",
                     style: TextStyle(
-                        fontSize: 30,
+                        fontSize: 18,
                         fontWeight: FontWeight.bold,
                         color: kPrimaryAlternateColor),
                   ),
-                  Text(
-                    "/seat",
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  )
                 ],
               ),
-              Row(
+              Column(
                 children: [
-                  counterButton(
-                    child: Icon(
-                      LineAwesomeIcons.minus,
-                      color: kPrimaryColor,
-                      size: 20,
+                  Text(
+                    "Amount",
+                    style: TextStyle(
+                      fontSize: 18,
                     ),
                   ),
-                  SizedBox(
-                    width: 10,
+                  Text(
+                    "N300",
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: kPrimaryAlternateColor),
                   ),
-                  Container(
-                    height: 40,
-                    width: 40,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color: kprimarywhiteshade,
-                    ),
-                    child: Center(
-                      child: Text(
-                        "1",
-                        style: TextStyle(
-                            fontSize: 25,
-                            fontWeight: FontWeight.bold,
-                            color: kPrimaryAlternateColor),
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    width: 10,
-                  ),
-                  counterButton(
-                    child: Icon(
-                      LineAwesomeIcons.plus,
-                      color: kPrimaryColor,
-                      size: 20,
-                    ),
-                  )
                 ],
               )
             ],
@@ -478,23 +286,108 @@ class Details extends StatelessWidget {
               Row(
                 children: [
                   Text(
-                    "Capacity",
+                    "Status",
                     style: TextStyle(fontSize: 20),
                   ),
                   SizedBox(
                     width: 10,
                   ),
                   Text(
-                    "2 left /4",
+                    "Completed",
                     style: TextStyle(
-                        fontSize: 20,
+                        fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color: kPrimaryAlternateColor),
+                        color: kPrimaryColor),
                   )
                 ],
               )
             ],
-          )
+          ),
+          SizedBox(height: 20),
+          Row(
+            children: [
+              Text(
+                "Your Rating",
+                style: TextStyle(fontSize: 18, color: kPrimaryAlternateColor),
+              ),
+              SizedBox(
+                width: 10,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(
+                    LineAwesomeIcons.star_1,
+                    size: getProportionateScreenHeight(20),
+                    color: kPrimaryColor,
+                  ),
+                  Icon(
+                    LineAwesomeIcons.star_1,
+                    size: getProportionateScreenHeight(20),
+                    color: kPrimaryColor,
+                  ),
+                  Icon(
+                    LineAwesomeIcons.star_1,
+                    size: getProportionateScreenHeight(20),
+                    color: kPrimaryColor,
+                  ),
+                  Icon(
+                    LineAwesomeIcons.star_1,
+                    size: getProportionateScreenHeight(20),
+                    color: kPrimaryColor,
+                  ),
+                  Icon(
+                    LineAwesomeIcons.star_1,
+                    size: getProportionateScreenHeight(20),
+                    color: kPrimaryColor,
+                  ),
+                ],
+              ),
+            ],
+          ),
+          SizedBox(
+            height: 30,
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Container(
+              height: 1,
+              width: double.infinity,
+              color: kTextColor.withOpacity(0.2),
+            ),
+          ),
+          SizedBox(
+            height: 20,
+          ),
+          Text("Additional feedback",
+              style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: kPrimaryAlternateColor)),
+          SizedBox(
+            height: getProportionateScreenHeight(10),
+          ),
+          SizedBox(
+            height: 20,
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Container(
+              height: 200,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                  color: kprimarywhiteshade,
+                  borderRadius: BorderRadius.circular(10)),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextFormField(
+                  maxLines: null,
+                  decoration: getInputDecoration("Leave a comment"),
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -628,30 +521,13 @@ class _TimeLineState extends State<TimeLine> {
                                       SizedBox(
                                         height: 5,
                                       ),
-                                      Container(
-                                        height: 50,
-                                        width: SizeConfig.screenWidth * 0.65,
-                                        decoration: BoxDecoration(
-                                            color: kprimarywhiteshade,
-                                            borderRadius:
-                                                BorderRadius.circular(15),
-                                            border: Border.all(
-                                              color:
-                                                  kTextColor.withOpacity(0.3),
-                                            )),
-                                        child: Padding(
-                                          padding: const EdgeInsets.only(
-                                              left: 10, right: 10),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Text("Select Pick-Up Location"),
-                                              Icon(LineAwesomeIcons.angle_down)
-                                            ],
-                                          ),
+                                      Text(
+                                        "Farmer's Market",
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w500,
                                         ),
-                                      ),
+                                      )
                                     ],
                                   )
                           ],
