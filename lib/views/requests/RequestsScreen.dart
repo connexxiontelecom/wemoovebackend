@@ -5,8 +5,15 @@ import 'package:flutter/services.dart';
 import '../../size_config.dart';
 import 'components/body.dart';
 
-class RequestScreen extends StatelessWidget {
+class RequestsScreen extends StatefulWidget {
   static String routeName = "/booking";
+
+  @override
+  _RequestsScreenState createState() => _RequestsScreenState();
+}
+
+class _RequestsScreenState extends State<RequestsScreen> {
+  bool up = false;
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);

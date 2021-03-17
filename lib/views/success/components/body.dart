@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:wemoove/globals.dart' as globals;
 import 'package:wemoove/helper/BouncingTransition.dart';
 import 'package:wemoove/views/ReservationDetailScreen/ReservationDetailScreen.dart';
+import 'package:wemoove/views/requests/RequestsScreen.dart';
 
 import '../../../constants.dart';
 import '../../../size_config.dart';
