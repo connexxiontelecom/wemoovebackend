@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:wemoove/globals.dart' as globals;
 import 'package:wemoove/helper/BouncingTransition.dart';
 import 'package:wemoove/views/ReservationDetailScreen/ReservationDetailScreen.dart';
 
@@ -137,7 +138,9 @@ class Body extends StatelessWidget {
                         ),
                         child: Center(
                           child: Text(
-                            "View Reservation",
+                            globals.isDriverMode
+                                ? "View Requests"
+                                : "View Reservation",
                             style: TextStyle(
                                 color: kPrimaryColor,
                                 fontWeight: FontWeight.w500,
@@ -145,7 +148,9 @@ class Body extends StatelessWidget {
                           ),
                         )),
                     onTap: () {
-                      Navigate.to(context, ReservationDetailScreen());
+                      globals.isDriverMode
+                          ? Navigate.to(context, RequestsScreen())
+                          : Navigate.to(context, ReservationDetailScreen());
                     },
                   ),
                 ],

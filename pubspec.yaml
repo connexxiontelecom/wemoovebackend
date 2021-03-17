@@ -27,8 +27,10 @@ dependencies:
   line_awesome_flutter: ^1.0.1
   flutter_svg: ^0.20.0-nullsafety.3
   sliding_up_panel: ^1.0.2
+  material_tag_editor: ^0.1.1
   google_sign_in: ^5.0.0
   stacked: ^1.7.6
+  flutter_switch: ^0.3.0
   dio: ^3.0.10
 
 

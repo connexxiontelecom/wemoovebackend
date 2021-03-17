@@ -5,6 +5,7 @@ import 'package:wemoove/constants.dart';
 import 'package:wemoove/helper/BouncingTransition.dart';
 import 'package:wemoove/size_config.dart';
 import 'package:wemoove/views/booking/BookingScreen.dart';
+import 'package:wemoove/views/publish/PublishScreen.dart';
 
 class DriverBody extends StatefulWidget {
   final GlobalKey<ScaffoldState> scaffoldkey;
@@ -241,7 +242,9 @@ class _DriverBodyState extends State<DriverBody> {
                           fontSize: 20),
                     ),
                   )),
-              onTap: () {},
+              onTap: () {
+                Navigate.to(context, PublishScreen());
+              },
             ),
           ),
         ),

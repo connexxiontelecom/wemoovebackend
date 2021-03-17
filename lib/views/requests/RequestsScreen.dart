@@ -5,8 +5,8 @@ import 'package:flutter/services.dart';
 import '../../size_config.dart';
 import 'components/body.dart';
 
-class PublishScreen extends StatelessWidget {
-  static String routeName = "/publish";
+class RequestScreen extends StatelessWidget {
+  static String routeName = "/booking";
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
