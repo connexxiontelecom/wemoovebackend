@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:responsive_framework/responsive_wrapper.dart';
 import 'package:responsive_framework/utils/scroll_behavior.dart';
 import 'package:wemoove/theme.dart';
-import 'package:wemoove/views/requests/RequestsScreen.dart';
+import 'package:wemoove/views/search/SearchScreen.dart';
 
 void main() {
   runApp(WeMoove());
@@ -29,7 +29,7 @@ class WeMoove extends StatelessWidget {
 
       debugShowCheckedModeBanner: false,
       theme: theme(),
-      home: RequestsScreen(),
+      home: SearchScreen(),
       // We use routeName so that we dont need to remember the name
       //initialRoute: SplashScreen.routeName,
       //routes: routes,

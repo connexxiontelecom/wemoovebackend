@@ -1,10 +1,9 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:wemoove/components/defaultButton.dart';
 import 'package:wemoove/components/form_error.dart';
 import 'package:wemoove/controllers/sign_up_controllers.dart';
-import 'package:wemoove/helper/BouncingTransition.dart';
-import 'package:wemoove/views/otp/otp_screen.dart';
 
 import '../../../constants.dart';
 import '../../../size_config.dart';
@@ -25,6 +24,7 @@ class _SignUpFormState extends State<SignUpForm> {
   String conform_password;
   bool Obscured = true;
   bool remember = false;
+
   final List<String> errors = [];
 
   void addError({String error}) {
@@ -60,7 +60,49 @@ class _SignUpFormState extends State<SignUpForm> {
               obscured: Obscured),
           SizedBox(height: getProportionateScreenHeight(20)),
 
-          InkWell(
+          Row(
+            children: [
+              Transform.scale(
+                scale: 1.5,
+                child: Radio(
+                  toggleable: true,
+                  value: 1,
+                  groupValue: widget.controller.isDriver,
+                  onChanged: widget.controller.isDriverChecked,
+                ),
+              ),
+              Text(
+                "I want to drive",
+                style: TextStyle(fontSize: 18),
+              )
+            ],
+          ),
+
+          Row(
+            children: [
+              Transform.scale(
+                scale: 1.5,
+                child: Radio(
+                  value: 0,
+                  groupValue: widget.controller.isDriver,
+                  onChanged: widget.controller.isDriverChecked,
+                ),
+              ),
+              Text(
+                "I need a ride",
+                style: TextStyle(fontSize: 18),
+              )
+            ],
+          ),
+
+          widget.controller.show_error
+              ? Text(
+                  "Please select one of the two options",
+                  style: TextStyle(color: Colors.red),
+                )
+              : Container(),
+
+          /* InkWell(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -91,10 +133,11 @@ class _SignUpFormState extends State<SignUpForm> {
             onTap: () {
               widget.controller.isDriverChecked();
             },
-          ),
+          ),*/
           SizedBox(
-            height: 10,
+            height: 5,
           ),
+
           FormError(errors: errors),
           widget.controller.errors.length > 0
               ? ListView.builder(
@@ -108,26 +151,31 @@ class _SignUpFormState extends State<SignUpForm> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(widget.controller.errors[index]),
+                          Text(widget.controller.errors[index],
+                              style: TextStyle(
+                                color: Colors.red,
+                                fontSize: 18,
+                              )),
                         ],
                       ),
                     );
                   })
               : Container(),
-          SizedBox(height: getProportionateScreenHeight(40)),
+          SizedBox(height: getProportionateScreenHeight(20)),
           DefaultButton(
             text: "Sign Up",
             color: kPrimaryAlternateColor,
             textColor: kPrimaryColor,
             press: () {
-              //widget.controller.signUp();
-              /* if (_formKey.currentState.validate()) {
+              if (_formKey.currentState.validate()) {
                 _formKey.currentState.save();
-                // if all are valid then go to success screen
-                //Navigator.pushNamed(context, CompleteProfileScreen.routeName);
-                Navigate.to(context, SearchScreen());
-              }*/
-              Navigate.to(context, OtpScreen());
+                widget.controller.showSelectionError();
+                if (widget.controller.show_error) {
+                  return;
+                } else {
+                  widget.controller.signUp(context);
+                }
+              }
             },
           ),
         ],

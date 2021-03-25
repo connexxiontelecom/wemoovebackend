@@ -1,12 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:wemoove/constants.dart';
 
 import 'CustomButton.dart';
 
-class errorProcessingModal extends StatelessWidget {
-  final String error_message;
-  const errorProcessingModal({Key key, this.error_message = ""})
+class successProcessingModal extends StatelessWidget {
+  final String sucessmsg;
+  const successProcessingModal({Key key, this.sucessmsg = ""})
       : super(key: key);
   @override
   Widget build(BuildContext context) {
@@ -14,25 +15,38 @@ class errorProcessingModal extends StatelessWidget {
         child: Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Container(
-        height: 220,
+        height: 250,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             SizedBox(
-              height: 30,
+              height: 20,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Icon(
+                  LineAwesomeIcons.check_circle,
+                  color: kPrimaryColor,
+                  size: 35,
+                ),
+                Text(
+                  "Success",
+                  style: TextStyle(
+                      fontSize: 30,
+                      fontWeight: FontWeight.w500,
+                      color: kPrimaryAlternateColor),
+                ),
+              ],
             ),
             Text(
-              "Oops!",
-              style: TextStyle(fontSize: 30, color: kTextColor),
+              sucessmsg,
+              style: TextStyle(fontSize: 17),
             ),
-            Text(
-              error_message,
-              style: TextStyle(fontSize: 18, color: kPrimaryAlternateColor),
-            ),
-            Text(
-              "Please try again",
-              style: TextStyle(fontSize: 18, color: kTextColor),
+            SizedBox(
+              height: 10,
             ),
             SizedBox(
               height: 10,

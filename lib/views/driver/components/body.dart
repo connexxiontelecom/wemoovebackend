@@ -1,7 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:form_field_validator/form_field_validator.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
+import 'package:stacked/stacked.dart';
 import 'package:wemoove/components/defaultButton.dart';
+import 'package:wemoove/controllers/CarSignUpController.dart';
 
 import '../../../constants.dart';
 import '../../../size_config.dart';
@@ -15,121 +18,175 @@ class _BodyState extends State<Body> {
   final _formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.only(left: 15, right: 15, top: 10),
-          child: Container(
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Image.asset(
-                    "assets/images/logox.png",
-                    height: getProportionateScreenHeight(35),
-                    //width: getProportionateScreenWidth(235),
-                  ),
+    return ViewModelBuilder<CarSignUpController>.reactive(
+        viewModelBuilder: () => CarSignUpController(),
+        builder: (context, controller, child) => SafeArea(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 15, right: 15, top: 10),
+                  child: Container(
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            height: 20,
+                          ),
+                          Image.asset(
+                            "assets/images/logox.png",
+                            height: getProportionateScreenHeight(35),
+                            //width: getProportionateScreenWidth(235),
+                          ),
 
-                  SizedBox(height: SizeConfig.screenHeight * 0.04),
+                          SizedBox(height: SizeConfig.screenHeight * 0.04),
 
-                  //Text("Sign Up", style: headingStyle),
-                  Text(
-                    "Almost There!",
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: getProportionateScreenWidth(18),
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                          //Text("Sign Up", style: headingStyle),
+                          Text(
+                            "Almost There!",
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: getProportionateScreenWidth(18),
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
 
-                  Text(
-                    "Just a few more details and your'e good to go!",
-                    style: TextStyle(
-                      //color: Colors.black,
-                      fontSize: getProportionateScreenWidth(12),
-                      //fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(
-                    height: 15,
-                  ),
-                  Center(
-                    child: CircleAvatar(
-                      radius: 50,
-                      backgroundColor: kPrimaryColor,
-                      child: CircleAvatar(
-                        radius: 48,
-                        backgroundColor: kPrimaryColor,
-                        backgroundImage:
-                            AssetImage("assets/images/portrait.jpg"),
+                          Text(
+                            "Just a few more details and your'e good to go!",
+                            style: TextStyle(
+                              //color: Colors.black,
+                              fontSize: getProportionateScreenWidth(12),
+                              //fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(
+                            height: 15,
+                          ),
+                          Center(
+                            child: CircleAvatar(
+                              radius: 50,
+                              backgroundColor: kPrimaryColor,
+                              child: CircleAvatar(
+                                radius: 48,
+                                backgroundColor: kPrimaryColor,
+                                backgroundImage:
+                                    AssetImage("assets/images/portrait.jpg"),
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Row(
+                            children: [
+                              Expanded(
+                                  child: buildCarBrandFormField(
+                                      controller: controller.brandController)),
+                              SizedBox(
+                                width: 10,
+                              ),
+                              Expanded(
+                                  child: buildCarModelFormField(
+                                      controller: controller.modelController))
+                            ],
+                          ),
+                          SizedBox(
+                            height: 30,
+                          ),
+                          Row(
+                            children: [
+                              Expanded(
+                                  child: buildCarYearFormField(
+                                      controller:
+                                          controller.modelYearController)),
+                              SizedBox(
+                                width: 10,
+                              ),
+                              Expanded(
+                                  child: buildCarColourFormField(
+                                      controller: controller.colourController))
+                            ],
+                          ),
+
+                          SizedBox(
+                            height: 30,
+                          ),
+
+                          InkWell(
+                            child: buildCarCapacityFormField(
+                                controller: controller.capacityController),
+                            onTap: () {
+                              controller.showCapacityModal(context);
+                            },
+                          ),
+
+                          SizedBox(
+                            height: 30,
+                          ),
+                          buildPlateNumberFormField(
+                              controller: controller.plateNumberController),
+                          SizedBox(
+                            height: 30,
+                          ),
+                          InkWell(
+                            child: buildLicenseFormField(
+                                Maincontroller: controller),
+                            onTap: () {
+                              controller.SelectFile();
+                            },
+                          ),
+                          SizedBox(
+                            height: 30,
+                          ),
+
+                          controller.file != null
+                              ? Padding(
+                                  padding: const EdgeInsets.only(bottom: 5),
+                                  child: Center(
+                                    child: Image.file(
+                                      controller.file,
+                                      width: 300,
+                                      height: 300,
+                                    ),
+                                  ),
+                                )
+                              : Container(),
+                          controller.file == null &&
+                                  controller.showError == true
+                              ? Text(
+                                  "Please attach your driver's License",
+                                  style: TextStyle(color: Colors.red),
+                                )
+                              : Container(),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          DefaultButton(
+                            text: "Confirm",
+                            color: kPrimaryAlternateColor,
+                            textColor: kPrimaryColor,
+                            press: () {
+                              // Navigate.to(context, SearchScreen());
+                              if (_formKey.currentState.validate()) {
+                                _formKey.currentState.save();
+                                if (controller.file == null) {
+                                  controller.showLicenseError();
+                                  return;
+                                }
+                                // if all are valid then go to success screen
+                                //Navigator.pushNamed(context, CompleteProfileScreen.routeName);
+                                //Navigate.to(context, SearchScreen());
+                                controller.RegisterVehicle(context);
+                              }
+                            },
+                          ),
+                        ],
                       ),
                     ),
                   ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Row(
-                    children: [
-                      Expanded(child: buildCarBrandFormField()),
-                      SizedBox(
-                        width: 10,
-                      ),
-                      Expanded(child: buildCarModelFormField())
-                    ],
-                  ),
-                  SizedBox(
-                    height: 30,
-                  ),
-                  Row(
-                    children: [
-                      Expanded(child: buildCarYearFormField()),
-                      SizedBox(
-                        width: 10,
-                      ),
-                      Expanded(child: buildCarColourFormField())
-                    ],
-                  ),
-
-                  SizedBox(
-                    height: 30,
-                  ),
-
-                  buildCarCapacityFormField(),
-                  SizedBox(
-                    height: 30,
-                  ),
-                  buildPlateNumberFormField(),
-                  SizedBox(
-                    height: 30,
-                  ),
-                  buildLicenseFormField(),
-                  SizedBox(
-                    height: 30,
-                  ),
-                  DefaultButton(
-                    text: "Confirm",
-                    color: kPrimaryAlternateColor,
-                    textColor: kPrimaryColor,
-                    press: () {
-                      if (_formKey.currentState.validate()) {
-                        _formKey.currentState.save();
-                        // if all are valid then go to success screen
-                        //Navigator.pushNamed(context, CompleteProfileScreen.routeName);
-                        //Navigate.to(context, SearchScreen());
-                      }
-                    },
-                  ),
-                ],
+                ),
               ),
-            ),
-          ),
-        ),
-      ),
-    );
+            ));
   }
 }
 
@@ -137,6 +194,7 @@ TextFormField buildCarBrandFormField({TextEditingController controller}) {
   return TextFormField(
     keyboardType: TextInputType.text,
     controller: controller,
+    validator: RequiredValidator(errorText: 'car brand is required'),
     decoration: InputDecoration(
       labelText: "Car Brand",
       hintText: "e.g Toyota",
@@ -153,6 +211,7 @@ TextFormField buildCarModelFormField({TextEditingController controller}) {
   return TextFormField(
     keyboardType: TextInputType.text,
     controller: controller,
+    validator: RequiredValidator(errorText: 'car model is required'),
     decoration: InputDecoration(
       labelText: "Model",
       hintText: "e.g Corolla",
@@ -169,6 +228,7 @@ TextFormField buildCarYearFormField({TextEditingController controller}) {
   return TextFormField(
     keyboardType: TextInputType.number,
     controller: controller,
+    validator: numberValidator(errorText: "Please provide a valid year"),
     decoration: InputDecoration(
       labelText: "Model Year",
       hintText: "e.g 2012",
@@ -185,6 +245,7 @@ TextFormField buildCarColourFormField({TextEditingController controller}) {
   return TextFormField(
     keyboardType: TextInputType.text,
     controller: controller,
+    validator: RequiredValidator(errorText: "colour is required"),
     decoration: InputDecoration(
       labelText: "Car Colour",
       hintText: "e.g Silver",
@@ -219,6 +280,7 @@ TextFormField buildPlateNumberFormField({TextEditingController controller}) {
   return TextFormField(
     keyboardType: TextInputType.text,
     controller: controller,
+    validator: RequiredValidator(errorText: "plate number is required"),
     decoration: InputDecoration(
       labelText: "Plate Number ",
       hintText: "",
@@ -232,11 +294,13 @@ TextFormField buildPlateNumberFormField({TextEditingController controller}) {
   );
 }
 
-TextFormField buildLicenseFormField({TextEditingController controller}) {
+TextFormField buildLicenseFormField({
+  CarSignUpController Maincontroller,
+}) {
   return TextFormField(
     enabled: false,
     keyboardType: TextInputType.text,
-    controller: controller,
+    controller: Maincontroller.licenseController,
     decoration: InputDecoration(
         labelText: "Driver's License",
         hintText: "Driver's License",
@@ -263,4 +327,29 @@ TextFormField buildLicenseFormField({TextEditingController controller}) {
         //CustomSurffixIcon(svgIcon: "assets/icons/Mail.svg"),
         ),
   );
+}
+
+class numberValidator extends TextFieldValidator {
+// pass the error text to the super constructor
+  numberValidator({String errorText = 'Please enter a valid year'})
+      : super(errorText);
+
+// return false if you want the validator to return error
+// message when the value is empty.
+  @override
+  bool get ignoreEmptyValues => false;
+
+  @override
+  bool isValid(String value) {
+    // Null or empty string is not a number
+    if (value == null || value.isEmpty) {
+      return false;
+    }
+    final number = int.tryParse(value);
+
+    if (number == null) {
+      return false;
+    }
+    return true;
+  }
 }

@@ -104,15 +104,17 @@ class _MainDrawerState extends State<MainDrawer> {
                     Scaffold.of(context).openEndDrawer();
                   },
                 ),
-                InkWell(
-                  child: MenuItem(
-                    icon: LineAwesomeIcons.wallet,
-                    title: "Discounts",
-                  ),
-                  onTap: () {
-                    Scaffold.of(context).openEndDrawer();
-                  },
-                ),
+                globals.isDriverMode
+                    ? Container()
+                    : InkWell(
+                        child: MenuItem(
+                          icon: LineAwesomeIcons.wallet,
+                          title: "Discounts",
+                        ),
+                        onTap: () {
+                          Scaffold.of(context).openEndDrawer();
+                        },
+                      ),
                 InkWell(
                   child: MenuItem(
                     icon: LineAwesomeIcons.headphones,

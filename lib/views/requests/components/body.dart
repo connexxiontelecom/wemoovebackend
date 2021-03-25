@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
+import 'package:wemoove/components/ExpandableSection.dart';
 import 'package:wemoove/constants.dart';
 import 'package:wemoove/size_config.dart';
 
@@ -183,36 +184,15 @@ class _BodyState extends State<Body> {
                     SizedBox(
                       height: 50,
                     ),
+                    PassengerRequest(
+                      accepted: true,
+                    ),
                     PassengerRequest(),
                     PassengerRequest(),
+                    PassengerRequest(
+                      accepted: true,
+                    ),
                     PassengerRequest(),
-                    PassengerRequest(),
-                    PassengerRequest(),
-
-                    /* Padding(
-                        padding: const EdgeInsets.all(0.0),
-                        child: InkWell(
-                          child: Container(
-                              height: 60,
-                              //width: SizeConfig.screenWidth * 0.7,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                color: kPrimaryAlternateColor,
-                              ),
-                              child: Center(
-                                child: Text(
-                                  "Share Ride",
-                                  style: TextStyle(
-                                      color: kPrimaryColor,
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 20),
-                                ),
-                              )),
-                          onTap: () {
-                            Navigate.to(context, PublishScreen());
-                          },
-                        ),
-                      )*/
                   ],
                 ),
               ),
@@ -340,81 +320,183 @@ class _BodyState extends State<Body> {
   }
 }
 
-class PassengerRequest extends StatelessWidget {
-  const PassengerRequest({
-    Key key,
-    this.image,
-    this.fullname,
-    this.pickup,
-  }) : super(key: key);
+class PassengerRequest extends StatefulWidget {
+  const PassengerRequest(
+      {Key key, this.image, this.fullname, this.pickup, this.accepted = false})
+      : super(key: key);
 
   final String image;
   final String fullname;
   final String pickup;
+  final bool accepted;
+  @override
+  _PassengerRequestState createState() => _PassengerRequestState();
+}
 
+class _PassengerRequestState extends State<PassengerRequest> {
+  bool expand = false;
+
+  _PassengerRequestState();
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(top: 20, bottom: 10),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.center,
+      child: Column(
         children: [
-          Row(
-            children: [
-              CircleAvatar(
-                backgroundColor: kPrimaryColor,
-                radius: 30,
-                backgroundImage: AssetImage("assets/images/portrait.jpg"),
-              ),
-              SizedBox(
-                width: 10,
-              ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Jason Brookes",
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Text(
-                        "2 Seats",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                            color: kPrimaryAlternateColor),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Container(
-                          height: 10,
-                          width: 10,
-                          decoration: BoxDecoration(
-                              color: kPrimaryAlternateColor,
-                              borderRadius: BorderRadius.circular(50)),
+          InkWell(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Row(
+                  children: [
+                    CircleAvatar(
+                      backgroundColor: kPrimaryColor,
+                      radius: 30,
+                      backgroundImage: AssetImage("assets/images/portrait.jpg"),
+                    ),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Text(
+                              "Jason Brookes",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold, fontSize: 18),
+                            ),
+                            SizedBox(
+                              width: 10,
+                            ),
+                            Text(
+                              "accepted",
+                              style: TextStyle(
+                                  fontStyle: FontStyle.italic,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                  color: kPrimaryColor),
+                            ),
+                          ],
                         ),
-                      ),
-                      Text(
-                        "Farmers Market",
-                        style: TextStyle(
-                            fontSize: 18, color: kPrimaryAlternateColor),
-                      ),
-                    ],
-                  ),
-                ],
-              )
-            ],
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              "2 Seats",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                  color: kPrimaryAlternateColor),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Container(
+                                height: 10,
+                                width: 10,
+                                decoration: BoxDecoration(
+                                    color: kPrimaryAlternateColor,
+                                    borderRadius: BorderRadius.circular(50)),
+                              ),
+                            ),
+                            Text(
+                              "Farmers Market",
+                              style: TextStyle(
+                                  fontSize: 18, color: kPrimaryAlternateColor),
+                            ),
+                          ],
+                        ),
+                      ],
+                    )
+                  ],
+                ),
+                /* Icon(
+                  LineAwesomeIcons.check_circle,
+                  size: 30,
+                )*/
+              ],
+            ),
+            onTap: () {
+              setState(() {
+                expand = !expand;
+              });
+            },
           ),
-          Icon(
-            LineAwesomeIcons.phone,
-            size: 30,
-            color: kPrimaryColor,
-          )
+          ExpandedSection(
+              expand: expand,
+              child: Container(
+                height: 150,
+                //color: Colors.red,
+                child: widget.accepted
+                    ? Row(
+                        children: [
+                          Container(
+                            height: 50,
+                            width: 100,
+                            decoration: BoxDecoration(
+                                color: kPrimaryAlternateColor,
+                                borderRadius: BorderRadius.circular(10)),
+                            child: Center(
+                                child: Text(
+                              "Remove",
+                              style: TextStyle(color: kPrimaryColor),
+                            )),
+                          ),
+                          SizedBox(
+                            width: 50,
+                          ),
+                          Icon(
+                            LineAwesomeIcons.phone,
+                            size: 30,
+                            color: kPrimaryColor,
+                          )
+                        ],
+                      )
+                    : Row(
+                        children: [
+                          Container(
+                            height: 50,
+                            width: 100,
+                            decoration: BoxDecoration(
+                                color: kPrimaryAlternateColor,
+                                borderRadius: BorderRadius.circular(10)),
+                            child: Center(
+                                child: Text(
+                              "Accept",
+                              style: TextStyle(color: kPrimaryColor),
+                            )),
+                          ),
+                          SizedBox(
+                            width: 50,
+                          ),
+                          Container(
+                            height: 50,
+                            width: 100,
+                            decoration: BoxDecoration(
+                                //color: kPrimaryAlternateColor,
+                                border: Border.all(color: kTextColor),
+                                borderRadius: BorderRadius.circular(10)),
+                            child: Center(
+                                child: Text(
+                              "Decline",
+                              style: TextStyle(color: kPrimaryColor),
+                            )),
+                          ),
+                          SizedBox(
+                            width: 50,
+                          ),
+                          Icon(
+                            LineAwesomeIcons.phone,
+                            size: 30,
+                            color: kPrimaryColor,
+                          )
+                        ],
+                      ),
+              ))
         ],
       ),
     );

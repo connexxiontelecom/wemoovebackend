@@ -235,7 +235,7 @@ class _DriverBodyState extends State<DriverBody> {
                   ),
                   child: Center(
                     child: Text(
-                      "Share Ride",
+                      "Post Ride",
                       style: TextStyle(
                           color: kPrimaryColor,
                           fontWeight: FontWeight.w500,

@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:wemoove/components/defaultButton.dart';
+import 'package:wemoove/controllers/OtpController.dart';
 import 'package:wemoove/helper/BouncingTransition.dart';
-import 'package:wemoove/views/search/SearchScreen.dart';
+import 'package:wemoove/views/driver/CompleteProfileScreen.dart';
 
 import '../../../constants.dart';
 import '../../../size_config.dart';
 
 class OtpForm extends StatefulWidget {
-  const OtpForm({
-    Key key,
-  }) : super(key: key);
+  final OtpController controller;
+  const OtpForm({Key key, this.controller}) : super(key: key);
 
   @override
   _OtpFormState createState() => _OtpFormState();
@@ -55,6 +55,7 @@ class _OtpFormState extends State<OtpForm> {
                 width: getProportionateScreenWidth(60),
                 child: TextFormField(
                   autofocus: true,
+                  controller: widget.controller.first_value,
                   maxLength: 1,
                   buildCounter: (BuildContext context,
                           {int currentLength, int maxLength, bool isFocused}) =>
@@ -73,6 +74,7 @@ class _OtpFormState extends State<OtpForm> {
                 width: getProportionateScreenWidth(60),
                 child: TextFormField(
                   focusNode: pin2FocusNode,
+                  controller: widget.controller.second_value,
                   obscureText: true,
                   maxLength: 1,
                   buildCounter: (BuildContext context,
@@ -89,6 +91,7 @@ class _OtpFormState extends State<OtpForm> {
                 width: getProportionateScreenWidth(60),
                 child: TextFormField(
                   focusNode: pin3FocusNode,
+                  controller: widget.controller.third_value,
                   obscureText: true,
                   maxLength: 1,
                   buildCounter: (BuildContext context,
@@ -105,6 +108,7 @@ class _OtpFormState extends State<OtpForm> {
                 width: getProportionateScreenWidth(60),
                 child: TextFormField(
                   focusNode: pin4FocusNode,
+                  controller: widget.controller.fourth_value,
                   obscureText: true,
                   maxLength: 1,
                   buildCounter: (BuildContext context,
@@ -130,7 +134,7 @@ class _OtpFormState extends State<OtpForm> {
             color: kPrimaryAlternateColor,
             textColor: kPrimaryColor,
             press: () {
-              Navigate.to(context, SearchScreen());
+              Navigate.to(context, CompleteProfileScreen());
             },
           )
         ],

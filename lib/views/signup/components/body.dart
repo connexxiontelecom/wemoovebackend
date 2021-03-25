@@ -37,7 +37,7 @@ class Body extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        SizedBox(height: SizeConfig.screenHeight * 0.1), // 4%
+                        SizedBox(height: SizeConfig.screenHeight * 0.05), // 4%
 
                         Image.asset(
                           "assets/images/logox.png",

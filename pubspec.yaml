@@ -32,6 +32,9 @@ dependencies:
   stacked: ^1.7.6
   flutter_switch: ^0.3.0
   dio: ^3.0.10
+  read_otp_plugin: ^0.0.8
+  file_picker: ^3.0.0
+  form_field_validator: ^1.0.1
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -71,12 +74,15 @@ flutter:
   # example:
 
   fonts:
-    - family: SFUIText
+    - family: Nunito
       fonts:
-        - asset: assets/fonts/SFUIText/SFUIText-Bold.ttf
-        - asset: assets/fonts/SFUIText/SFUIText-Medium.ttf
-        - asset: assets/fonts/SFUIText/SFUIText-Regular.ttf
-        - asset: assets/fonts/SFUIText/SFUIText-Light.ttf
+        - asset:  assets/fonts/Nunito/Nunito-Black.ttf
+        - asset:  assets/fonts/Nunito/Nunito-Bold.ttf
+        - asset:  assets/fonts/Nunito/Nunito-ExtraBold.ttf
+        - asset:  assets/fonts/Nunito/Nunito-ExtraLight.ttf
+        - asset:  assets/fonts/Nunito/Nunito-Light.ttf
+        - asset:  assets/fonts/Nunito/Nunito-Regular.ttf
+        - asset:  assets/fonts/Nunito/Nunito-SemiBold.ttf
   # fonts:
   #   - family: Schyler
   #     fonts:
