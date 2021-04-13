@@ -1,0 +1,18 @@
+1.Add one field to DB to indicate verified phonenumber
+Handle phone-number verification error
+
+2.check the supplied otp against the one recieved from server
+if matched update the otpverified field in users db
+
+3.Handle the vehicle registration from the frontend
+handle all errors and enforce constraints
+
+4.check the login api/Handle responses
+
+5.implement the new UI for search results
+
+6. Implement user's search
+
+7.Implement posting of ride by drivers
+
+Implement Accepting/Declining of rides by drivers
