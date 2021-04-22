@@ -124,6 +124,7 @@ class RideController extends Controller
 
                     $ride["passengers"] = $this->fetchPassengers($ride["driver_id"]);
                     $ride["driver"] = $this->driverInfo($ride["driver_id"]);
+                    $ride["taken_seats"] = $this->countTakenSeats($ride["id"]);
                     $results[] = $ride;
                 }
             }
@@ -146,7 +147,6 @@ class RideController extends Controller
 
     public function BookRide(Request $request)
     {
-
         $this->validate($request, [
             'ride_id' => 'required',
             'passenger_id' => 'required',
@@ -167,10 +167,16 @@ class RideController extends Controller
         $message = "success";
 
         $title = "Ride Request";
-        $body = "You have a Ride Request!";
+        $body = "You have Placed a Ride Request!";
         $userId =  $passenger->passenger_id;
         $this->ToSpecificUser($title, $body, $userId);
 
+
+        $title = "Ride Request";
+        $body = "You have a Ride Request!";
+        $ride =  Ride::find($request->ride_id);
+        $userid = $ride->driver_id;
+        $this->ToSpecificUser($title, $body, $userid);
         //notify driver
         return response()->json(compact("message"));
 
@@ -208,6 +214,9 @@ class RideController extends Controller
             $join->on('u.id', '=', 'p.passenger_id');
         })->select('p.id as pid', 'p.*', 'u.*')->where('p.request_status', $pending)->orWhere('p.request_status', $accepted)->where('p.ride_id', $ride_id)->get();
 
+       foreach($passengers as $passenger){
+        $passenger->profile_image = url("/assets/uploads/profile/" . $passenger->profile_image);
+       }
         return response()->json(compact("passengers"));
     }
 
@@ -302,7 +311,6 @@ class RideController extends Controller
 
 
         //notify passengers
-
         $passengers =  Passenger::where("ride_id", $ride_id)->get();
 
         foreach($passengers as $passenger){
@@ -314,28 +322,41 @@ class RideController extends Controller
 
         }
 
-
-
-
         return response()->json(compact("message"));
 
     }
 
 
 
+    public function ridestatus(Request $request){
+
+        $result = Ride::where('driver_id', Auth::user()->id )->first();
+        $status = $result["status"];
+        return response()->json(compact("status"));
+    }
+
+
+
+    public function userridestatus(Request $request){
+        $this->validate($request, [
+            "ride_id" => 'required',
+        ]);
+
+        $ride_id = $request->ride_id;
+        $ride = Ride::find($ride_id);
+        $status = $ride->status;
+        return response()->json(compact("status"));
+    }
 
 
 
     public function rideHistory(Request $request)
     {
 
-        $this->validate($request, [
-            "id" => 'required',
-        ]);
 
         $declined = 3;
-        $completed= 4;
-        $id = $request->id;
+        $completed= 3;
+        $id =  Auth::user()->id;
 
         $rides = DB::table('passengers as p')->leftJoin('rides as r', function ($join) {
             $join->on('r.id', '=', 'p.ride_id');
@@ -347,20 +368,14 @@ class RideController extends Controller
             $ride->passengers = $this->fetchPassengers($ride->driver_id);
             $ride->driver = $this->driverInfo($ride->driver_id);
         }
-
-
         return response()->json(compact("rides"));
 
     }
 
 
 
-
-
-
     public function AcceptRequest(Request $request)
     {
-
         $this->validate($request, [
             'id' => 'required',
         ]);
@@ -404,9 +419,6 @@ class RideController extends Controller
 
         $title =  Auth::user()->id == $passenger->passenger_id ? "Ride Request Canceled!" : "Ride Request Declined!";
         $body =  Auth::user()->id == $passenger->passenger_id ? "You Have Canceled Your Ride Request" : "Your Ride Request has been declined by the driver!";
-
-
-
 
         $userId =  $passenger->passenger_id;
         $this->ToSpecificUser($title, $body, $userId);
@@ -484,6 +496,14 @@ class RideController extends Controller
 		}
 	}
 
+
+    //count accepted seats
+    public function countTakenSeats($rideid){
+
+        $accepted =  2;
+        $seats  =  Passenger::where("request_status", $accepted)->where("ride_id",$rideid)->count();
+        return $seats;
+    }
 
 
 

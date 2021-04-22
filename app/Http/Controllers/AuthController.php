@@ -49,30 +49,21 @@ class AuthController extends Controller
         }
 
         $user = Auth::user();
-        $user["drive"] = 0;
-        $user["ride"] = 0;
+        $user["current_ride_status"] = 0;
+        $user["current_request_status"] = 0;
+        $user["profile_image"] = url("/assets/uploads/profile/" . $user["profile_image"]);
+        $currentRideStatus =  $this->isRidePendingOrInProgress(Auth::user()->id);
 
-
-        $PendingdriverRide =  $this->isRidePendingOrInProgress(Auth::user()->id);
-
-        $pendingRideRequest = $this->isRequestPendingOrAccepted(Auth::user()->id);
+        $currentRequestStatus = $this->isRequestPendingOrAccepted(Auth::user()->id);
 
         $hasvehicle =  $this->hasVehicle(Auth::user()->id);
 
-        if ($PendingdriverRide!=false) {
-            $user["drive"] = 1;
-            $user["driver_ride_pending"] = $PendingdriverRide;
-        }
-        else{
-            $user["driver_ride_pending"] = 0;
+        if($currentRideStatus!=false){
+            $user["current_ride_status"] =1;
         }
 
-        if ($pendingRideRequest!=false) {
-            $user["ride"] = 1;
-            $user["user_ride_pending"] = $pendingRideRequest;
-        }
-        else{
-            $user["user_ride_pending"] =0;
+        if($currentRequestStatus!=false){
+            $user["current_request_status"]=1;
         }
 
         if($hasvehicle!=false){
@@ -181,16 +172,39 @@ class AuthController extends Controller
             'colour' => 'required|string',
             'capacity' => 'required|string',
             'plate_number' => 'required|string',
+            'carpicture' => 'required',
             'license' => 'required',
         ]);
 
-        if (!empty($request->file('license'))) {
+        if (!empty($request->file('license')) && !empty($request->file('carpicture')) ) {
             $extension = $request->file('license');
             $extension = $request->file('license')->getClientOriginalExtension();
             //$size = $request->file('file')->getSize();
             $dir = 'assets/uploads/license/';
-            $filename = uniqid() . '_' . time() . '_' . date('Ymd') . '.' . $extension;
-            $request->file('license')->move($this->public_path($dir), $filename);
+            $license_filename = uniqid() . '_' . time() . '_' . date('Ymd') . '.' . $extension;
+            $request->file('license')->move($this->public_path($dir), $license_filename);
+
+
+            //The Car's Front View Picture
+            $extension = $request->file('carpicture');
+            $extension = $request->file('carpicture')->getClientOriginalExtension();
+            //$size = $request->file('file')->getSize();
+            $dir = 'assets/uploads/images/';
+            $CarPicturefilename = uniqid() . '_' . time() . '_' . date('Ymd') . '.' . $extension;
+            $request->file('carpicture')->move($this->public_path($dir), $CarPicturefilename);
+
+            $user = User::find(Auth::user()->id);
+
+            if (!empty($request->file('profileImage'))) {
+                $extension = $request->file('profileImage');
+                $extension = $request->file('profileImage')->getClientOriginalExtension();
+                //$size = $request->file('file')->getSize();
+                $dir = 'assets/uploads/profile/';
+                $profileImagefilename = uniqid() . '_' . time() . '_' . date('Ymd') . '.' . $extension;
+                $request->file('profileImage')->move($this->public_path($dir), $profileImagefilename);
+                $user->profile_image = $profileImagefilename;
+            }
+
 
             $vehicle = new Vehicle();
             $vehicle->driver_id = Auth::user()->id;
@@ -200,15 +214,27 @@ class AuthController extends Controller
             $vehicle->colour = $request->colour;
             $vehicle->capacity = $request->capacity;
             $vehicle->plate_number = $request->plate_number;
-            $vehicle->license = $filename;
+            $vehicle->license = $license_filename;
+            $vehicle->car_picture = $CarPicturefilename;
+
+
+            $user->user_type = 1;
             $vehicle->save();
+            $user->save();
+
+            $details = array();
+
+            $details["profile"] = url("/assets/uploads/profile/" . $user->profile_image);
+            $details["type"] = $user->user_type;
 
             $message = "success";
-            return response()->json(compact("message"));
+            return response()->json(compact('message', 'details'));
 
         } else {
             $filename = '';
         }
+
+
 
     }
 
@@ -280,7 +306,9 @@ class AuthController extends Controller
     public function isRidePendingOrInProgress($id)
     {
 
-        $response = Ride::where("driver_id", $id)->where("status", 1)->first();//get();
+        $pending =1;    //yet to start
+        $started = 2;   //in progress
+        $response = Ride::where("driver_id", $id)->where("status", 1)->orWhere("status", 2)->first();//get();
         //$count = Count($response);
         if ($response!=null) {
             return $response->id;
@@ -295,7 +323,15 @@ class AuthController extends Controller
     //linked to an upcoming ride or a ride in progress
     public function isRequestPendingOrAccepted($id)
     {
-        $response = Passenger::where("passenger_id", $id)->where("request_status", 1)->orWhere("request_status", 2)->where("passenger_ride_status", 1)->first();//->get()
+        $pending = 1;
+        $accepted = 2;
+        $ride_pending =1;
+        $response = Passenger::where(function ($query) use ($pending,$ride_pending, $id) {
+            $query->where("passenger_id", $id)->where("request_status", $pending)->where("passenger_ride_status", $ride_pending);
+        })->oRwhere(function ($query) use ($accepted, $ride_pending, $id) {
+            $query->where("passenger_id", $id)->where("request_status", $accepted)->where("passenger_ride_status", $ride_pending);
+        })->first();
+        //$response = Passenger::where("passenger_id", $id)->where("request_status", 1)->where("passenger_ride_status", 1)->first();//->get()
         //$count = Count($response);
         if ($response!=null) {
             return $response->ride_id;

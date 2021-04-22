@@ -28,6 +28,8 @@ class CreateChatsTable extends Migration
 
             $table->tinyInteger('read');
 
+            $table->tinyInteger('ride_id');
+
             $table->string('time');
 
             $table->timestamps();

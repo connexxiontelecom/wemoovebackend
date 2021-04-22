@@ -58,6 +58,18 @@ $router->group(['middleware' => ['jwt.auth'], 'prefix'=>'api/auth' ], function (
 
     $router->post('startride', 'RideController@startRide');
 
+    $router->get('fetchunread', 'chatController@checkUnreadMessages');
+
+    $router->post('markasread', 'chatController@markAsRead');
+
+    $router->get('ridestatus', 'RideController@ridestatus');
+
+    $router->get('userridestatus', 'RideController@userridestatus');
+
+    $router->get('driverdetails', 'UserController@fetchDriverDetail');
+
+    $router->post('updateprofile', 'UserController@updateProfile');
+
 
 
 });
