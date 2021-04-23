@@ -1,13 +1,17 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
+import 'package:wemoove/components/ExpandableSection.dart';
+import 'package:wemoove/controllers/BookingController.dart';
 import 'package:wemoove/helper/BouncingTransition.dart';
-import 'package:wemoove/views/success/SuccessScreen.dart';
 
 import '../../../constants.dart';
 import '../../../size_config.dart';
 
 class Body extends StatefulWidget {
+  final BookingController controller;
+
+  const Body({Key key, this.controller}) : super(key: key);
   @override
   _BodyState createState() => _BodyState();
 }
@@ -71,7 +75,9 @@ class _BodyState extends State<Body> {
                           ],
                           color: kprimarywhite,
                           borderRadius: BorderRadius.all(Radius.circular(10))),
-                      child: Details()),
+                      child: Details(
+                        controller: widget.controller,
+                      )),
                   SizedBox(
                     height: 20,
                   ),
@@ -98,29 +104,32 @@ class _BodyState extends State<Body> {
                       SizedBox(
                         width: 20,
                       ),
-                      Expanded(
-                        child: InkWell(
-                          child: Container(
-                              height: 50,
-                              //width: SizeConfig.screenWidth * 0.7,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                color: kPrimaryAlternateColor,
-                              ),
-                              child: Center(
-                                child: Text(
-                                  "Save My Space",
-                                  style: TextStyle(
-                                      color: kPrimaryColor,
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 20),
+                      if (widget.controller.ride.capacity !=
+                          widget.controller.ride.takenSeats)
+                        Expanded(
+                          child: InkWell(
+                            child: Container(
+                                height: 50,
+                                //width: SizeConfig.screenWidth * 0.7,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  color: kPrimaryAlternateColor,
                                 ),
-                              )),
-                          onTap: () {
-                            Navigate.to(context, SuccessScreen());
-                          },
+                                child: Center(
+                                  child: Text(
+                                    "Reserve",
+                                    style: TextStyle(
+                                        color: kPrimaryColor,
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 20),
+                                  ),
+                                )),
+                            onTap: () {
+                              //Navigate.to(context, SuccessScreen());
+                              widget.controller.bookRide(context);
+                            },
+                          ),
                         ),
-                      ),
                     ],
                   )
                 ],
@@ -133,11 +142,45 @@ class _BodyState extends State<Body> {
   }
 }
 
-class Details extends StatelessWidget {
+class Details extends StatefulWidget {
+  final BookingController controller;
   const Details({
     Key key,
+    this.controller,
   }) : super(key: key);
 
+  @override
+  _DetailsState createState() => _DetailsState();
+}
+
+class _DetailsState extends State<Details> {
+  List<Widget> createChildren(list) {
+    return new List<Widget>.generate(list.length, (int index) {
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Container(
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: kPrimaryAlternateColor),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  list[index],
+                  style: TextStyle(color: kPrimaryColor),
+                ),
+              ),
+            ),
+          ),
+        ],
+      );
+    });
+  }
+
+  bool expanded = false;
+  bool expandedknockOffs = false;
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -153,7 +196,9 @@ class Details extends StatelessWidget {
                 fontSize: 20,
                 color: kPrimaryAlternateColor),
           ),
-          TimeLine(),
+          TimeLine(
+            controller: widget.controller,
+          ),
           SizedBox(
             height: 30,
           ),
@@ -177,7 +222,7 @@ class Details extends StatelessWidget {
               ),
               Container(
                 height: 50,
-                width: 110,
+                //width: 110,
                 decoration: BoxDecoration(
                   color: kPrimaryAlternateColor,
                   borderRadius: BorderRadius.circular(15),
@@ -185,7 +230,7 @@ class Details extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.all(10),
                   child: Text(
-                    "4:30 pm",
+                    widget.controller.ride.departureTime,
                     style: TextStyle(
                         color: kPrimaryColor,
                         fontWeight: FontWeight.bold,
@@ -204,153 +249,218 @@ class Details extends StatelessWidget {
             color: kTextColor.withOpacity(0.2),
           ),
           SizedBox(
-            height: 10,
+            height: 20,
           ),
-          Text(
-            "Rider",
-            style: TextStyle(
-                fontWeight: FontWeight.w500,
-                fontSize: 20,
-                color: kPrimaryAlternateColor),
+          InkWell(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      "Knockoffs",
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                          color: kPrimaryAlternateColor),
+                    ),
+                    Text(
+                      "(Areas Driver won't be stopping)",
+                      style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          fontSize: 15,
+                          color: kPrimaryAlternateColor),
+                    ),
+                  ],
+                ),
+                Icon(LineAwesomeIcons.plus_square),
+              ],
+            ),
+            onTap: () {
+              setState(() {
+                expandedknockOffs = !expandedknockOffs;
+              });
+            },
+          ),
+          ExpandedSection(
+            expand: expandedknockOffs,
+            child: Container(
+              child: Wrap(
+                  children: createChildren(widget.controller.ride.knockoffs)),
+            ),
           ),
           SizedBox(
             height: 20,
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                height: 150,
-                width: 150,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  image: DecorationImage(
-                      image: AssetImage("assets/images/driver.jpg"),
-                      fit: BoxFit.cover),
+          Container(
+            height: 1,
+            width: double.infinity,
+            color: kTextColor.withOpacity(0.2),
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          InkWell(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Rider",
+                  style: TextStyle(
+                      fontWeight: FontWeight.w500,
+                      fontSize: 20,
+                      color: kPrimaryAlternateColor),
                 ),
-              ),
-              SizedBox(
-                width: 10,
-              ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Jason Brookes",
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: kPrimaryAlternateColor,
-                        fontSize: 20),
+                Icon(LineAwesomeIcons.plus_square),
+              ],
+            ),
+            onTap: () {
+              setState(() {
+                expanded = !expanded;
+              });
+            },
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          ExpandedSection(
+            expand: expanded,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  height: 150,
+                  width: 150,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    image: DecorationImage(
+                        image: AssetImage("assets/images/driver.jpg"),
+                        fit: BoxFit.cover),
                   ),
-                  Row(
-                    children: [
-                      Icon(
-                        LineAwesomeIcons.star_1,
-                        color: kPrimaryColor,
-                      ),
-                      Text(
-                        "4.9",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                            color: kPrimaryAlternateColor),
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 5,
-                  ),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Icon(
-                            LineAwesomeIcons.users,
-                            size: 30,
-                          ),
-                          Text(
-                            "Passengers",
-                            style: TextStyle(
+                ),
+                SizedBox(
+                  width: 10,
+                ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.controller.ride.driver.fullName,
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: kPrimaryAlternateColor,
+                          fontSize: 20),
+                    ),
+                    Row(
+                      children: [
+                        Icon(
+                          LineAwesomeIcons.star_1,
+                          color: kPrimaryColor,
+                        ),
+                        Text(
+                          "4.9",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
                               fontSize: 18,
+                              color: kPrimaryAlternateColor),
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: 5,
+                    ),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(
+                              LineAwesomeIcons.users,
+                              size: 30,
                             ),
-                          )
-                        ],
-                      ),
-                      Text(
-                        "23,123,342",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                            color: kTextColor),
-                      )
-                    ],
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Text(
-                    "ABJ345CV",
-                    style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                        color: kPrimaryAlternateColor),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Row(
-                    children: [
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Brand:",
-                            style: TextStyle(fontSize: 18),
-                          ),
-                          Text(
-                            "Color:",
-                            style: TextStyle(fontSize: 18),
-                          ),
-                          Text(
-                            "Model:",
-                            style: TextStyle(fontSize: 18),
-                          ),
-                        ],
-                      ),
-                      SizedBox(
-                        width: 10,
-                      ),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Toyota Corolla",
-                            style: TextStyle(
-                                color: kPrimaryAlternateColor, fontSize: 18),
-                          ),
-                          Text(
-                            "Silver",
-                            style: TextStyle(
-                                color: kPrimaryAlternateColor, fontSize: 18),
-                          ),
-                          Text(
-                            "2010",
-                            style: TextStyle(
-                                color: kPrimaryAlternateColor, fontSize: 18),
-                          ),
-                        ],
-                      )
-                    ],
-                  ),
-                ],
-              )
-            ],
+                            Text(
+                              "Passengers",
+                              style: TextStyle(
+                                fontSize: 18,
+                              ),
+                            )
+                          ],
+                        ),
+                        Text(
+                          widget.controller.ride.passengers.toString(),
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                              color: kTextColor),
+                        )
+                      ],
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Text(
+                      widget.controller.ride.driver.plateNumber,
+                      style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: kPrimaryAlternateColor),
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Row(
+                      children: [
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Brand:",
+                              style: TextStyle(fontSize: 18),
+                            ),
+                            Text(
+                              "Color:",
+                              style: TextStyle(fontSize: 18),
+                            ),
+                            Text(
+                              "Model:",
+                              style: TextStyle(fontSize: 18),
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              widget.controller.ride.driver.brand,
+                              style: TextStyle(
+                                  color: kPrimaryAlternateColor, fontSize: 18),
+                            ),
+                            Text(
+                              widget.controller.ride.driver.colour,
+                              style: TextStyle(
+                                  color: kPrimaryAlternateColor, fontSize: 18),
+                            ),
+                            Text(
+                              widget.controller.ride.driver.modelYear,
+                              style: TextStyle(
+                                  color: kPrimaryAlternateColor, fontSize: 18),
+                            ),
+                          ],
+                        )
+                      ],
+                    ),
+                  ],
+                )
+              ],
+            ),
           ),
           SizedBox(
             height: 30,
@@ -385,7 +495,7 @@ class Details extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    "300",
+                    widget.controller.ride.amount,
                     style: TextStyle(
                         fontSize: 30,
                         fontWeight: FontWeight.bold,
@@ -408,6 +518,9 @@ class Details extends StatelessWidget {
                       color: kPrimaryColor,
                       size: 20,
                     ),
+                    ontap: () {
+                      widget.controller.decrement();
+                    },
                   ),
                   SizedBox(
                     width: 10,
@@ -421,7 +534,7 @@ class Details extends StatelessWidget {
                     ),
                     child: Center(
                       child: Text(
-                        "1",
+                        "${widget.controller.seats}",
                         style: TextStyle(
                             fontSize: 25,
                             fontWeight: FontWeight.bold,
@@ -438,6 +551,9 @@ class Details extends StatelessWidget {
                       color: kPrimaryColor,
                       size: 20,
                     ),
+                    ontap: () {
+                      widget.controller.increment();
+                    },
                   )
                 ],
               )
@@ -485,7 +601,10 @@ class Details extends StatelessWidget {
                     width: 10,
                   ),
                   Text(
-                    "2 left /4",
+                    widget.controller.ride.capacity ==
+                            widget.controller.ride.takenSeats
+                        ? " Full"
+                        : "${widget.controller.ride.capacity - widget.controller.ride.takenSeats} left / ${widget.controller.ride.capacity}",
                     style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -505,27 +624,34 @@ class counterButton extends StatelessWidget {
   const counterButton({
     Key key,
     this.child,
+    this.ontap,
   }) : super(key: key);
 
   final Widget child;
+  final Function ontap;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 40,
-      width: 40,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        color: kPrimaryAlternateColor,
+    return InkWell(
+      child: Container(
+        height: 40,
+        width: 40,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: kPrimaryAlternateColor,
+        ),
+        child: child,
       ),
-      child: child,
+      onTap: ontap,
     );
   }
 }
 
 class TimeLine extends StatefulWidget {
+  final BookingController controller;
   const TimeLine({
     Key key,
+    this.controller,
   }) : super(key: key);
   @override
   _TimeLineState createState() => _TimeLineState();
@@ -596,63 +722,90 @@ class _TimeLineState extends State<TimeLine> {
                               width: 10,
                             ),
                             index == 1
-                                ? Column(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        "Drop-off Location",
-                                        style: TextStyle(fontSize: 16),
-                                      ),
-                                      SizedBox(
-                                        height: 5,
-                                      ),
-                                      Text(
-                                        "Dutse",
-                                        style: TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.w500),
-                                      )
-                                    ],
-                                  )
-                                : Column(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        "Pick-Up Location",
-                                        style: TextStyle(fontSize: 16),
-                                      ),
-                                      SizedBox(
-                                        height: 5,
-                                      ),
-                                      Container(
-                                        height: 50,
-                                        width: SizeConfig.screenWidth * 0.65,
-                                        decoration: BoxDecoration(
-                                            color: kprimarywhiteshade,
-                                            borderRadius:
-                                                BorderRadius.circular(15),
-                                            border: Border.all(
-                                              color:
-                                                  kTextColor.withOpacity(0.3),
-                                            )),
-                                        child: Padding(
-                                          padding: const EdgeInsets.only(
-                                              left: 10, right: 10),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Text("Select Pick-Up Location"),
-                                              Icon(LineAwesomeIcons.angle_down)
-                                            ],
-                                          ),
+                                ? Expanded(
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          "Drop-off Location",
+                                          style: TextStyle(fontSize: 16),
                                         ),
+                                        SizedBox(
+                                          height: 5,
+                                        ),
+                                        Text(
+                                          widget.controller.ride.destination,
+                                          style: TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.w500),
+                                        )
+                                      ],
+                                    ),
+                                  )
+                                : Expanded(
+                                    child: InkWell(
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            "Pick-Up Location",
+                                            style: TextStyle(fontSize: 16),
+                                          ),
+                                          SizedBox(
+                                            height: 5,
+                                          ),
+                                          Container(
+                                            width:
+                                                SizeConfig.screenWidth * 0.65,
+                                            decoration: BoxDecoration(
+                                                color: kprimarywhiteshade,
+                                                borderRadius:
+                                                    BorderRadius.circular(15),
+                                                border: Border.all(
+                                                  color: kTextColor
+                                                      .withOpacity(0.3),
+                                                )),
+                                            child: Padding(
+                                              padding: const EdgeInsets.only(
+                                                  left: 10, right: 10),
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  Expanded(
+                                                    child: Padding(
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              12.0),
+                                                      child: Text(widget
+                                                                  .controller
+                                                                  .pickup !=
+                                                              null
+                                                          ? widget
+                                                              .controller.pickup
+                                                          : "Select Pick-Up Location"),
+                                                    ),
+                                                  ),
+                                                  Icon(LineAwesomeIcons
+                                                      .angle_down)
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ],
                                       ),
-                                    ],
+                                      onTap: () {
+                                        widget.controller.showPickupsModal(
+                                            context, widget.controller);
+                                      },
+                                    ),
                                   )
                           ],
                         ),

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
+import 'package:wemoove/controllers/SearchScreenController.dart';
 import 'package:wemoove/size_config.dart';
 
 //const kPrimaryColor = Color(0xFFFFCC00);
 const kPrimaryColor = Color(0xFFF9B233);
+const kVariationColor = Color(0xFFFABC51);
 const kPrimaryLightColor = Color(0xFFFFECDF);
 const kPrimaryAlternateColor = Color(0xFF000000);
 const kprimarywhite = Color(0xFFFFFFFF);
@@ -66,19 +68,30 @@ OutlineInputBorder outlineInputBorder() {
   );
 }
 
-final noborderInputDecoration = InputDecoration(
-    filled: true,
-    fillColor: kprimarywhiteshade,
-    hintStyle: TextStyle(
-        fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
-    hintText: "Where to ?",
-    contentPadding:
-        EdgeInsets.symmetric(vertical: getProportionateScreenWidth(15)),
-    border: outlineInputBorder(),
-    focusedBorder: noOutlineInputBorder(),
-    enabledBorder: noOutlineInputBorder(),
-    prefixIcon: Icon(LineAwesomeIcons.search),
-    counterText: "");
+InputDecoration noborderInputDecoration(
+    {SearchScreenController controller, BuildContext context}) {
+  return InputDecoration(
+      filled: true,
+      fillColor: kprimarywhiteshade,
+      hintStyle: TextStyle(
+          fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
+      hintText: "Where to ?",
+      contentPadding:
+          EdgeInsets.symmetric(vertical: getProportionateScreenWidth(15)),
+      border: outlineInputBorder(),
+      focusedBorder: noOutlineInputBorder(),
+      enabledBorder: noOutlineInputBorder(),
+      suffixIcon: InkWell(
+        child: Icon(
+          LineAwesomeIcons.search,
+          size: 30,
+        ),
+        onTap: () {
+          //controller.Search(context);
+        },
+      ),
+      counterText: "");
+}
 
 OutlineInputBorder noOutlineInputBorder() {
   return OutlineInputBorder(

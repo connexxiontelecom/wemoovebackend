@@ -8,6 +8,7 @@ import 'package:wemoove/helper/BouncingTransition.dart';
 import 'package:wemoove/models/request_errors.dart';
 import 'package:wemoove/services/UserServices.dart';
 import 'package:wemoove/views/driver/CompleteProfileScreen.dart';
+import 'package:wemoove/views/search/SearchScreen.dart';
 
 class OtpController extends BaseViewModel {
   TextEditingController first_value = TextEditingController();
@@ -28,6 +29,7 @@ class OtpController extends BaseViewModel {
     }
     notifyListeners();
 
+    //submit(context);
     if (globals.otp == value) {
       submit(context);
     }
@@ -58,7 +60,12 @@ class OtpController extends BaseViewModel {
           builder: (_) => successProcessingModal(
                 sucessmsg: "Successfully",
               ));*/
-      Navigate.to(context, CompleteProfileScreen());
+
+      if (globals.user.userType == 1) {
+        Navigate.to(context, CompleteProfileScreen());
+      } else {
+        Navigate.to(context, SearchScreen());
+      }
     } else if (response == RequestError.CONNECTION_ERROR) {
       Navigator.pop(context);
       showDialog(

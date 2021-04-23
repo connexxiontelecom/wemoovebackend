@@ -5,6 +5,9 @@ import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:stacked/stacked.dart';
 import 'package:wemoove/components/defaultButton.dart';
 import 'package:wemoove/controllers/CarSignUpController.dart';
+import 'package:wemoove/globals.dart' as globals;
+import 'package:wemoove/helper/BouncingTransition.dart';
+import 'package:wemoove/views/driver/components/TakePictureScreen.dart';
 
 import '../../../constants.dart';
 import '../../../size_config.dart';
@@ -39,7 +42,7 @@ class _BodyState extends State<Body> {
                             //width: getProportionateScreenWidth(235),
                           ),
 
-                          SizedBox(height: SizeConfig.screenHeight * 0.04),
+                          SizedBox(height: SizeConfig.screenHeight * 0.01),
 
                           //Text("Sign Up", style: headingStyle),
                           Text(
@@ -62,7 +65,52 @@ class _BodyState extends State<Body> {
                           SizedBox(
                             height: 15,
                           ),
+
                           Center(
+                            child: Stack(
+                              children: [
+                                CircleAvatar(
+                                  radius: 52,
+                                  backgroundColor: kPrimaryColor,
+                                  child: CircleAvatar(
+                                    radius: 50,
+                                    backgroundColor: kPrimaryColor,
+                                    backgroundImage:
+                                        controller.profileImage != null
+                                            ? Image.file(
+                                                controller.profileImage,
+                                              ).image
+                                            : NetworkImage(
+                                                globals.user.profileImage),
+                                  ),
+                                ),
+                                Positioned(
+                                  right: 0,
+                                  bottom: 0,
+                                  child: GestureDetector(
+                                    child: Container(
+                                      height: 40,
+                                      width: 40,
+                                      decoration: BoxDecoration(
+                                          color: kPrimaryAlternateColor,
+                                          borderRadius:
+                                              BorderRadius.circular(50)),
+                                      child: Icon(
+                                        Icons.camera_alt_rounded,
+                                        color: kPrimaryColor,
+                                        size: 30,
+                                      ),
+                                    ),
+                                    onTap: () {
+                                      controller.selectProfileImage();
+                                    },
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+
+                          /*  Center(
                             child: CircleAvatar(
                               radius: 50,
                               backgroundColor: kPrimaryColor,
@@ -73,7 +121,7 @@ class _BodyState extends State<Body> {
                                     AssetImage("assets/images/portrait.jpg"),
                               ),
                             ),
-                          ),
+                          ),*/
                           SizedBox(
                             height: 10,
                           ),
@@ -136,9 +184,8 @@ class _BodyState extends State<Body> {
                             },
                           ),
                           SizedBox(
-                            height: 30,
+                            height: 25,
                           ),
-
                           controller.file != null
                               ? Padding(
                                   padding: const EdgeInsets.only(bottom: 5),
@@ -158,9 +205,47 @@ class _BodyState extends State<Body> {
                                   style: TextStyle(color: Colors.red),
                                 )
                               : Container(),
-                          SizedBox(
-                            height: 10,
+
+                          GestureDetector(
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.camera_alt_rounded,
+                                  size: 40,
+                                  color: kPrimaryColor,
+                                ),
+                                Text(
+                                  "Take a picture of your Car's Front-View",
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                )
+                              ],
+                            ),
+                            onTap: () {
+                              Navigate.to(
+                                  context,
+                                  TakePictureScreen(
+                                      carSignUpController: controller,
+                                      camera: controller.firstCamera));
+                            },
                           ),
+                          if (controller.capturedPicture != null)
+                            Row(
+                              children: [
+                                Text("Front-View: "),
+                                Text(
+                                  " Captured",
+                                  style: TextStyle(
+                                      //fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: kPrimaryAlternateColor),
+                                ),
+                              ],
+                            ),
+
+                          SizedBox(
+                            height: 15,
+                          ),
+
                           DefaultButton(
                             text: "Confirm",
                             color: kPrimaryAlternateColor,

@@ -32,12 +32,15 @@ class _SearchScreenState extends State<SearchScreen> {
         viewModelBuilder: () => SearchScreenController(),
         builder: (context, controller, child) => Scaffold(
               key: scaffoldKey,
-              body: globals.isDriverMode || controller.isDriverMode
+              body: globals.user.userType == 1 &&
+                      (globals.isDriverMode || controller.isDriverMode)
                   ? DriverBody(
                       scaffoldkey: scaffoldKey,
+                      controller: controller,
                     )
                   : Body(
                       scaffoldkey: scaffoldKey,
+                      controller: controller,
                     ),
               drawer: Theme(
                 data: Theme.of(context).copyWith(

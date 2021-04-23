@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:wemoove/constants.dart';
+import 'package:wemoove/controllers/SearchScreenController.dart';
+import 'package:wemoove/globals.dart' as globals;
 import 'package:wemoove/helper/BouncingTransition.dart';
 import 'package:wemoove/size_config.dart';
 import 'package:wemoove/views/booking/BookingScreen.dart';
@@ -9,7 +11,10 @@ import 'package:wemoove/views/publish/PublishScreen.dart';
 
 class DriverBody extends StatefulWidget {
   final GlobalKey<ScaffoldState> scaffoldkey;
-  const DriverBody({Key key, this.scaffoldkey}) : super(key: key);
+  final SearchScreenController controller;
+  const DriverBody({Key key, this.controller, this.scaffoldkey})
+      : super(key: key);
+
   @override
   _DriverBodyState createState() => _DriverBodyState();
 }
@@ -94,10 +99,13 @@ class _DriverBodyState extends State<DriverBody> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Good Afternoon,",
+                        "Welcome back!,",
                         style: TextStyle(fontSize: 18),
                       ),
-                      Text("Jason",
+                      Text(
+                          globals.user != null
+                              ? globals.user.fullName.split(" ")[0]
+                              : "",
                           style:
                               SmallHeadingStyle //TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                           ),
@@ -125,9 +133,9 @@ class _DriverBodyState extends State<DriverBody> {
                   CircleAvatar(
                       radius: 35,
                       //child: Image.asset("assets/images/sample.jpg")
-                      backgroundImage: AssetImage(
-                          "assets/images/portrait.jpg") //NetworkImage(globals.user.avatar)
-                      ),
+                      backgroundImage: globals.user.profileImage.isEmpty
+                          ? AssetImage("assets/images/portrait.jpg")
+                          : NetworkImage(globals.user.profileImage)),
                 ],
               ),
             ),
@@ -177,7 +185,9 @@ class _DriverBodyState extends State<DriverBody> {
                     children: [
                       SummaryWidget(
                         title: "Total Rides",
-                        value: "1,200",
+                        value: globals.details != null
+                            ? "${globals.details.rides}"
+                            : "",
                         icon: LineAwesomeIcons.car,
                       ),
                       SizedBox(
@@ -209,7 +219,9 @@ class _DriverBodyState extends State<DriverBody> {
                       ),
                       SummaryWidget(
                         title: "Passengers",
-                        value: "200",
+                        value: globals.details != null
+                            ? "${globals.details.passengers}"
+                            : "",
                         icon: LineAwesomeIcons.user_friends,
                       ),
                     ],
@@ -420,9 +432,9 @@ class RIdeCard extends StatelessWidget {
                       CircleAvatar(
                           radius: 25,
                           //child: Image.asset("assets/images/sample.jpg")
-                          backgroundImage: AssetImage(
-                              "assets/images/driver.jpg") //NetworkImage(globals.user.avatar)
-                          ),
+                          backgroundImage: globals.user.profileImage.isEmpty
+                              ? AssetImage("assets/images/portrait.jpg")
+                              : NetworkImage(globals.user.profileImage)),
                       SizedBox(
                         width: 10,
                       ),

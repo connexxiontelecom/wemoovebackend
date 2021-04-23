@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wemoove/components/defaultButton.dart';
 import 'package:wemoove/controllers/OtpController.dart';
-import 'package:wemoove/helper/BouncingTransition.dart';
-import 'package:wemoove/views/driver/CompleteProfileScreen.dart';
 
 import '../../../constants.dart';
 import '../../../size_config.dart';
@@ -134,7 +132,8 @@ class _OtpFormState extends State<OtpForm> {
             color: kPrimaryAlternateColor,
             textColor: kPrimaryColor,
             press: () {
-              Navigate.to(context, CompleteProfileScreen());
+              widget.controller.submit(context);
+              //Navigate.to(context, CompleteProfileScreen());
             },
           )
         ],

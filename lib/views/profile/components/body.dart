@@ -1,10 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:wemoove/constants.dart';
-import 'package:wemoove/helper/BouncingTransition.dart';
+import 'package:wemoove/controllers/ProfileScreenController.dart';
+import 'package:wemoove/globals.dart' as globals;
 import 'package:wemoove/size_config.dart';
 
 class Body extends StatefulWidget {
+  final ProfileScreenController controller;
+  const Body({Key key, this.controller}) : super(key: key);
   @override
   _BodyState createState() => _BodyState();
 }
@@ -66,15 +69,43 @@ class _BodyState extends State<Body> {
                 child: Container(
                   child: Column(
                     children: [
-                      CircleAvatar(
-                        radius: 80,
-                        backgroundColor: kPrimaryColor,
-                        child: CircleAvatar(
-                          radius: 75,
-                          backgroundColor: kPrimaryColor,
-                          backgroundImage:
-                              AssetImage("assets/images/portrait.jpg"),
-                        ),
+                      Stack(
+                        children: [
+                          CircleAvatar(
+                            radius: 80,
+                            backgroundColor: kPrimaryColor,
+                            child: CircleAvatar(
+                              radius: 75,
+                              backgroundColor: kPrimaryColor,
+                              backgroundImage: widget.controller.file != null
+                                  ? Image.file(
+                                      widget.controller.file,
+                                    ).image
+                                  : NetworkImage(globals.user.profileImage),
+                            ),
+                          ),
+                          Positioned(
+                            right: 0,
+                            bottom: 0,
+                            child: GestureDetector(
+                              child: Container(
+                                height: 60,
+                                width: 60,
+                                decoration: BoxDecoration(
+                                    color: kPrimaryAlternateColor,
+                                    borderRadius: BorderRadius.circular(50)),
+                                child: Icon(
+                                  Icons.camera_alt_rounded,
+                                  color: kPrimaryColor,
+                                  size: 40,
+                                ),
+                              ),
+                              onTap: () {
+                                widget.controller.SelectFile();
+                              },
+                            ),
+                          )
+                        ],
                       ),
                       SizedBox(
                         height: 30,
@@ -90,7 +121,7 @@ class _BodyState extends State<Body> {
                                 style: TextStyle(fontSize: 18),
                               ),
                               Text(
-                                "Jason",
+                                globals.user.fullName.split(" ")[0],
                                 style: TextStyle(
                                     fontSize: 20,
                                     fontWeight: FontWeight.bold,
@@ -110,7 +141,7 @@ class _BodyState extends State<Body> {
                                 style: TextStyle(fontSize: 18),
                               ),
                               Text(
-                                "Brookes",
+                                globals.user.fullName.split(" ")[1],
                                 style: TextStyle(
                                     fontSize: 20,
                                     fontWeight: FontWeight.bold,
@@ -135,7 +166,7 @@ class _BodyState extends State<Body> {
                                 style: TextStyle(fontSize: 18),
                               ),
                               Text(
-                                "Jasonbrookes@gmail.com",
+                                globals.user.email,
                                 style: TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.w500,
@@ -160,7 +191,7 @@ class _BodyState extends State<Body> {
                                 style: TextStyle(fontSize: 18),
                               ),
                               Text(
-                                "+234 85254412454",
+                                globals.user.phoneNumber,
                                 style: TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.w500,
@@ -193,6 +224,8 @@ class _BodyState extends State<Body> {
                                 child: Padding(
                                   padding: const EdgeInsets.only(left: 10),
                                   child: TextFormField(
+                                    controller:
+                                        widget.controller.homeController,
                                     maxLines: null,
                                     decoration: getInputDecoration(
                                         "Enter Home Location"),
@@ -226,6 +259,8 @@ class _BodyState extends State<Body> {
                                 child: Padding(
                                   padding: const EdgeInsets.only(left: 10),
                                   child: TextFormField(
+                                    controller:
+                                        widget.controller.workController,
                                     maxLines: null,
                                     decoration: getInputDecoration(
                                         "Enter Work Location"),
@@ -259,7 +294,8 @@ class _BodyState extends State<Body> {
                                 ),
                               )),
                           onTap: () {
-                            Navigate.pop(context);
+                            // Navigate.pop(context);
+                            widget.controller.SaveUpdates(context);
                           },
                         ),
                       ),

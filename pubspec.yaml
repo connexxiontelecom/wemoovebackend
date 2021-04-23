@@ -31,10 +31,30 @@ dependencies:
   google_sign_in: ^5.0.0
   stacked: ^1.7.6
   flutter_switch: ^0.3.0
+  #dio: ^4.0.0
   dio: ^3.0.10
   read_otp_plugin: ^0.0.8
   file_picker: ^3.0.0
   form_field_validator: ^1.0.1
+  url_launcher: ^6.0.3
+  ably_flutter: ^1.2.0-preview.1
+  google_maps_flutter: ^2.0.2
+  flutter_google_places: ^0.2.3
+  geolocator: ^7.0.1
+  http: ^0.12.2
+  google_maps_webservice: ^0.0.14
+  provider: ^5.0.0
+  swipe_to: ^0.0.1+8
+  firebase_messaging: ^9.1.1
+  firebase_core: ^1.0.3
+  overlay_support: ^1.2.0
+  flutter_swipable: ^0.1.1
+  camera: any
+  path_provider: any
+  path: any
+  hive: ^1.4.4+1
+  hive_flutter: ^0.3.1
+  #gallery_saver: ^2.0.3
 
 
   # The following adds the Cupertino Icons font to your application.

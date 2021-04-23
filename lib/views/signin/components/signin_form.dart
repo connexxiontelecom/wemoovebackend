@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:wemoove/components/defaultButton.dart';
 import 'package:wemoove/components/form_error.dart';
-import 'package:wemoove/helper/BouncingTransition.dart';
-import 'package:wemoove/views/search/SearchScreen.dart';
+import 'package:wemoove/controllers/SignInController.dart';
 
 import '../../../constants.dart';
 import '../../../size_config.dart';
 
 class SignForm extends StatefulWidget {
+  SignInController controller;
+  SignForm({Key key, this.controller}) : super(key: key);
   @override
   _SignFormState createState() => _SignFormState();
 }
@@ -18,6 +19,7 @@ class _SignFormState extends State<SignForm> {
   String email;
   String password;
   bool remember = false;
+  bool Obscured = true;
   final List<String> errors = [];
 
   void addError({String error}) {
@@ -40,9 +42,11 @@ class _SignFormState extends State<SignForm> {
       key: _formKey,
       child: Column(
         children: [
-          buildEmailFormField(),
+          buildEmailFormField(controller: widget.controller.usernameController),
           SizedBox(height: getProportionateScreenHeight(30)),
-          buildPasswordFormField(),
+          buildPasswordFormField(
+              controller: widget.controller.passwordController,
+              obscured: Obscured),
           SizedBox(height: getProportionateScreenHeight(30)),
           Row(
             children: [
@@ -73,13 +77,15 @@ class _SignFormState extends State<SignForm> {
             text: "Continue",
             textColor: kPrimaryColor,
             press: () {
-              /*if (_formKey.currentState.validate()) {
+              if (_formKey.currentState.validate()) {
                 _formKey.currentState.save();
+                widget.controller.signIn(context);
                 // if all are valid then go to success screen
-                KeyboardUtil.hideKeyboard(context);
+                //KeyboardUtil.hideKeyboard(context);
                 //Navigator.pushNamed(context, LoginSuccessScreen.routeName);
-              }*/
-              Navigate.to(context, SearchScreen());
+
+              }
+              //Navigate.to(context, SearchScreen());
             },
           ),
         ],
@@ -87,23 +93,25 @@ class _SignFormState extends State<SignForm> {
     );
   }
 
-  TextFormField buildPasswordFormField() {
+  TextFormField buildPasswordFormField(
+      {TextEditingController controller, bool obscured}) {
     return TextFormField(
-      obscureText: true,
+      obscureText: obscured,
+      controller: controller,
       onSaved: (newValue) => password = newValue,
       onChanged: (value) {
-        if (value.isNotEmpty) {
+        if (controller.text.isNotEmpty) {
           removeError(error: kPassNullError);
-        } else if (value.length >= 8) {
+        } else if (controller.text.length >= 8) {
           removeError(error: kShortPassError);
         }
-        return null;
+        password = value;
       },
       validator: (value) {
-        if (value.isEmpty) {
+        if (controller.text.isEmpty) {
           addError(error: kPassNullError);
           return "";
-        } else if (value.length < 8) {
+        } else if (controller.text.length < 8) {
           addError(error: kShortPassError);
           return "";
         }
@@ -115,15 +123,25 @@ class _SignFormState extends State<SignForm> {
           // If  you are using latest version of flutter then lable text and hint text shown like this
           // if you r using flutter less then 1.20.* then maybe this is not working properly
           floatingLabelBehavior: FloatingLabelBehavior.always,
-          prefixIcon: Icon(LineAwesomeIcons.lock)
-          //CustomSurffixIcon(svgIcon: "assets/icons/Lock.svg"),
-
+          suffixIcon: GestureDetector(
+            child: Icon(Obscured == true
+                ? LineAwesomeIcons.eye_slash_1
+                : LineAwesomeIcons.eye),
+            onTap: () {
+              setState(() {
+                Obscured = !Obscured;
+              });
+            },
+          ),
+          prefixIcon: Icon(LineAwesomeIcons
+              .lock) //CustomSurffixIcon(svgIcon: "assets/icons/Lock.svg"),
           ),
     );
   }
 
-  TextFormField buildEmailFormField() {
+  TextFormField buildEmailFormField({TextEditingController controller}) {
     return TextFormField(
+      controller: controller,
       keyboardType: TextInputType.emailAddress,
       onSaved: (newValue) => email = newValue,
       onChanged: (value) {

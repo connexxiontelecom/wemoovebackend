@@ -1,11 +1,16 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
+import 'package:wemoove/globals.dart' as globals;
+import 'package:wemoove/models/Boarded.dart';
 
 import '../../../constants.dart';
 import '../../../size_config.dart';
 
 class Body extends StatefulWidget {
+  final Boarded boarded;
+
+  const Body({Key key, this.boarded}) : super(key: key);
   @override
   _BodyState createState() => _BodyState();
 }
@@ -32,11 +37,51 @@ class _BodyState extends State<Body> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Image.asset(
+                  InkWell(
+                    child: Row(
+                      children: [
+                        Icon(
+                          LineAwesomeIcons.arrow_left,
+                          color: kPrimaryColor,
+                          size: 35,
+                        ),
+                        SizedBox(
+                          width: 5,
+                        ),
+                        Text(
+                          "Back",
+                          style: TextStyle(fontSize: 20, color: kPrimaryColor),
+                        )
+                      ],
+                    ),
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                  Text(
+                    "Ride's History",
+                    style: TextStyle(fontSize: 20, color: kPrimaryColor),
+                  ),
+                  CircleAvatar(
+                    radius: 25,
+                    backgroundImage: NetworkImage(globals.user.profileImage),
+                  ),
+                  /*Image.asset(
                     "assets/images/appbarlogo.png",
                     height: getProportionateScreenHeight(30),
                     //width: getProportionateScreenWidth(235),
-                  ),
+                  ),*/
+                  /*  InkWell(
+                    child: Container(
+                      height: 50,
+                      width: 50,
+                      decoration: BoxDecoration(
+                          color: Colors.transparent,
+                          borderRadius: BorderRadius.circular(50)),
+                      child: Icon(LineAwesomeIcons.list, color: kPrimaryColor),
+                    ),
+
+                  )*/
                 ],
               ),
             ),
@@ -66,25 +111,32 @@ class _BodyState extends State<Body> {
                           ],
                           color: kprimarywhite,
                           borderRadius: BorderRadius.all(Radius.circular(10))),
-                      child: Details()),
+                      child: Details(
+                        boarded: widget.boarded,
+                      )),
                   SizedBox(
                     height: 20,
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(0.0),
-                    child: Container(
-                        height: 60,
-                        //width: SizeConfig.screenWidth * 0.7,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          color: kPrimaryAlternateColor,
-                        ),
-                        child: Center(
-                            child: Icon(
-                          LineAwesomeIcons.arrow_left,
-                          size: 35,
-                          color: kPrimaryColor,
-                        ))),
+                  GestureDetector(
+                    child: Padding(
+                      padding: const EdgeInsets.all(0.0),
+                      child: Container(
+                          height: 60,
+                          //width: SizeConfig.screenWidth * 0.7,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            color: kPrimaryAlternateColor,
+                          ),
+                          child: Center(
+                              child: Icon(
+                            LineAwesomeIcons.arrow_left,
+                            size: 35,
+                            color: kPrimaryColor,
+                          ))),
+                    ),
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
                   ),
                 ],
               ),
@@ -97,8 +149,10 @@ class _BodyState extends State<Body> {
 }
 
 class Details extends StatelessWidget {
+  final Boarded boarded;
   const Details({
     Key key,
+    this.boarded,
   }) : super(key: key);
 
   @override
@@ -116,7 +170,9 @@ class Details extends StatelessWidget {
                 fontSize: 20,
                 color: kPrimaryAlternateColor),
           ),
-          TimeLine(),
+          TimeLine(
+            boarded: boarded,
+          ),
           SizedBox(
             height: 30,
           ),
@@ -134,7 +190,7 @@ class Details extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 50.0,
-                backgroundImage: AssetImage("assets/images/driver.jpg"),
+                backgroundImage: NetworkImage(boarded.driver.profileImage),
                 backgroundColor: Colors.transparent,
               ),
               SizedBox(
@@ -145,7 +201,7 @@ class Details extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "Jason Brookes",
+                    "${boarded.driver.fullName}",
                     style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: kPrimaryAlternateColor,
@@ -158,7 +214,7 @@ class Details extends StatelessWidget {
                     height: 10,
                   ),
                   Text(
-                    "ABJ345CV",
+                    "${boarded.driver.plateNumber}".toUpperCase(),
                     style: TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
@@ -174,7 +230,7 @@ class Details extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "Toyota Corolla :",
+                            "${boarded.driver.brand} ${boarded.driver.model}:",
                             style: TextStyle(fontSize: 18),
                           ),
                         ],
@@ -187,7 +243,7 @@ class Details extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "Silver ",
+                            "${boarded.driver.colour}",
                             style: TextStyle(
                                 color: kPrimaryAlternateColor, fontSize: 18),
                           ),
@@ -224,7 +280,7 @@ class Details extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    "1 seat(s)",
+                    "${boarded.seats} seat(s)",
                     style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -241,7 +297,7 @@ class Details extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    "N300",
+                    "N${boarded.amount}",
                     style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -293,7 +349,7 @@ class Details extends StatelessWidget {
                     width: 10,
                   ),
                   Text(
-                    "Completed",
+                    boarded.status == 4 ? "Completed" : "Cancelled",
                     style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -417,8 +473,10 @@ class counterButton extends StatelessWidget {
 }
 
 class TimeLine extends StatefulWidget {
+  final Boarded boarded;
   const TimeLine({
     Key key,
+    this.boarded,
   }) : super(key: key);
   @override
   _TimeLineState createState() => _TimeLineState();
@@ -489,46 +547,52 @@ class _TimeLineState extends State<TimeLine> {
                               width: 10,
                             ),
                             index == 1
-                                ? Column(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        "Drop-off Location",
-                                        style: TextStyle(fontSize: 16),
-                                      ),
-                                      SizedBox(
-                                        height: 5,
-                                      ),
-                                      Text(
-                                        "Dutse",
-                                        style: TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.w500),
-                                      )
-                                    ],
-                                  )
-                                : Column(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        "Pick-Up Location",
-                                        style: TextStyle(fontSize: 16),
-                                      ),
-                                      SizedBox(
-                                        height: 5,
-                                      ),
-                                      Text(
-                                        "Farmer's Market",
-                                        style: TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.w500,
+                                ? Expanded(
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          "Drop-off Location",
+                                          style: TextStyle(fontSize: 16),
                                         ),
-                                      )
-                                    ],
+                                        SizedBox(
+                                          height: 5,
+                                        ),
+                                        Text(
+                                          "${widget.boarded.destination}",
+                                          style: TextStyle(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.w500),
+                                        )
+                                      ],
+                                    ),
+                                  )
+                                : Expanded(
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          "Pick-Up Location",
+                                          style: TextStyle(fontSize: 16),
+                                        ),
+                                        SizedBox(
+                                          height: 5,
+                                        ),
+                                        Text(
+                                          "${widget.boarded.pickup}",
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        )
+                                      ],
+                                    ),
                                   )
                           ],
                         ),

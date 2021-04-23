@@ -1,11 +1,17 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
+import 'package:wemoove/globals.dart' as globals;
+import 'package:wemoove/models/Driven.dart';
 
 import '../../../constants.dart';
 import '../../../size_config.dart';
 
 class DriverRideHistoryDetail extends StatefulWidget {
+  final Driven driven;
+
+  const DriverRideHistoryDetail({Key key, this.driven}) : super(key: key);
   @override
   _BodyState createState() => _BodyState();
 }
@@ -32,11 +38,51 @@ class _BodyState extends State<DriverRideHistoryDetail> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Image.asset(
+                  InkWell(
+                    child: Row(
+                      children: [
+                        Icon(
+                          LineAwesomeIcons.arrow_left,
+                          color: kPrimaryColor,
+                          size: 35,
+                        ),
+                        SizedBox(
+                          width: 5,
+                        ),
+                        Text(
+                          "Back",
+                          style: TextStyle(fontSize: 20, color: kPrimaryColor),
+                        )
+                      ],
+                    ),
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                  Text(
+                    "Ride's History",
+                    style: TextStyle(fontSize: 20, color: kPrimaryColor),
+                  ),
+                  CircleAvatar(
+                    radius: 25,
+                    backgroundImage: NetworkImage(globals.user.profileImage),
+                  ),
+                  /*Image.asset(
                     "assets/images/appbarlogo.png",
                     height: getProportionateScreenHeight(30),
                     //width: getProportionateScreenWidth(235),
-                  ),
+                  ),*/
+                  /*  InkWell(
+                    child: Container(
+                      height: 50,
+                      width: 50,
+                      decoration: BoxDecoration(
+                          color: Colors.transparent,
+                          borderRadius: BorderRadius.circular(50)),
+                      child: Icon(LineAwesomeIcons.list, color: kPrimaryColor),
+                    ),
+
+                  )*/
                 ],
               ),
             ),
@@ -66,7 +112,7 @@ class _BodyState extends State<DriverRideHistoryDetail> {
                           ],
                           color: kprimarywhite,
                           borderRadius: BorderRadius.all(Radius.circular(10))),
-                      child: Details()),
+                      child: Details(driven: widget.driven)),
                   SizedBox(
                     height: 20,
                   ),
@@ -102,10 +148,17 @@ class _BodyState extends State<DriverRideHistoryDetail> {
 }
 
 class Details extends StatelessWidget {
+  final Driven driven;
   const Details({
     Key key,
+    this.driven,
   }) : super(key: key);
+  String parseDate(String date) {
+    DateTime parsedDate = DateTime.tryParse(date);
+    return formatDate(parsedDate);
+  }
 
+  String formatDate(DateTime date) => new DateFormat("d MMM y").format(date);
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -125,12 +178,14 @@ class Details extends StatelessWidget {
                     color: kPrimaryAlternateColor),
               ),
               Text(
-                "25-Jun-2020",
+                "${parseDate(driven.createdAt)}",
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
               )
             ],
           ),
-          TimeLine(),
+          TimeLine(
+            driven: driven,
+          ),
           SizedBox(
             height: 30,
           ),
@@ -154,7 +209,7 @@ class Details extends StatelessWidget {
               ),
               SizedBox(width: 10),
               Text(
-                "N1000",
+                "N${driven.amount}",
                 style: TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
@@ -173,9 +228,19 @@ class Details extends StatelessWidget {
           SizedBox(
             height: 10,
           ),
-          PassengerTile(),
-          PassengerTile(),
-          PassengerTile(),
+          Text(
+            "Passengers:",
+            style: TextStyle(
+              fontSize: 18,
+            ),
+          ),
+          Column(
+            children: List.generate(
+                driven.passengers.length,
+                (index) => PassengerTile(
+                      passenger: driven.passengers[index],
+                    )),
+          ),
           SizedBox(
             height: 30,
           ),
@@ -221,7 +286,7 @@ class Details extends StatelessWidget {
                     width: 10,
                   ),
                   Text(
-                    "Completed",
+                    driven.status == 4 ? "Completed" : "Cancelled",
                     style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -239,8 +304,10 @@ class Details extends StatelessWidget {
 }
 
 class PassengerTile extends StatelessWidget {
+  final Passengers passenger;
   const PassengerTile({
     Key key,
+    this.passenger,
   }) : super(key: key);
 
   @override
@@ -253,65 +320,67 @@ class PassengerTile extends StatelessWidget {
         children: [
           CircleAvatar(
             radius: 35.0,
-            backgroundImage: AssetImage("assets/images/driver.jpg"),
-            backgroundColor: Colors.transparent,
+            backgroundImage: NetworkImage(passenger.profileImage),
+            //backgroundColor: Colors.transparent,
           ),
           SizedBox(
             width: 10,
           ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                "Jason Brookes",
-                style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: kPrimaryAlternateColor,
-                    fontSize: 20),
-              ),
-              SizedBox(
-                height: 5,
-              ),
-              Row(
-                children: [
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "2 Seat(s)",
-                        style: TextStyle(fontSize: 18),
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    width: 2,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Container(
-                      height: 10,
-                      width: 10,
-                      decoration: BoxDecoration(
-                          color: kPrimaryAlternateColor,
-                          borderRadius: BorderRadius.circular(50)),
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "${passenger.fullName}",
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: kPrimaryAlternateColor,
+                      fontSize: 20),
+                ),
+                SizedBox(
+                  height: 5,
+                ),
+                Row(
+                  children: [
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "${passenger.seats} Seat(s)",
+                          style: TextStyle(fontSize: 18),
+                        ),
+                      ],
                     ),
-                  ),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Nicon Junction",
-                        style: TextStyle(
-                            color: kPrimaryAlternateColor, fontSize: 18),
+                    SizedBox(
+                      width: 2,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Container(
+                        height: 10,
+                        width: 10,
+                        decoration: BoxDecoration(
+                            color: kPrimaryAlternateColor,
+                            borderRadius: BorderRadius.circular(50)),
                       ),
-                    ],
-                  )
-                ],
-              ),
-            ],
+                    ),
+                  ],
+                ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "${passenger.pickup}",
+                      style: TextStyle(
+                          color: kPrimaryAlternateColor, fontSize: 16),
+                    ),
+                  ],
+                )
+              ],
+            ),
           )
         ],
       ),
@@ -342,8 +411,10 @@ class counterButton extends StatelessWidget {
 }
 
 class TimeLine extends StatefulWidget {
+  final Driven driven;
   const TimeLine({
     Key key,
+    this.driven,
   }) : super(key: key);
   @override
   _TimeLineState createState() => _TimeLineState();
@@ -414,56 +485,63 @@ class _TimeLineState extends State<TimeLine> {
                               width: 10,
                             ),
                             index == 1
-                                ? Column(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        "Destination",
-                                        style: TextStyle(fontSize: 16),
-                                      ),
-                                      SizedBox(
-                                        height: 5,
-                                      ),
-                                      Text(
-                                        "Dutse",
-                                        style: TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.w500),
-                                      )
-                                    ],
+                                ? Expanded(
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          "Destination",
+                                          style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                              color: kPrimaryAlternateColor),
+                                        ),
+                                        SizedBox(
+                                          height: 5,
+                                        ),
+                                        Text(
+                                          "${widget.driven.destination}",
+                                          style: TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.w500),
+                                        )
+                                      ],
+                                    ),
                                   )
-                                : Column(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        "Pick-Up Locations",
-                                        style: TextStyle(fontSize: 16),
-                                      ),
-                                      SizedBox(
-                                        height: 5,
-                                      ),
-                                      Text(
-                                        "Farmer's Market",
-                                        style: TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.w500,
+                                : Expanded(
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          "Pick-Up Locations",
+                                          style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                              color: kPrimaryAlternateColor),
                                         ),
-                                      ),
-                                      SizedBox(
-                                        height: 10,
-                                      ),
-                                      Text(
-                                        "NICON Junction",
-                                        style: TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.w500,
+                                        SizedBox(
+                                          height: 5,
                                         ),
-                                      )
-                                    ],
+                                        Column(
+                                          children: List.generate(
+                                              widget.driven.pickups.length,
+                                              (index) => Text(
+                                                    "${widget.driven.pickups[index].name}",
+                                                    style: TextStyle(
+                                                      fontSize: 18,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                    ),
+                                                  )),
+                                        ),
+                                      ],
+                                    ),
                                   )
                           ],
                         ),

@@ -1,20 +1,66 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
+import 'package:swipe_to/swipe_to.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:wemoove/components/CustomButton.dart';
 import 'package:wemoove/components/ExpandableSection.dart';
 import 'package:wemoove/constants.dart';
+import 'package:wemoove/controllers/RideRequestsController.dart';
+import 'package:wemoove/globals.dart' as globals;
+import 'package:wemoove/helper/BouncingTransition.dart';
+import 'package:wemoove/models/request.dart';
 import 'package:wemoove/size_config.dart';
+import 'package:wemoove/views/chat/components/chatBody.dart';
 
 class Body extends StatefulWidget {
   final GlobalKey<ScaffoldState> scaffoldkey;
-  const Body({Key key, this.scaffoldkey}) : super(key: key);
+  final RideRequestController controller;
+  Body({Key key, this.scaffoldkey, this.controller}) : super(key: key);
   @override
   _BodyState createState() => _BodyState();
 }
 
 class _BodyState extends State<Body> {
   bool up = false;
+  Timer timer;
+  static const oneSec = const Duration(minutes: 1);
   // final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    fetchRequests();
+    timer = new Timer.periodic(oneSec, (Timer t) {
+      if (widget.controller.ride_current_status == 1) {
+        widget.controller.RefreshData();
+      }
+      print("refreshed");
+    });
+  }
+
+  fetchRequests() {
+    SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
+      widget.controller.Fetch(context);
+    });
+  }
+
+  Future<void> refresh() async {
+    widget.controller.Fetch(context);
+    setState(() {});
+    return;
+  }
+
+  @override
+  void dispose() {
+    timer?.cancel();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     BorderRadiusGeometry radius = BorderRadius.only(
@@ -78,10 +124,13 @@ class _BodyState extends State<Body> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Good Afternoon,",
+                        "Hello!,",
                         style: TextStyle(fontSize: 18),
                       ),
-                      Text("Jason",
+                      Text(
+                          globals.user != null
+                              ? globals.user.fullName.split(" ")[0]
+                              : "",
                           style:
                               SmallHeadingStyle //TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                           ),
@@ -109,9 +158,9 @@ class _BodyState extends State<Body> {
                   CircleAvatar(
                       radius: 35,
                       //child: Image.asset("assets/images/sample.jpg")
-                      backgroundImage: AssetImage(
-                          "assets/images/portrait.jpg") //NetworkImage(globals.user.avatar)
-                      ),
+                      backgroundImage: globals.user.profileImage.isEmpty
+                          ? AssetImage("assets/images/portrait.jpg")
+                          : NetworkImage(globals.user.profileImage)),
                 ],
               ),
             ),
@@ -132,7 +181,7 @@ class _BodyState extends State<Body> {
                 style: TextStyle(fontSize: 20),
               ),
               Text(
-                " (0 requests)",
+                "  ${widget.controller.requests.length} ${"(requests)"}",
                 style: TextStyle(
                     fontSize: 15,
                     color: kPrimaryAlternateColor,
@@ -156,50 +205,113 @@ class _BodyState extends State<Body> {
                 ],
                 color: kprimarywhite,
                 borderRadius: BorderRadius.all(Radius.circular(10))),
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(15.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Image.asset(
-                            "assets/images/error.png",
-                            height: 300,
-                          ),
-                          Text(
-                            "You currently do not have any"
-                            "\n passengers' request",
-                            style: TextStyle(fontSize: 15),
-                            textAlign: TextAlign.center,
-                          )
-                        ],
+            child: RefreshIndicator(
+              onRefresh: refresh,
+              child: SingleChildScrollView(
+                physics: AlwaysScrollableScrollPhysics(),
+                child: Padding(
+                  padding: const EdgeInsets.all(15.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      widget.controller.requests == null ||
+                              widget.controller.requests.length <= 0
+                          ? Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Image.asset(
+                                    "assets/images/error.png",
+                                    height: 300,
+                                  ),
+                                  Text(
+                                    "You currently do not have any"
+                                    "\n passengers' request",
+                                    style: TextStyle(fontSize: 15),
+                                    textAlign: TextAlign.center,
+                                  )
+                                ],
+                              ),
+                            )
+                          /* SizedBox(
+                        height: 50,
+                      )*/
+                          : ListView.builder(
+                              itemCount: widget.controller.requests
+                                  .length, //controller.Receipts.length, //recipients.length,
+                              shrinkWrap: true,
+                              physics: NeverScrollableScrollPhysics(),
+                              itemBuilder: (context, index) {
+                                return PassengerRequest(
+                                  index: index,
+                                  request: widget.controller.requests[index],
+                                  controller: widget.controller,
+                                );
+                              }),
+                      if (widget.controller.ride_current_status != 3)
+                        SizedBox(
+                          height: 50,
+                        ),
+                      SwipeTo(
+                        animationDuration: const Duration(milliseconds: 375),
+                        iconOnRightSwipe: LineAwesomeIcons.arrow_right,
+                        onRightSwipe: () {
+                          if (widget.controller.ride_current_status == 1) {
+                            widget.controller.Start(context);
+                          } else {
+                            widget.controller.Cancel(context);
+                          }
+                        },
+                        //animationDuration: const Duration(milliseconds: 300),
+                        child: CustomButton(
+                          child: Center(
+                              child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              widget.controller.ride_current_status == 1
+                                  ? Text(
+                                      "Swipe to Start Ride",
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 17),
+                                    )
+                                  : widget.controller.ride_current_status == 2
+                                      ? Text(
+                                          "Swipe to Cancel Ride",
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 17),
+                                        )
+                                      : Container(),
+                              Icon(
+                                LineAwesomeIcons.arrow_right,
+                                color: kPrimaryColor,
+                              )
+                            ],
+                          )),
+                          ontap: () {},
+                        ),
+                      )
+
+                      /* PassengerRequest(
+                        accepted: true,
                       ),
-                    ),
-                    SizedBox(
-                      height: 50,
-                    ),
-                    PassengerRequest(
-                      accepted: true,
-                    ),
-                    PassengerRequest(),
-                    PassengerRequest(),
-                    PassengerRequest(
-                      accepted: true,
-                    ),
-                    PassengerRequest(),
-                  ],
+                      PassengerRequest(),
+                      PassengerRequest(),
+                      PassengerRequest(
+                        accepted: true,
+                      ),
+                      PassengerRequest(),*/
+                    ],
+                  ),
                 ),
               ),
             ),
           ),
         ),
-        Positioned(
+        /*  Positioned(
           bottom: 0,
           right: 0,
           child: AnimatedContainer(
@@ -215,6 +327,7 @@ class _BodyState extends State<Body> {
               child: Row(
                 children: [
                   FloatingActionButton(
+                    heroTag: "share",
                     backgroundColor: kPrimaryAlternateColor,
                     child: Icon(
                       LineAwesomeIcons.share,
@@ -242,20 +355,27 @@ class _BodyState extends State<Body> {
               offset: Offset(
                   0, up == true ? -150 : 0), // Change -100 for the y offset
             ).transform,
-            child: Container(
-              height: 50.0,
-              child: FloatingActionButton(
-                backgroundColor: kPrimaryAlternateColor,
-                child: Icon(
-                  LineAwesomeIcons.times,
-                  color: kPrimaryColor,
+            child: InkWell(
+              child: Container(
+                height: 50.0,
+                child: FloatingActionButton(
+                  heroTag: "times",
+                  backgroundColor: kPrimaryAlternateColor,
+                  child: Icon(
+                    LineAwesomeIcons.times,
+                    color: kPrimaryColor,
+                  ),
+                  onPressed: () {
+                    widget.controller.Cancel(context);
+                    setState(() {
+                      up = !up;
+                    });
+                  },
                 ),
-                onPressed: () {
-                  setState(() {
-                    up = !up;
-                  });
-                },
               ),
+              onTap: () {
+                widget.controller.Cancel(context);
+              },
             ),
           ),
         ),
@@ -273,12 +393,14 @@ class _BodyState extends State<Body> {
             child: Container(
               height: 50.0,
               child: FloatingActionButton(
+                heroTag: "start",
                 backgroundColor: kPrimaryAlternateColor,
                 child: Icon(
                   LineAwesomeIcons.play,
                   color: kPrimaryColor,
                 ),
                 onPressed: () {
+                  widget.controller.Start(context);
                   setState(() {
                     up = !up;
                   });
@@ -300,6 +422,7 @@ class _BodyState extends State<Body> {
             child: Container(
               height: 50.0,
               child: FloatingActionButton(
+                heroTag: "menu",
                 backgroundColor: kPrimaryAlternateColor,
                 child: Icon(
                   LineAwesomeIcons.horizontal_ellipsis,
@@ -313,7 +436,7 @@ class _BodyState extends State<Body> {
               ),
             ),
           ),
-        ),
+        ),*/
       ],
     );
     //);
@@ -321,14 +444,16 @@ class _BodyState extends State<Body> {
 }
 
 class PassengerRequest extends StatefulWidget {
-  const PassengerRequest(
-      {Key key, this.image, this.fullname, this.pickup, this.accepted = false})
-      : super(key: key);
+  const PassengerRequest({
+    Key key,
+    this.request,
+    this.controller,
+    this.index,
+  }) : super(key: key);
 
-  final String image;
-  final String fullname;
-  final String pickup;
-  final bool accepted;
+  final Request request;
+  final int index;
+  final RideRequestController controller;
   @override
   _PassengerRequestState createState() => _PassengerRequestState();
 }
@@ -340,15 +465,109 @@ class _PassengerRequestState extends State<PassengerRequest> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(top: 20, bottom: 10),
+      padding: const EdgeInsets.only(top: 5, bottom: 25),
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           InkWell(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
+                CircleAvatar(
+                  backgroundColor: kPrimaryColor,
+                  radius: 30,
+                  backgroundImage: NetworkImage(widget.request.profileImage),
+                ),
+                SizedBox(
+                  width: 10,
+                ),
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Text(
+                            "${widget.request.fullName}",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 18),
+                          ),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          Text(
+                            widget.request.requestStatus == 1
+                                ? "Pending"
+                                : "Accepted",
+                            style: TextStyle(
+                                fontStyle: FontStyle.italic,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                                color: kPrimaryColor),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                            "${widget.request.seats} Seat(s)",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
+                                color: kPrimaryAlternateColor),
+                          ),
+                          if (widget.controller.unreads != null &&
+                              widget.controller.unreads.length > 0 &&
+                              widget.controller.containsIndex(widget.index) &&
+                              widget.controller.aboveZero(widget.index))
+                            Container(
+                              height: 30,
+                              width: 30,
+                              decoration: BoxDecoration(
+                                  color: Colors.red,
+                                  borderRadius: BorderRadius.circular(50)),
+                              child: Center(
+                                child: Text(
+                                  "${widget.controller.unreads[widget.index]}",
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                            )
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              "${widget.request.pickup}",
+                              style: TextStyle(
+                                  fontSize: 15, color: kPrimaryAlternateColor),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                expand
+                    ? Icon(
+                        LineAwesomeIcons.angle_up,
+                      )
+                    : Icon(
+                        LineAwesomeIcons.angle_down,
+                      )
+
+                /*  Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     CircleAvatar(
                       backgroundColor: kPrimaryColor,
@@ -365,7 +584,7 @@ class _PassengerRequestState extends State<PassengerRequest> {
                         Row(
                           children: [
                             Text(
-                              "Jason Brookes",
+                              "${widget.request.fullName}",
                               style: TextStyle(
                                   fontWeight: FontWeight.bold, fontSize: 18),
                             ),
@@ -373,7 +592,9 @@ class _PassengerRequestState extends State<PassengerRequest> {
                               width: 10,
                             ),
                             Text(
-                              "accepted",
+                              widget.request.requestStatus == 1
+                                  ? "Pending"
+                                  : "Accepted",
                               style: TextStyle(
                                   fontStyle: FontStyle.italic,
                                   fontWeight: FontWeight.bold,
@@ -387,37 +608,34 @@ class _PassengerRequestState extends State<PassengerRequest> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Text(
-                              "2 Seats",
+                              "${widget.request.seats} Seat(s)",
                               style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 18,
                                   color: kPrimaryAlternateColor),
                             ),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Container(
-                                height: 10,
-                                width: 10,
-                                decoration: BoxDecoration(
-                                    color: kPrimaryAlternateColor,
-                                    borderRadius: BorderRadius.circular(50)),
-                              ),
-                            ),
+                          ],
+                        ),
+                        Row(
+                          children: [
                             Text(
-                              "Farmers Market",
+                              "${widget.request.pickup}",
                               style: TextStyle(
-                                  fontSize: 18, color: kPrimaryAlternateColor),
+                                  fontSize: 15, color: kPrimaryAlternateColor),
                             ),
                           ],
                         ),
                       ],
-                    )
+                    ),
                   ],
-                ),
-                /* Icon(
-                  LineAwesomeIcons.check_circle,
-                  size: 30,
-                )*/
+                ),*/
+                /*expand
+                    ? Icon(
+                        LineAwesomeIcons.angle_up,
+                      )
+                    : Icon(
+                        LineAwesomeIcons.angle_down,
+                      )*/
               ],
             ),
             onTap: () {
@@ -429,71 +647,207 @@ class _PassengerRequestState extends State<PassengerRequest> {
           ExpandedSection(
               expand: expand,
               child: Container(
-                height: 150,
+                height: 100,
                 //color: Colors.red,
-                child: widget.accepted
+                child: widget.request.requestStatus == 2
                     ? Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
-                          Container(
-                            height: 50,
-                            width: 100,
-                            decoration: BoxDecoration(
-                                color: kPrimaryAlternateColor,
-                                borderRadius: BorderRadius.circular(10)),
-                            child: Center(
-                                child: Text(
-                              "Remove",
-                              style: TextStyle(color: kPrimaryColor),
-                            )),
+                          InkWell(
+                            child: Container(
+                              height: 50,
+                              width: 100,
+                              decoration: BoxDecoration(
+                                  color: kPrimaryAlternateColor,
+                                  borderRadius: BorderRadius.circular(10)),
+                              child: Center(
+                                  child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    LineAwesomeIcons.times,
+                                    color: kPrimaryColor,
+                                    size: 18,
+                                  ),
+                                  SizedBox(
+                                    width: 2,
+                                  ),
+                                  Text(
+                                    "Remove",
+                                    style: TextStyle(color: kPrimaryColor),
+                                  ),
+                                ],
+                              )),
+                            ),
+                            onTap: () {
+                              widget.controller
+                                  .Decline(context, widget.request.pid);
+                            },
                           ),
-                          SizedBox(
-                            width: 50,
+                          InkWell(
+                            child: Row(
+                              children: [
+                                Container(
+                                  height: 50,
+                                  width: 100,
+                                  decoration: BoxDecoration(
+                                      color: Colors.transparent,
+                                      borderRadius: BorderRadius.circular(10),
+                                      border: Border.all(
+                                          color: kPrimaryAlternateColor)),
+                                  child: Center(
+                                      child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      Stack(
+                                        children: [
+                                          Icon(
+                                            LineAwesomeIcons.comments,
+                                            color: kPrimaryColor,
+                                          ),
+                                          if (widget.controller.unreads !=
+                                                  null &&
+                                              widget.controller.unreads.length >
+                                                  0 &&
+                                              widget.controller.containsIndex(
+                                                  widget.index) &&
+                                              widget.controller
+                                                  .aboveZero(widget.index))
+                                            Container(
+                                              height: 15,
+                                              width: 15,
+                                              decoration: BoxDecoration(
+                                                  color: Colors.red,
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          50)),
+                                            )
+                                        ],
+                                      ),
+                                      SizedBox(
+                                        width: 10,
+                                      ),
+                                      Text(
+                                        "Chat",
+                                        style: TextStyle(color: kPrimaryColor),
+                                      ),
+                                    ],
+                                  )),
+                                ),
+                              ],
+                            ),
+                            onTap: () {
+                              widget.controller.updateUnread(widget.index);
+                              Navigate.to(
+                                  context,
+                                  ChatBody(
+                                      rideId: widget.request.rideId,
+                                      name: widget.request.fullName,
+                                      recipient: widget.request.passengerId));
+                            },
                           ),
-                          Icon(
-                            LineAwesomeIcons.phone,
-                            size: 30,
-                            color: kPrimaryColor,
-                          )
+                          InkWell(
+                            child: Container(
+                              height: 50,
+                              width: 100,
+                              decoration: BoxDecoration(
+                                  color: Colors.transparent,
+                                  borderRadius: BorderRadius.circular(10),
+                                  border: Border.all(
+                                      color: kPrimaryAlternateColor)),
+                              child: Center(
+                                  child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    LineAwesomeIcons.phone,
+                                    color: kPrimaryColor,
+                                  ),
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                  Text(
+                                    "Call",
+                                    style: TextStyle(color: kPrimaryColor),
+                                  ),
+                                ],
+                              )),
+                            ),
+                            onTap: () {
+                              //print("hello");
+                              launch("tel:${widget.request.phoneNumber}");
+                            },
+                          ),
                         ],
                       )
                     : Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
-                          Container(
-                            height: 50,
-                            width: 100,
-                            decoration: BoxDecoration(
-                                color: kPrimaryAlternateColor,
-                                borderRadius: BorderRadius.circular(10)),
-                            child: Center(
-                                child: Text(
-                              "Accept",
-                              style: TextStyle(color: kPrimaryColor),
-                            )),
+                          InkWell(
+                            child: Container(
+                              height: 50,
+                              width: 100,
+                              decoration: BoxDecoration(
+                                  color: kPrimaryAlternateColor,
+                                  borderRadius: BorderRadius.circular(10)),
+                              child: Center(
+                                  child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    LineAwesomeIcons.check,
+                                    color: kPrimaryColor,
+                                    size: 18,
+                                  ),
+                                  SizedBox(
+                                    width: 2,
+                                  ),
+                                  Text(
+                                    "Accept",
+                                    style: TextStyle(color: kPrimaryColor),
+                                  ),
+                                ],
+                              )),
+                            ),
+                            onTap: () {
+                              widget.controller
+                                  .Accept(context, widget.request.pid);
+                            },
                           ),
-                          SizedBox(
-                            width: 50,
+                          InkWell(
+                            child: Container(
+                              height: 50,
+                              width: 100,
+                              decoration: BoxDecoration(
+                                  //color: kPrimaryAlternateColor,
+                                  border: Border.all(color: kTextColor),
+                                  borderRadius: BorderRadius.circular(10)),
+                              child: Center(
+                                  child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    LineAwesomeIcons.times_circle,
+                                    color: kPrimaryColor,
+                                  ),
+                                  Text(
+                                    "Decline",
+                                    style: TextStyle(color: kPrimaryColor),
+                                  ),
+                                ],
+                              )),
+                            ),
+                            onTap: () {
+                              widget.controller
+                                  .Decline(context, widget.request.pid);
+                            },
                           ),
-                          Container(
-                            height: 50,
-                            width: 100,
-                            decoration: BoxDecoration(
-                                //color: kPrimaryAlternateColor,
-                                border: Border.all(color: kTextColor),
-                                borderRadius: BorderRadius.circular(10)),
-                            child: Center(
-                                child: Text(
-                              "Decline",
-                              style: TextStyle(color: kPrimaryColor),
-                            )),
-                          ),
-                          SizedBox(
-                            width: 50,
-                          ),
-                          Icon(
-                            LineAwesomeIcons.phone,
-                            size: 30,
-                            color: kPrimaryColor,
-                          )
                         ],
                       ),
               ))

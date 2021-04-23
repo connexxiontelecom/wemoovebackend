@@ -1,23 +1,32 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
+import 'package:overlay_support/overlay_support.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:wemoove/components/ExpandableSection.dart';
 import 'package:wemoove/constants.dart';
+import 'package:wemoove/controllers/SearchScreenController.dart';
+import 'package:wemoove/globals.dart' as globals;
 import 'package:wemoove/helper/BouncingTransition.dart';
+import 'package:wemoove/models/Ride.dart';
 import 'package:wemoove/size_config.dart';
 import 'package:wemoove/views/booking/BookingScreen.dart';
 
 class Body extends StatefulWidget {
   final GlobalKey<ScaffoldState> scaffoldkey;
-  const Body({Key key, this.scaffoldkey}) : super(key: key);
+  final SearchScreenController controller;
+  const Body({Key key, this.scaffoldkey, this.controller}) : super(key: key);
   @override
   _BodyState createState() => _BodyState();
 }
 
 class _BodyState extends State<Body> {
   //final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
     BorderRadiusGeometry radius = BorderRadius.only(
       topLeft: Radius.circular(24.0),
       topRight: Radius.circular(24.0),
@@ -28,7 +37,7 @@ class _BodyState extends State<Body> {
     return SlidingUpPanel(
       borderRadius: radius,
       minHeight: getProportionateScreenHeight(230),
-      maxHeight: getProportionateScreenHeight(560),
+      maxHeight: SizeConfig.screenHeight,
       panel: Padding(
         padding: const EdgeInsets.all(10.0),
         child: Column(
@@ -55,18 +64,66 @@ class _BodyState extends State<Body> {
               ),*/
             SizedBox(height: getProportionateScreenHeight(20)),
             Container(
-              height: 80,
+              height: 65,
               child: TextField(
+                onChanged: (value) => widget.controller.searchPlaces(value),
+                onTap: () => widget.controller.clearSelectedLocation(),
+
+                /* onTap: () async {
+                  Prediction p = await PlacesAutocomplete.show(
+                    context: context,
+                    apiKey: "AIzaSyDAHdeQbSuLtDdpfhueU392zOUW6KAjGlA",
+                    language: "en",
+                    components: [
+                      Component(Component.country, "ng"),
+                      //Component(Component.locality, "Abuja"),
+                    ],
+                  );
+                },*/
+                onSubmitted: (value) {
+                  //widget.controller.Search(context);
+                },
+                controller: widget.controller.queryController,
                 style:
                     new TextStyle(fontWeight: FontWeight.normal, fontSize: 20),
-                decoration:
-                    noborderInputDecoration, /*InputDecoration(
-                      //labelText: "search",
-                      hintText: "Destination",
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(LineAwesomeIcons.search)),*/
+                decoration: noborderInputDecoration(
+                    context: context, controller: widget.controller),
               ),
             ),
+
+            if (widget.controller.searchResults != null)
+              SingleChildScrollView(
+                child: Container(
+                  height: 300.0,
+                  child: MediaQuery.removePadding(
+                    context: context,
+                    removeTop: true,
+                    child: ListView.builder(
+                        physics: NeverScrollableScrollPhysics(),
+                        itemCount: widget.controller.searchResults.length,
+                        itemBuilder: (context, index) {
+                          return ListTile(
+                            leading: Icon(LineAwesomeIcons.map_marker),
+                            title: Text(
+                              widget
+                                  .controller.searchResults[index].description,
+                              style: TextStyle(color: Colors.black),
+                            ),
+                            onTap: () {
+                              widget.controller.setSelectedLocation(widget
+                                  .controller.searchResults[index].placeId);
+                              widget.controller.setSelectedDestination(widget
+                                  .controller.searchResults[index].description);
+
+                              widget.controller
+                                  .Search(widget.scaffoldkey.currentContext);
+                            },
+                          );
+                        }),
+                  ),
+                ),
+              ),
+
             SizedBox(
               height: 10,
             ),
@@ -94,24 +151,77 @@ class _BodyState extends State<Body> {
                 Text(
                   "Work",
                   style: TextStyle(fontWeight: FontWeight.bold),
-                )
+                ),
               ],
             ),
+
             SizedBox(
               height: 20,
             ),
+
+            widget.controller.rides.length > 0
+                ? Row(
+                    children: [
+                      Text(
+                        widget.controller.rides.length.toString(),
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
+                            color: kPrimaryAlternateColor),
+                      ),
+                      Text(
+                        widget.controller.rides.length > 1
+                            ? " Rides Found"
+                            : " Ride Found",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 20),
+                      ),
+                    ],
+                  )
+                : Container(),
+
             Expanded(
-                child: ListView(
-              scrollDirection: Axis.horizontal,
-              shrinkWrap: true,
-              children: [
-                RIdeCard(),
-                RIdeCard(),
-                RIdeCard(),
-                RIdeCard(),
-                RIdeCard(),
-              ],
-            ))
+                child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  widget.controller.rides.isNotEmpty ||
+                          widget.controller.rides.length > 0
+                      ? ListView.builder(
+                          itemCount: widget.controller.rides
+                              .length, //controller.Receipts.length, //recipients.length,
+                          shrinkWrap: true,
+                          physics: NeverScrollableScrollPhysics(),
+                          itemBuilder: (context, index) {
+                            return RideCard(
+                              controller: widget.controller,
+                              ride: widget.controller.rides[index],
+                            );
+                          })
+                      : widget.controller.isShow
+                          ? Center(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Image.asset(
+                                    "assets/images/error.png",
+                                    height: 300,
+                                  ),
+                                  Text(
+                                    "No Rides Found"
+                                    "\n For your searched Destination",
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                        color: kPrimaryAlternateColor),
+                                    textAlign: TextAlign.center,
+                                  )
+                                ],
+                              ),
+                            )
+                          : Container(),
+                ],
+              ),
+            )),
             //Expanded(child: SingleChildScrollView(child: RIdeCard())),
           ],
         ),
@@ -187,10 +297,10 @@ class _BodyState extends State<Body> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "Good Afternoon,",
+                          "Howdy,",
                           style: TextStyle(fontSize: 18),
                         ),
-                        Text("Jason",
+                        Text(globals.user.fullName.split(" ")[0],
                             style:
                                 SmallHeadingStyle //TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                             ),
@@ -218,9 +328,16 @@ class _BodyState extends State<Body> {
                     CircleAvatar(
                         radius: 35,
                         //child: Image.asset("assets/images/sample.jpg")
+                        backgroundImage: globals.user.profileImage.isEmpty
+                            ? AssetImage("assets/images/portrait.jpg")
+                            : NetworkImage(globals.user.profileImage)),
+
+                    /*  CircleAvatar(
+                        radius: 35,
+                        //child: Image.asset("assets/images/sample.jpg")
                         backgroundImage: AssetImage(
                             "assets/images/portrait.jpg") //NetworkImage(globals.user.avatar)
-                        ),
+                        ),*/
                   ],
                 ),
               ),
@@ -331,7 +448,355 @@ class _BodyState extends State<Body> {
   }
 }
 
-class RIdeCard extends StatelessWidget {
+class RideCard extends StatefulWidget {
+  final Ride ride;
+  final SearchScreenController controller;
+  const RideCard({Key key, this.ride, this.controller}) : super(key: key);
+
+  @override
+  _RideCardState createState() => _RideCardState();
+}
+
+class _RideCardState extends State<RideCard> {
+  List<Widget> createChildren(List<Pickups> list) {
+    return new List<Widget>.generate(list.length, (int index) {
+      return InkWell(
+        child: Padding(
+          padding: const EdgeInsets.only(top: 5, bottom: 5),
+          child: Container(
+            decoration: BoxDecoration(
+              //color: kPrimaryAlternateColor,
+              borderRadius: BorderRadius.circular(15),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(5.0),
+              child: Text(
+                list[index].name,
+                style: TextStyle(color: kTextColor),
+              ),
+            ),
+          ),
+        ),
+        onTap: () async {
+          String googleUrl =
+              "https://www.google.com/maps/search/?api=1&query=${list[index].name}";
+          if (await canLaunch(googleUrl)) {
+            await launch(googleUrl);
+          } else {
+            toast('Could not open the map.');
+          }
+        },
+      );
+    });
+  }
+
+  bool expanded = false;
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Container(
+          decoration: BoxDecoration(
+              color: kprimarywhite,
+              boxShadow: [
+                BoxShadow(
+                  offset: Offset(0, 1),
+                  blurRadius: 5,
+                  color: Color(0xffb0cce1).withOpacity(0.9),
+                ),
+              ],
+              //color: kprimarywhite,
+              borderRadius: BorderRadius.all(Radius.circular(10))),
+          child: Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Column(
+              children: [
+                InkWell(
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Icon(
+                              LineAwesomeIcons.map_marker,
+                              size: 20,
+                              color: kPrimaryColor,
+                            ),
+                            SizedBox(
+                              width: 15,
+                            ),
+                            Expanded(
+                              child: Text(
+                                widget.ride.destination,
+                                /* controller
+                                            .queryController.text, */ //"Dutse Alhaji",
+                                style: TextStyle(
+                                    color: kPrimaryAlternateColor,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 20),
+                              ),
+                            ),
+                          ],
+                        ),
+                        /* Row(
+                    children: [
+                      Icon(LineAwesomeIcons.car),
+                      SizedBox(
+                        width: 15,
+                      ),
+                      Expanded(child: Text(ride.pickups[0].name)),
+                      //Icon(LineAwesomeIcons.angle_double_right),
+                      //Text(ride.destination),
+                    ],
+                  ),*/
+                        Row(
+                          children: [
+                            Icon(LineAwesomeIcons.clock),
+                            SizedBox(
+                              width: 15,
+                            ),
+                            Text("Take-off: "),
+                            Text(
+                              widget.ride.departureTime,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: kPrimaryAlternateColor),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Icon(LineAwesomeIcons.map_pin),
+                            SizedBox(
+                              width: 15,
+                            ),
+                            Text("Nearest Pickup: "),
+                            Text(
+                              widget.ride.pickups[0].time,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: kPrimaryAlternateColor),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                Icon(LineAwesomeIcons.user),
+                                SizedBox(
+                                  width: 15,
+                                ),
+                                Text(
+                                  "Seats:",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: kPrimaryAlternateColor),
+                                ),
+                                SizedBox(
+                                  width: 5,
+                                ),
+                                Text(
+                                  widget.ride.takenSeats == widget.ride.capacity
+                                      ? "Full"
+                                      : "${widget.ride.capacity - widget.ride.takenSeats}",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20,
+                                      color: kPrimaryColor),
+                                ),
+                                Text(
+                                  "/",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: kPrimaryAlternateColor),
+                                ),
+                                Text(
+                                  "${widget.ride.capacity}",
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      color: kPrimaryAlternateColor),
+                                )
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Text(
+                                  "N",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 23),
+                                ),
+                                Text(
+                                  "${widget.ride.amount}",
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 23,
+                                      color: kPrimaryAlternateColor),
+                                )
+                              ],
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    onTap: () {
+                      Navigate.to(
+                          context,
+                          BookingScreen(
+                            ride: widget.ride,
+                          ));
+                    }),
+                InkWell(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "Pickups",
+                          style: TextStyle(
+                              color: kPrimaryAlternateColor,
+                              fontWeight: FontWeight.bold),
+                        ),
+                        Icon(
+                          LineAwesomeIcons.angle_down,
+                        )
+                      ],
+                    ),
+                  ),
+                  onTap: () {
+                    setState(() {
+                      expanded = !expanded;
+                    });
+                  },
+                ),
+                /* InkWell(
+                  child:*/
+                ExpandedSection(
+                  expand: expanded,
+                  child: Column(
+                      children: createChildren(widget.ride
+                          .pickups) /*[
+                      InkWell(
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 5, bottom: 5),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              //color: kPrimaryAlternateColor,
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(5.0),
+                              child: Text(
+                                widget.ride.pickup1,
+                                style: TextStyle(color: kTextColor),
+                              ),
+                            ),
+                          ),
+                        ),
+                        onTap: () async {
+                          String googleUrl =
+                              "https://www.google.com/maps/search/?api=1&query=${widget.ride.pickup1}";
+                          if (await canLaunch(googleUrl)) {
+                            await launch(googleUrl);
+                          } else {
+                            toast('Could not open the map.');
+                          }
+                        },
+                      ),
+                      InkWell(
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 5, bottom: 5),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              //color: kPrimaryAlternateColor,
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(5.0),
+                              child: Text(
+                                widget.ride.pickup2,
+                                style: TextStyle(color: kTextColor),
+                              ),
+                            ),
+                          ),
+                        ),
+                        onTap: () async {
+                          String googleUrl =
+                              "https://www.google.com/maps/search/?api=1&query=${widget.ride.pickup2}";
+                          if (await canLaunch(googleUrl)) {
+                            await launch(googleUrl);
+                          } else {
+                            toast('Could not open the map.');
+                          }
+                        },
+                      )
+                    ],*/
+                      ),
+                ),
+                /* onTap: () {
+                    setState(() {
+                      expanded = !expanded;
+                    });
+                  },*/
+                //)
+                /* Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(top: 5, bottom: 5),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: kPrimaryAlternateColor,
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(5.0),
+                          child: Text(
+                            ride.pickup1,
+                            style: TextStyle(color: kPrimaryColor),
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      width: 20,
+                    ),
+                    ride.pickup2 != null
+                        ? Padding(
+                            padding: const EdgeInsets.only(top: 5, bottom: 5),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: kPrimaryAlternateColor,
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(5.0),
+                                child: Text(
+                                  ride.pickup2,
+                                  style: TextStyle(color: kPrimaryColor),
+                                ),
+                              ),
+                            ),
+                          )
+                        : Container()
+                  ],
+                ),*/
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/*class RIdeCard extends StatelessWidget {
   const RIdeCard({
     Key key,
   }) : super(key: key);
@@ -546,4 +1011,4 @@ class RIdeCard extends StatelessWidget {
       },
     );
   }
-}
+}*/

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:stacked/stacked.dart';
+import 'package:wemoove/controllers/RideHistoryController.dart';
 import 'package:wemoove/views/ridehistory/components/DriverHistoryBody.dart';
 
 import '../../globals.dart' as globals;
@@ -10,8 +12,16 @@ class RideHistoryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
-    return Scaffold(
-      body: globals.isDriverMode ? DriverHistoryBody() : Body(),
-    );
+    return ViewModelBuilder<RideHistoryController>.reactive(
+        viewModelBuilder: () => RideHistoryController(/*context: context*/),
+        builder: (context, controller, child) => Scaffold(
+              body: globals.isDriverMode
+                  ? DriverHistoryBody(
+                      controller: controller,
+                    )
+                  : Body(
+                      controller: controller,
+                    ),
+            ));
   }
 }

@@ -5,8 +5,11 @@ import 'package:wemoove/constants.dart';
 import 'package:wemoove/controllers/SearchScreenController.dart';
 import 'package:wemoove/globals.dart' as globals;
 import 'package:wemoove/helper/BouncingTransition.dart';
+import 'package:wemoove/views/Wallet/WalletScreen.dart';
+import 'package:wemoove/views/driver/CompleteProfileScreen.dart';
 import 'package:wemoove/views/profile/ProfileScreen.dart';
 import 'package:wemoove/views/ridehistory/RideHistoryScreen.dart';
+import 'package:wemoove/views/signin/SignInScreen.dart';
 
 class MainDrawer extends StatefulWidget {
   MainDrawer(this.currentPage, this.controller);
@@ -49,8 +52,9 @@ class _MainDrawerState extends State<MainDrawer> {
                     CircleAvatar(
                         radius: 35,
                         //child: Image.asset("assets/images/sample.jpg")
-                        backgroundImage:
-                            AssetImage("assets/images/portrait.jpg")),
+                        backgroundImage: globals.user.profileImage.isEmpty
+                            ? AssetImage("assets/images/portrait.jpg")
+                            : NetworkImage(globals.user.profileImage)),
                     SizedBox(
                       width: 10,
                     ),
@@ -68,7 +72,7 @@ class _MainDrawerState extends State<MainDrawer> {
               Padding(
                 padding: const EdgeInsets.only(
                     left: 10, right: 10, top: 5, bottom: 8),
-                child: Text("Jason Brookes",
+                child: Text(globals.user.fullName,
                     style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: kPrimaryAlternateColor,
@@ -101,6 +105,17 @@ class _MainDrawerState extends State<MainDrawer> {
                   onTap: () {
                     // Navigator.pop(context);
                     Navigate.to(context, RideHistoryScreen());
+                    Scaffold.of(context).openEndDrawer();
+                  },
+                ),
+                InkWell(
+                  child: MenuItem(
+                    icon: LineAwesomeIcons.wallet,
+                    title: "Wallet",
+                  ),
+                  onTap: () {
+                    // Navigator.pop(context);
+                    Navigate.to(context, WalletScreen());
                     Scaffold.of(context).openEndDrawer();
                   },
                 ),
@@ -150,42 +165,72 @@ class _MainDrawerState extends State<MainDrawer> {
                   ),
                   onTap: () {
                     Scaffold.of(context).openEndDrawer();
-                    Navigator.pop(context);
-
+                    Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute(builder: (context) => SignInScreen()),
+                        (Route<dynamic> route) => false);
                     /*
                     to do
                     Invalidate token
                     */
                   },
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: InkWell(
-                    child: Container(
-                        height: 60,
-                        //width: SizeConfig.screenWidth * 0.7,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          color: kPrimaryAlternateColor,
+                globals.user.userType == 1
+                    ? Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: InkWell(
+                          child: Container(
+                              height: 60,
+                              //width: SizeConfig.screenWidth * 0.7,
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  color:
+                                      Colors.cyan[700] //kPrimaryAlternateColor,
+                                  ),
+                              child: Center(
+                                child: Text(
+                                  globals.isDriverMode
+                                      ? "Switch to Passenger"
+                                      : "Switch to Driver",
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 20),
+                                ),
+                              )),
+                          onTap: () {
+                            globals.isDriverMode = !globals.isDriverMode;
+                            print(globals.isDriverMode);
+                            widget.controller.changeMode();
+                            Scaffold.of(context).openEndDrawer();
+                          },
                         ),
-                        child: Center(
-                          child: Text(
-                            globals.isDriverMode
-                                ? "Switch to Passenger"
-                                : "Switch to Driver",
-                            style: TextStyle(
-                                color: kPrimaryColor,
-                                fontWeight: FontWeight.w500,
-                                fontSize: 20),
-                          ),
-                        )),
-                    onTap: () {
-                      globals.isDriverMode = !globals.isDriverMode;
-                      widget.controller.changeMode();
-                      Scaffold.of(context).openEndDrawer();
-                    },
-                  ),
-                ),
+                      )
+                    : Container(),
+                if (globals.user.userType == 0)
+                  Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: InkWell(
+                      child: Container(
+                          height: 60,
+                          //width: SizeConfig.screenWidth * 0.7,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              color: Colors.cyan[700] //kPrimaryAlternateColor,
+                              ),
+                          child: Center(
+                            child: Text(
+                              "Sign-up to Drive",
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 20),
+                            ),
+                          )),
+                      onTap: () {
+                        Navigate.to(context, CompleteProfileScreen());
+                      },
+                    ),
+                  )
               ],
             ),
           ),

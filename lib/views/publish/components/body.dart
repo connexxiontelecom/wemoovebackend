@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_switch/flutter_switch.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:material_tag_editor/tag_editor.dart';
-import 'package:stacked/stacked.dart';
+import 'package:provider/provider.dart';
 import 'package:wemoove/controllers/PostRideController.dart';
+import 'package:wemoove/globals.dart' as globals;
 import 'package:wemoove/helper/BouncingTransition.dart';
-import 'package:wemoove/views/success/SuccessScreen.dart';
 
 import '../../../constants.dart';
 import '../../../size_config.dart';
@@ -19,140 +19,141 @@ class Body extends StatefulWidget {
 class _BodyState extends State<Body> {
   @override
   Widget build(BuildContext context) {
-    return ViewModelBuilder<PostRideController>.reactive(
+    final applicationBloc = Provider.of<PostRideController>(context);
+    return /*ViewModelBuilder<PostRideController>.reactive(
       viewModelBuilder: () => PostRideController(),
-      builder: (context, controller, child) => Stack(
-        children: [
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: Container(
-              height: getProportionateScreenHeight(100),
-              decoration: BoxDecoration(
-                  color: kPrimaryAlternateColor,
-                  borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(10),
-                      bottomRight: Radius.circular(10))),
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Image.asset(
-                      "assets/images/appbarlogo.png",
-                      height: getProportionateScreenHeight(30),
-                      //width: getProportionateScreenWidth(235),
-                    ),
-                    CircleAvatar(
-                        radius: 25,
-                        //child: Image.asset("assets/images/sample.jpg")
-                        backgroundImage: AssetImage(
-                            "assets/images/portrait.jpg") //NetworkImage(globals.user.avatar)
-                        ),
-                  ],
-                ),
+      builder: (context, controller, child) => */
+        Stack(
+      children: [
+        Positioned(
+          top: 0,
+          left: 0,
+          right: 0,
+          child: Container(
+            height: getProportionateScreenHeight(100),
+            decoration: BoxDecoration(
+                color: kPrimaryAlternateColor,
+                borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(10),
+                    bottomRight: Radius.circular(10))),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Image.asset(
+                    "assets/images/appbarlogo.png",
+                    height: getProportionateScreenHeight(30),
+                    //width: getProportionateScreenWidth(235),
+                  ),
+                  CircleAvatar(
+                      radius: 25,
+                      //child: Image.asset("assets/images/sample.jpg")
+                      backgroundImage: globals.user.profileImage.isEmpty
+                          ? AssetImage("assets/images/portrait.jpg")
+                          : NetworkImage(globals.user.profileImage)),
+                ],
               ),
             ),
           ),
-          Positioned.fill(
-            top: getProportionateScreenHeight(140),
-            left: 15,
-            right: 15,
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  children: [
-                    Container(
-                        //height: getProportionateScreenHeight(120),
-                        decoration: BoxDecoration(
-                            boxShadow: [
-                              BoxShadow(
-                                offset: Offset(0, 1),
-                                blurRadius: 5,
-                                color: Color(0xffb0cce1).withOpacity(0.9),
-                              ),
-                            ],
-                            color: kprimarywhite,
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(10))),
-                        child: Details(
-                          controller: controller,
-                        )),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    Row(
-                      children: [
-                        InkWell(
-                          child: Container(
-                            height: 50,
-                            width: 50,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              color: kPrimaryAlternateColor,
+        ),
+        Positioned.fill(
+          top: getProportionateScreenHeight(140),
+          left: 15,
+          right: 15,
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                children: [
+                  Container(
+                      //height: getProportionateScreenHeight(120),
+                      decoration: BoxDecoration(
+                          boxShadow: [
+                            BoxShadow(
+                              offset: Offset(0, 1),
+                              blurRadius: 5,
+                              color: Color(0xffb0cce1).withOpacity(0.9),
                             ),
-                            child: Icon(
-                              LineAwesomeIcons.arrow_left,
-                              color: kPrimaryColor,
-                              size: 30,
-                            ),
+                          ],
+                          color: kprimarywhite,
+                          borderRadius: BorderRadius.all(Radius.circular(10))),
+                      child: Details(
+                        controller: applicationBloc,
+                      )),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Row(
+                    children: [
+                      InkWell(
+                        child: Container(
+                          height: 50,
+                          width: 50,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            color: kPrimaryAlternateColor,
                           ),
+                          child: Icon(
+                            LineAwesomeIcons.arrow_left,
+                            color: kPrimaryColor,
+                            size: 30,
+                          ),
+                        ),
+                        onTap: () {
+                          Navigate.pop(context);
+                        },
+                      ),
+                      SizedBox(
+                        width: 20,
+                      ),
+                      Expanded(
+                        child: InkWell(
+                          child: Container(
+                              height: 50,
+                              //width: SizeConfig.screenWidth * 0.7,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                color: kPrimaryAlternateColor,
+                              ),
+                              child: Center(
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      "Post Ride",
+                                      style: TextStyle(
+                                          color: kPrimaryColor,
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 20),
+                                    ),
+                                    SizedBox(
+                                      width: 20,
+                                    ),
+                                    Icon(
+                                      LineAwesomeIcons.arrow_right,
+                                      color: kPrimaryColor,
+                                    )
+                                  ],
+                                ),
+                              )),
                           onTap: () {
-                            Navigate.pop(context);
+                            applicationBloc.PublishRide(context);
+                            //Navigate.to(context, SuccessScreen());
                           },
                         ),
-                        SizedBox(
-                          width: 20,
-                        ),
-                        Expanded(
-                          child: InkWell(
-                            child: Container(
-                                height: 50,
-                                //width: SizeConfig.screenWidth * 0.7,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  color: kPrimaryAlternateColor,
-                                ),
-                                child: Center(
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        "Post Ride",
-                                        style: TextStyle(
-                                            color: kPrimaryColor,
-                                            fontWeight: FontWeight.w500,
-                                            fontSize: 20),
-                                      ),
-                                      SizedBox(
-                                        width: 20,
-                                      ),
-                                      Icon(
-                                        LineAwesomeIcons.arrow_right,
-                                        color: kPrimaryColor,
-                                      )
-                                    ],
-                                  ),
-                                )),
-                            onTap: () {
-                              Navigate.to(context, SuccessScreen());
-                            },
-                          ),
-                        ),
-                      ],
-                    )
-                  ],
-                ),
+                      ),
+                    ],
+                  )
+                ],
               ),
             ),
           ),
-        ],
-      ),
+        ),
+      ],
+      // ),
     );
   }
 }
@@ -245,7 +246,7 @@ class _DetailsState extends State<Details> {
                 length: _values.length,
                 controller: _textEditingController,
                 focusNode: _focusNode,
-                delimiters: [',', ' '],
+                delimiters: [',', '  '], //[',', ' '],
                 hasAddButton: true,
                 resetTextOnSubmitted: true,
                 // This is set to grey just to illustrate the `textStyle` prop
@@ -263,6 +264,7 @@ class _DetailsState extends State<Details> {
                 onTagChanged: (newValue) {
                   setState(() {
                     _values.add(newValue);
+                    widget.controller.updateKnockOffs(_values);
                   });
                 },
                 tagBuilder: (context, index) => _Chip(
@@ -623,22 +625,27 @@ class _TimeLineState extends State<TimeLine> {
                                                     MainAxisAlignment
                                                         .spaceBetween,
                                                 children: [
-                                                  Text(widget
-                                                          .controller
-                                                          .destinationController
-                                                          .text
-                                                          .isNotEmpty
-                                                      ? widget
-                                                          .controller
-                                                          .destinationController
-                                                          .text
-                                                      : "Destination"),
+                                                  Expanded(
+                                                    child: Text(widget
+                                                            .controller
+                                                            .destinationController
+                                                            .text
+                                                            .isNotEmpty
+                                                        ? widget
+                                                            .controller
+                                                            .destinationController
+                                                            .text
+                                                        : "Destination"),
+                                                  ),
                                                   Icon(LineAwesomeIcons.pen)
                                                 ],
                                               ),
                                             ),
                                           ),
                                           onTap: () {
+                                            widget.controller
+                                                .clearSelectedDestination();
+
                                             widget.controller
                                                 .showAddDestinationModal(
                                                     context);
@@ -695,6 +702,8 @@ class _TimeLineState extends State<TimeLine> {
                                           onTap: () {
                                             widget.controller
                                                 .showAddPickupModal(context);
+                                            widget.controller
+                                                .clearSelectedPickup();
                                           },
                                         ),
                                         SizedBox(

@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:wemoove/constants.dart';
 
 class ProcessModal extends StatelessWidget {
+  final String title;
+
+  const ProcessModal({Key key, this.title = "Processing"}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Dialog(
@@ -16,7 +19,7 @@ class ProcessModal extends StatelessWidget {
               height: 30,
             ),
             Text(
-              "Processing",
+              title,
               style: TextStyle(fontSize: 20),
             ),
             SizedBox(

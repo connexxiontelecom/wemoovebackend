@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:camera/camera.dart';
 import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
@@ -23,10 +24,39 @@ class CarSignUpController extends BaseViewModel {
       new TextEditingController(text: "1");
   TextEditingController plateNumberController = new TextEditingController();
   TextEditingController licenseController = new TextEditingController();
+  TextEditingController profileImageController = new TextEditingController();
 
   File file;
+  File profileImage;
 
   bool showError = false;
+  List<dynamic> cameras;
+  dynamic firstCamera;
+
+  dynamic capturedPicture;
+
+  CameraDescription camera;
+  CameraController _controller;
+  Future<void> _initializeControllerFuture;
+
+  CarSignUpController() {
+    initCamera();
+  }
+
+  void initCamera() async {
+    // Obtain a list of the available cameras on the device.
+    cameras = await availableCameras();
+    // Get a specific camera from the list of available cameras.
+    firstCamera = cameras.first;
+
+    _controller = CameraController(
+      // Get a specific camera from the list of available cameras.
+      firstCamera,
+      // Define the resolution to use.
+      ResolutionPreset.medium,
+    );
+    _initializeControllerFuture = _controller.initialize();
+  }
 
   SelectFile() async {
     FilePickerResult result = await FilePicker.platform.pickFiles(
@@ -42,6 +72,27 @@ class CarSignUpController extends BaseViewModel {
     } else {
       print("file Selection cancelled");
     }
+  }
+
+  selectProfileImage() async {
+    FilePickerResult result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['jpg', 'png', 'jpeg'],
+    );
+    if (result != null) {
+      profileImage = File(result.files.single.path);
+      profileImageController =
+          new TextEditingController(text: profileImage.path.split('/').last);
+      notifyListeners();
+      print("file Selected");
+    } else {
+      print("file Selection cancelled");
+    }
+  }
+
+  void saveCaptureImage(dynamic image) {
+    capturedPicture = image;
+    notifyListeners();
   }
 
   showCapacityModal(BuildContext context) {
@@ -78,6 +129,10 @@ class CarSignUpController extends BaseViewModel {
       'capacity': capacityController.text,
       'plate_number': plateNumberController.text,
       'license': await MultipartFile.fromFile(file.path, filename: fileName),
+      'profileImage':
+          await MultipartFile.fromFile(profileImage.path, filename: fileName),
+      'carpicture':
+          await MultipartFile.fromFile(capturedPicture, filename: fileName),
     });
 
     showDialog(

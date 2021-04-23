@@ -1,12 +1,19 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:wemoove/constants.dart';
+import 'package:wemoove/controllers/RideHistoryController.dart';
+import 'package:wemoove/globals.dart' as globals;
 import 'package:wemoove/helper/BouncingTransition.dart';
+import 'package:wemoove/models/Boarded.dart';
 import 'package:wemoove/size_config.dart';
 import 'package:wemoove/views/RideHistoryDetail/RideHistoryDetailScreen.dart';
 
 class Body extends StatefulWidget {
+  final RideHistoryController controller;
+
+  const Body({Key key, this.controller}) : super(key: key);
   @override
   _BodyState createState() => _BodyState();
 }
@@ -37,11 +44,40 @@ class _BodyState extends State<Body> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Image.asset(
+                  InkWell(
+                    child: Row(
+                      children: [
+                        Icon(
+                          LineAwesomeIcons.arrow_left,
+                          color: kPrimaryColor,
+                          size: 35,
+                        ),
+                        SizedBox(
+                          width: 5,
+                        ),
+                        Text(
+                          "Back",
+                          style: TextStyle(fontSize: 20, color: kPrimaryColor),
+                        )
+                      ],
+                    ),
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                  Text(
+                    "Ride's History",
+                    style: TextStyle(fontSize: 20, color: kPrimaryColor),
+                  ),
+                  CircleAvatar(
+                    radius: 25,
+                    backgroundImage: NetworkImage(globals.user.profileImage),
+                  ),
+                  /*Image.asset(
                     "assets/images/appbarlogo.png",
                     height: getProportionateScreenHeight(30),
                     //width: getProportionateScreenWidth(235),
-                  ),
+                  ),*/
                   /*  InkWell(
                     child: Container(
                       height: 50,
@@ -59,33 +95,57 @@ class _BodyState extends State<Body> {
           ),
         ),
         Positioned.fill(
-            top: getProportionateScreenHeight(120),
-            left: 10,
-            right: 10,
-            child: SingleChildScrollView(
-              child: Padding(
+          top: getProportionateScreenHeight(120),
+          left: 10,
+          right: 10,
+          child: SingleChildScrollView(
+            child: Padding(
                 padding: const EdgeInsets.only(left: 10, right: 10),
-                child: Column(
-                  children: [
-                    RideTile(),
-                    RideTile(),
-                    RideTile(),
-                    RideTile(),
-                    RideTile(),
-                    RideTile()
-                  ],
-                ),
-              ),
-            )),
+                child: widget.controller.boarded.length > 0
+                    ? Column(
+                        children: List.generate(
+                            widget.controller.boarded.length,
+                            (index) => RideTile(
+                                boarded: widget.controller.boarded[index])),
+                      )
+                    : Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Image.asset(
+                              "assets/images/error.png",
+                              height: 300,
+                            ),
+                            Text(
+                              "You currently do not have any"
+                              "\n Rides History as a Passenger",
+                              style: TextStyle(fontSize: 15),
+                              textAlign: TextAlign.center,
+                            )
+                          ],
+                        ),
+                      )),
+          ),
+        ),
       ],
     );
   }
 }
 
 class RideTile extends StatelessWidget {
+  final Boarded boarded;
   const RideTile({
     Key key,
+    this.boarded,
   }) : super(key: key);
+
+  String parseDate(String date) {
+    DateTime parsedDate = DateTime.tryParse(date);
+    return formatDate(parsedDate);
+  }
+
+  String formatDate(DateTime date) => new DateFormat("d MMM y").format(date);
 
   @override
   Widget build(BuildContext context) {
@@ -107,8 +167,8 @@ class RideTile extends StatelessWidget {
             padding: const EdgeInsets.all(8.0),
             child: Column(
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
@@ -117,107 +177,139 @@ class RideTile extends StatelessWidget {
                       children: [
                         Icon(
                           LineAwesomeIcons.map_marker,
-                          size: 35,
+                          size: 25,
                           color: kPrimaryColor,
                         ),
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              "Dutse",
-                              style: TextStyle(
-                                  color: kPrimaryAlternateColor,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                            Text(
-                              "Farmer's Market",
-                              style: TextStyle(
-                                  fontSize: 18, fontWeight: FontWeight.w500),
-                            )
-                          ],
-                        )
+                        SizedBox(
+                          width: 5,
+                        ),
+                        Expanded(
+                          child: Text(
+                            boarded.destination,
+                            /* controller
+                                              .queryController.text, */ //"Dutse Alhaji",
+                            style: TextStyle(
+                                color: kPrimaryAlternateColor,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20),
+                          ),
+                        ),
                       ],
                     ),
-                    Text(
-                      "25-Jun-2020",
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-                    )
-                  ],
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                Container(
-                  height: 1,
-                  width: double.infinity,
-                  color: kTextColor.withOpacity(0.2),
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        CircleAvatar(
-                          radius: 30,
-                          backgroundImage:
-                              AssetImage("assets/images/driver.jpg"),
+                        Icon(
+                          LineAwesomeIcons.car,
+                          color: kPrimaryColor,
                         ),
                         SizedBox(
-                          width: 10,
+                          width: 5,
                         ),
-                        Column(
+                        Expanded(
+                          child: Text(
+                            "${boarded.pickup}",
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.w500),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Row(
+                      children: [
+                        Icon(
+                          LineAwesomeIcons.calendar,
+                          color: kPrimaryColor,
+                          size: 20,
+                        ),
+                        SizedBox(
+                          width: 5,
+                        ),
+                        Text(
+                          parseDate(boarded.createdAt),
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.w500),
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Container(
+                      height: 1,
+                      width: double.infinity,
+                      color: kTextColor.withOpacity(0.2),
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              "Jason Brookes",
-                              style: TextStyle(
-                                  color: kPrimaryAlternateColor,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold),
+                            CircleAvatar(
+                              radius: 30,
+                              backgroundImage:
+                                  NetworkImage(boarded.driver.profileImage),
                             ),
                             SizedBox(
-                              height: 10,
+                              width: 10,
                             ),
-                            Row(
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  "ABJ234CV",
+                                  "${boarded.driver.fullName}",
                                   style: TextStyle(
+                                      color: kPrimaryAlternateColor,
                                       fontSize: 18,
-                                      fontWeight: FontWeight.w500),
+                                      fontWeight: FontWeight.bold),
                                 ),
                                 SizedBox(
-                                  width: 20,
+                                  height: 10,
                                 ),
-                                Text(
-                                  "Toyota Corolla",
-                                  style: TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w500),
-                                ),
-                                SizedBox(
-                                  width: 20,
-                                ),
-                                Text(
-                                  "Silver",
-                                  style: TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w500),
+                                Row(
+                                  children: [
+                                    Text(
+                                      "${boarded.driver.plateNumber}"
+                                          .toUpperCase(),
+                                      style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w500),
+                                    ),
+                                    SizedBox(
+                                      width: 20,
+                                    ),
+                                    Text(
+                                      "${boarded.driver.brand}",
+                                      style: TextStyle(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.w500),
+                                    ),
+                                    SizedBox(
+                                      width: 20,
+                                    ),
+                                    Text(
+                                      "${boarded.driver.colour}",
+                                      style: TextStyle(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.w500),
+                                    ),
+                                  ],
                                 ),
                               ],
-                            ),
+                            )
                           ],
-                        )
+                        ),
                       ],
                     ),
                   ],
@@ -228,7 +320,11 @@ class RideTile extends StatelessWidget {
         ),
       ),
       onTap: () {
-        Navigate.to(context, RideHistoryDetailScreen());
+        Navigate.to(
+            context,
+            RideHistoryDetailScreen(
+              boarded: boarded,
+            ));
       },
     );
   }
