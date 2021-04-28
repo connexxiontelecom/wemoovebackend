@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Passenger;
 use App\Models\Ride;
 use App\Models\User;
+use App\Models\Vehicle;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -12,7 +13,6 @@ use Illuminate\Support\Facades\DB;
 class RideController extends Controller
 {
     //
-
 
     /* *
 
@@ -22,8 +22,7 @@ class RideController extends Controller
     accepted 2
     finished 3;
 
-    */
-
+     */
 
     public function publishRide(Request $request)
     {
@@ -36,6 +35,7 @@ class RideController extends Controller
             'airconditioner' => 'required',
             'amount' => 'required',
             'departure' => 'required',
+            "car"=>'required',
         ]);
 
         $ride = new Ride();
@@ -51,8 +51,10 @@ class RideController extends Controller
         $ride->destination = $request->destination;
         $ride->amount = $request->amount;
         $ride->capacity = $request->capacity;
+        $ride->car = $request->car;
         $ride->pickups = json_encode($request->pickups);
-       /*  //we may later use array to integrate drop-offs and pickups
+
+        /*  //we may later use array to integrate drop-offs and pickups
         //in the mean time lets go this way
         $ride->pickup1 = $request->pickup1;
         $ride->pickup2 = $request->pickup2; */
@@ -101,7 +103,7 @@ class RideController extends Controller
                     $ride["knockoffs"] = json_decode($ride["knockoffs"]);
                     $ride["pickups"] = json_decode($ride["pickups"]);
 
-                    foreach ($ride["pickups"] as $pickup){
+                    foreach ($ride["pickups"] as $pickup) {
 
                         //$start = $origin !=null ? $origin : "ChIJL3W5c0IKThAROqEfOKvXokE";
 
@@ -110,7 +112,7 @@ class RideController extends Controller
                         $destination = $pickup->place;
                         $matrix = $this->distanceMatrix($start, $destination);
 
-                        if($matrix!=null){
+                        if ($matrix != null) {
 
                         }
 
@@ -120,7 +122,6 @@ class RideController extends Controller
                     }
 
                     $ride["pickups"] = $this->SortPickups($ride["pickups"]);
-
 
                     $ride["passengers"] = $this->fetchPassengers($ride["driver_id"]);
                     $ride["driver"] = $this->driverInfo($ride["driver_id"]);
@@ -136,14 +137,13 @@ class RideController extends Controller
 
     }
 
-    function SortPickups($array){
-        usort($array,function($a,$b){
+    public function SortPickups($array)
+    {
+        usort($array, function ($a, $b) {
             return $a->seconds > $b->seconds;
         });
         return $array;
     }
-
-
 
     public function BookRide(Request $request)
     {
@@ -168,24 +168,18 @@ class RideController extends Controller
 
         $title = "Ride Request";
         $body = "You have Placed a Ride Request!";
-        $userId =  $passenger->passenger_id;
+        $userId = $passenger->passenger_id;
         $this->ToSpecificUser($title, $body, $userId);
-
 
         $title = "Ride Request";
         $body = "You have a Ride Request!";
-        $ride =  Ride::find($request->ride_id);
+        $ride = Ride::find($request->ride_id);
         $userid = $ride->driver_id;
         $this->ToSpecificUser($title, $body, $userid);
         //notify driver
         return response()->json(compact("message"));
 
     }
-
-
-
-
-
 
     public function RideRequests(Request $request)
     {
@@ -214,9 +208,9 @@ class RideController extends Controller
             $join->on('u.id', '=', 'p.passenger_id');
         })->select('p.id as pid', 'p.*', 'u.*')->where('p.request_status', $pending)->orWhere('p.request_status', $accepted)->where('p.ride_id', $ride_id)->get();
 
-       foreach($passengers as $passenger){
-        $passenger->profile_image = url("/assets/uploads/profile/" . $passenger->profile_image);
-       }
+        foreach ($passengers as $passenger) {
+            $passenger->profile_image = url("/assets/uploads/profile/" . $passenger->profile_image);
+        }
         return response()->json(compact("passengers"));
     }
 
@@ -243,55 +237,49 @@ class RideController extends Controller
 
     }
 
-
-
-
-    public function cancelRide(Request $request){
+    public function cancelRide(Request $request)
+    {
 
         $this->validate($request, [
             "id" => 'required',
         ]);
 
-
         $id = $request->id;
         $pending = 1; //pending // requests awaiting acceptance
         $in_progress = 2;
-
 
         $result = Ride::where('driver_id', $id)->where('status', $pending)->orWhere('status', $in_progress)->first();
 
         $ride_id = $result["id"];
         $ride = Ride::find($ride_id);
 
-        $canceled = 3;//cancelled
+        $canceled = 3; //cancelled
         $ride->status = $canceled;
         $ride->save();
         $message = "success";
 
-
         //notify passengers
 
-        $passengers =  Passenger::where("ride_id", $ride_id)->get();
+        $passengers = Passenger::where("ride_id", $ride_id)->get();
 
-        foreach($passengers as $passenger){
+        foreach ($passengers as $passenger) {
 
             $title = "Ride Canceled";
             $body = "The Driver Just Canceled this Ride!";
-            $userId =  $passenger->passenger_id;
+            $userId = $passenger->passenger_id;
             $this->ToSpecificUser($title, $body, $userId);
 
         }
 
-
         return response()->json(compact("message"));
     }
 
-    public function startRide(Request $request){
+    public function startRide(Request $request)
+    {
 
         $this->validate($request, [
             "id" => 'required',
         ]);
-
 
         $id = $request->id;
 
@@ -303,21 +291,19 @@ class RideController extends Controller
         $ride_id = $result["id"];
         $ride = Ride::find($ride_id);
 
-
-        $started = 2;//started or in-progress
+        $started = 2; //started or in-progress
         $ride->status = $started;
         $ride->save();
         $message = "success";
 
-
         //notify passengers
-        $passengers =  Passenger::where("ride_id", $ride_id)->get();
+        $passengers = Passenger::where("ride_id", $ride_id)->get();
 
-        foreach($passengers as $passenger){
+        foreach ($passengers as $passenger) {
 
             $title = "Ride Started";
             $body = "The Driver Just Started this Ride!";
-            $userId =  $passenger->passenger_id;
+            $userId = $passenger->passenger_id;
             $this->ToSpecificUser($title, $body, $userId);
 
         }
@@ -326,18 +312,16 @@ class RideController extends Controller
 
     }
 
+    public function ridestatus(Request $request)
+    {
 
-
-    public function ridestatus(Request $request){
-
-        $result = Ride::where('driver_id', Auth::user()->id )->first();
+        $result = Ride::where('driver_id', Auth::user()->id)->first();
         $status = $result["status"];
         return response()->json(compact("status"));
     }
 
-
-
-    public function userridestatus(Request $request){
+    public function userridestatus(Request $request)
+    {
         $this->validate($request, [
             "ride_id" => 'required',
         ]);
@@ -348,31 +332,56 @@ class RideController extends Controller
         return response()->json(compact("status"));
     }
 
-
-
     public function rideHistory(Request $request)
     {
 
-
         $declined = 3;
-        $completed= 3;
-        $id =  Auth::user()->id;
+        $completed = 4;
+        $id = Auth::user()->id;
+        $usertype = Auth::user()->user_type;
 
-        $rides = DB::table('passengers as p')->leftJoin('rides as r', function ($join) {
-            $join->on('r.id', '=', 'p.ride_id');
-        })->select('p.id as pid', 'p.*', 'r.*')->where('p.passenger_id', $id)->where('p.passenger_ride_status', $declined)->orWhere('p.request_status', $completed)->get();
+        //get all rides where I was a passenger
+        $rides = DB::table('passengers as p')
+            ->join('rides as r', 'r.id', '=', 'p.ride_id')
+            ->select('p.id as pid', 'p.*', 'r.*')
+            ->where('p.passenger_id', $id)->where(function ($query) use ($completed) {
+            $query->where('r.status', $completed);
+        })->oRwhere(function ($query) use ($declined) {
+            $query->where('r.status', $declined);
+        })->get();
 
-        foreach($rides as $ride){
+        //  orWhere('r.status', $completed)->where('r.status', $declined)->get();
+        /* $rides = DB::table('passengers as p')->Join('rides as r', function ($join) {
+        $join->on('r.id', '=', 'p.ride_id');
+        })->select('p.id as pid', 'p.*', 'r.*')->where('p.passenger_id', $id)->where('r.status', $declined)->orWhere('r.status', $completed)->get();*/
+
+        foreach ($rides as $ride) {
             $ride->knockoffs = json_decode($ride->knockoffs);
             $ride->pickups = json_decode($ride->pickups);
-            $ride->passengers = $this->fetchPassengers($ride->driver_id);
+            //$ride->passengers = $this->ridePassengers($ride->id);
             $ride->driver = $this->driverInfo($ride->driver_id);
         }
-        return response()->json(compact("rides"));
+
+        //$rides = Ride::where("driver_id", $id)->where("status", $declined)->orWhere("status",$completed)->get();
+
+        $drivens = Ride::where(function ($query) use ($completed, $id) {
+            $query->where('driver_id', $id)->where('status', $completed);
+        })->oRwhere(function ($query) use ($id, $declined) {
+            $query->where('driver_id', $id)->where('status', $declined);
+        })->get();
+
+        // $drivens = Ride::where('driver_id', $id)->where('status', $declined)->orWhere('status', $completed)->get();
+
+        foreach ($drivens as $driven) {
+            $driven->knockoffs = json_decode($driven->knockoffs);
+            $driven->pickups = json_decode($driven->pickups);
+            $driven->passengers = $this->ridePassengers($driven->id);
+            //$driven->driver = $this->driverInfo($driven->driver_id);
+        }
+
+        return response()->json(compact("rides", 'drivens'));
 
     }
-
-
 
     public function AcceptRequest(Request $request)
     {
@@ -392,7 +401,7 @@ class RideController extends Controller
 
         $title = "Ride Request Accepted!";
         $body = "Your Ride Request has been Accepted by the driver!";
-        $userId =  $passenger->passenger_id;
+        $userId = $passenger->passenger_id;
         $this->ToSpecificUser($title, $body, $userId);
 
         return response()->json(compact("message"));
@@ -417,15 +426,13 @@ class RideController extends Controller
 
         $message = "success";
 
-        $title =  Auth::user()->id == $passenger->passenger_id ? "Ride Request Canceled!" : "Ride Request Declined!";
-        $body =  Auth::user()->id == $passenger->passenger_id ? "You Have Canceled Your Ride Request" : "Your Ride Request has been declined by the driver!";
+        $title = Auth::user()->id == $passenger->passenger_id ? "Ride Request Canceled!" : "Ride Request Declined!";
+        $body = Auth::user()->id == $passenger->passenger_id ? "You Have Canceled Your Ride Request" : "Your Ride Request has been declined by the driver!";
 
-        $userId =  $passenger->passenger_id;
+        $userId = $passenger->passenger_id;
         $this->ToSpecificUser($title, $body, $userId);
         return response()->json(compact("message"));
     }
-
-
 
     public function fetchPassengers($id)
     {
@@ -439,13 +446,37 @@ class RideController extends Controller
         return count($passengers);
     }
 
+    public function ridePassengers($id)
+    {
+        $canceled = 3; // status of request is done
+        $in_progress = 2;
+        $completed = 4;
+        //fetch number of passengers driver has ridden with
+        $passengers = Passenger::join('users', function ($join) {
+        $join->on('passengers.passenger_id', '=', 'users.id');
+        })->where('passengers.ride_id', $id)->get();
+
+        //$passengers = Passenger::where("ride_id", $id)->get();
+
+        foreach ($passengers as $passenger) {
+            //$user_passenger = User::find($passenger->passenger_id);
+            $passenger->profile_image = url("/assets/uploads/profile/" . $passenger->profile_image);
+            //$passenger->knockoffs = json_decode($passenger->knockoffs);
+            //$passenger->pickups = json_decode($passenger->pickups);
+        }
+
+        return $passengers;
+    }
+
     public function driverInfo($id)
     {
         $driver = User::leftJoin('vehicles', function ($join) {
             $join->on('users.id', '=', 'vehicles.driver_id');
-        })->where('users.id', $id)->where('vehicles.driver_id', $id)->get();
+        })->where('users.id', $id)->where('vehicles.driver_id', $id)->first();
 
-        return $driver[0];
+        $driver->profile_image = url("/assets/uploads/profile/" . $driver->profile_image);
+
+        return $driver;
     }
 
     public function uniqueArray($array, $key)
@@ -464,48 +495,45 @@ class RideController extends Controller
         return $temp_array;
     }
 
+    public function distanceMatrix($start, $destination, $jsonFormat = true)
+    {
 
+        $key = "AIzaSyDAHdeQbSuLtDdpfhueU392zOUW6KAjGlA";
 
-	public  function distanceMatrix( $start, $destination, $jsonFormat = true ) {
+        $url = "https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=place_id:$start&destinations=place_id:$destination&key=$key";
 
-        $key= "AIzaSyDAHdeQbSuLtDdpfhueU392zOUW6KAjGlA";
+        // Create a curl call
+        $ch = curl_init();
+        $timeout = 0;
 
-		$url     = "https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=place_id:$start&destinations=place_id:$destination&key=$key";
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
 
-		// Create a curl call
-		$ch      = curl_init();
-		$timeout = 0;
+        $data = curl_exec($ch);
+        // send request and wait for response
 
-		curl_setopt( $ch, CURLOPT_URL, $url );
-		curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, 0 );
-		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
-		curl_setopt( $ch, CURLOPT_HEADER, 0 );
-		curl_setopt( $ch, CURLOPT_CONNECTTIMEOUT, $timeout );
+        $response = json_decode($data, true);
 
-		$data = curl_exec( $ch );
-		// send request and wait for response
+        curl_close($ch);
 
-		$response = json_decode( $data, true );
-
-		curl_close( $ch );
-
-		if ( $jsonFormat == true ) {
-			return $response; // response()->json( $response, 200 );
-		} else {
-			return $response;
-		}
-	}
-
-
-    //count accepted seats
-    public function countTakenSeats($rideid){
-
-        $accepted =  2;
-        $seats  =  Passenger::where("request_status", $accepted)->where("ride_id",$rideid)->count();
-        return $seats;
+        if ($jsonFormat == true) {
+            return $response; // response()->json( $response, 200 );
+        } else {
+            return $response;
+        }
     }
 
+    //count accepted seats
+    public function countTakenSeats($rideid)
+    {
 
+        $accepted = 2;
+        $seats = Passenger::where("request_status", $accepted)->where("ride_id", $rideid)->count();
+        return $seats;
+    }
 
     public function pushtoToken($token, $title, $body, $userId)
     {
@@ -519,7 +547,7 @@ class RideController extends Controller
         $notification = array('title' => $title, 'body' => $body);
 
         //This array contains, the token and the notification. The 'to' attribute stores the token.
-        $arrayToSend = array('to' =>$token, 'notification' => $notification, 'data' => $data);
+        $arrayToSend = array('to' => $token, 'notification' => $notification, 'data' => $data);
 
         //Generating JSON encoded string form the above array.
         $json = json_encode($arrayToSend);
@@ -541,40 +569,98 @@ class RideController extends Controller
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         $result = curl_exec($ch);
-       // print($result);
+        // print($result);
 
         //Send the request
         curl_exec($ch);
 
         //Close request
         curl_close($ch);
-		}
+    }
+
+
+    public function registerVehicle(Request $request)
+    {
+
+        $this->validate($request, [
+            'brand' => 'required|string',
+            'model' => 'required|string',
+            'model_year' => 'required|string',
+            'colour' => 'required|string',
+            'capacity' => 'required|string',
+            'plate_number' => 'required|string',
+            'carpicture' => 'required',
+        ]);
+
+        if (!empty($request->file('carpicture')) ) {
+
+            //The Car's Front View Picture
+            $extension = $request->file('carpicture');
+            $extension = $request->file('carpicture')->getClientOriginalExtension();
+            //$size = $request->file('file')->getSize();
+            $dir = 'assets/uploads/images/';
+            $CarPicturefilename = uniqid() . '_' . time() . '_' . date('Ymd') . '.' . $extension;
+            $request->file('carpicture')->move($this->public_path($dir), $CarPicturefilename);
+
+            $user = User::find(Auth::user()->id);
+
+            $previousVehicle = Vehicle::where('driver_id', Auth::user()->id)->first();
+
+            $vehicle = new Vehicle();
+            $vehicle->driver_id = Auth::user()->id;
+            $vehicle->brand = $request->brand;
+            $vehicle->model = $request->model;
+            $vehicle->model_year = $request->model_year;
+            $vehicle->colour = $request->colour;
+            $vehicle->capacity = $request->capacity;
+            $vehicle->plate_number = $request->plate_number;
+            $vehicle->license = $previousVehicle->license;
+            $vehicle->car_picture = $CarPicturefilename;
+
+
+            $user->user_type = 1;
+            $vehicle->save();
+            $user->save();
+
+            $cars = $this->fetchVehicles(Auth::user()->id);
+
+            $message = "success";
+            return response()->json(compact('message', 'cars'));
+
+        } else {
+            $filename = '';
+        }
+
+
+
+    }
 
 
 
 
+    public function fetchVehicles($id)
+    {
+        $response = Vehicle::where("driver_id", $id)->get();
+        return $response;
+    }
 
 
 
-
-		public function ToSpecificUser($title, $body, $userId)
-		{
-			$users = User::where('users.id', $userId)->get();
-			foreach($users as $user)
-			{
-					 $token= $user['device_token'];
-					 if($token !=null && !empty($token))
-						{
-							$this->pushtoToken($token, $title, $body, $userId);
-						}
-			}
-		}
+    public function public_path($path = null)
+    {
+        return rtrim(app()->basePath('public/' . $path), '/');
+    }
 
 
-
-
-
-
-
+    public function ToSpecificUser($title, $body, $userId)
+    {
+        $users = User::where('users.id', $userId)->get();
+        foreach ($users as $user) {
+            $token = $user['device_token'];
+            if ($token != null && !empty($token)) {
+                $this->pushtoToken($token, $title, $body, $userId);
+            }
+        }
+    }
 
 }

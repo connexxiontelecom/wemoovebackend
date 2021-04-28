@@ -37,6 +37,11 @@ class CreateRidesTable extends Migration
             //ride capacity
             $table->tinyInteger('capacity')->nullable(false);
 
+
+            $table->Integer('status')->nullable(false);
+
+            $table->Integer('car')->nullable(false);
+
             //ride capacity
             $table->tinyInteger('ride_status')->nullable(false);
 

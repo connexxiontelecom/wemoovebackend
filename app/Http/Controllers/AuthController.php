@@ -6,6 +6,7 @@ use App\Models\Passenger;
 use App\Models\Ride;
 use App\Models\User;
 use App\Models\Vehicle;
+use App\Models\Wallet;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -26,20 +27,25 @@ class AuthController extends Controller
     {
 
         $this->validate($request, [
-            'email' => 'required|email',
+            'username' => 'required',//can be email or password
             'password' => 'required',
         ]);
-
-        $credentials = $request->only('email', 'password');
 
         try {
             $myTTL = 10080; //minutes
             Auth::factory()->setTTL($myTTL);
-            if (!$token = Auth::attempt($credentials)) {
 
-                $message = "Email or Password not valid";
-                return response()->json(compact('message'));
-                //return response()->json(['message' => 'invalid credentials'], 400);
+            //attempt to login with phonenumber
+            $credentials = array ('phone_number'=>$request->username, 'password'=>$request->password);
+            $token = Auth::attempt($credentials);
+            if(!$token){
+
+                $credentials = array ('email'=>$request->username, 'password'=>$request->password);
+                $token = Auth::attempt($credentials);
+                if(!$token){
+                    $message = "Login Credentials are not valid";
+                    return response()->json(compact('message'));
+                }
             }
         } catch (Exception $e) {
 
@@ -69,6 +75,7 @@ class AuthController extends Controller
         if($hasvehicle!=false){
 
             $user["hasvehicle"] = 1;
+            $user['vehicles'] =  $this->fetchVehicles(Auth::user()->id);
         }
         else{
 
@@ -151,12 +158,17 @@ class AuthController extends Controller
                 return response()->json(['message' => 'invalid credentials, could not register user'], 409);
             }
 
+            //initial credit bonus
+            $this->credit(500, $user->id);
+
             return response()->json(['token' => $token, 'user' => $user, 'message' => 'User successfully registered'], 201);
 
         } catch (\Exception $e) {
             //return error message
             return response()->json(['message' => 'User Registration Failed!'], 409);
         }
+
+
     }
 
     public function registerVehicle(Request $request)
@@ -354,6 +366,15 @@ class AuthController extends Controller
     }
 
 
+
+
+    public function fetchVehicles($id)
+    {
+        $response = Vehicle::where("driver_id", $id)->get();
+        return $response;
+    }
+
+
     public function updateDeviceToken(Request $request){
         $userid = Auth::user()->id;
         $user = User::find($userid);
@@ -361,6 +382,17 @@ class AuthController extends Controller
         $user->save();
     }
 
+    private function credit($amount, $id)
+    {
+        $wallet = new Wallet();
+        $wallet->credit = $amount;
+        $user = Auth::user()->full_name;
+        $narration = "Initial on-boarding credit bonus ";
+        $wallet->narration = $narration;
+        $wallet->user_id = $id;
+        $wallet->debit = 0;
+        $wallet->save();
+    }
 
 
 }

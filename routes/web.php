@@ -42,6 +42,8 @@ $router->group(['middleware' => ['jwt.auth'], 'prefix'=>'api/auth' ], function (
 
     $router->get('myrequest', 'RideController@fetchRequest');
 
+    $router->post('registercar', 'RideController@registerVehicle');
+
     $router->post('savechat', 'chatController@SaveChat');
 
     $router->post('deletechat', 'chatController@deleteChat');
@@ -70,7 +72,15 @@ $router->group(['middleware' => ['jwt.auth'], 'prefix'=>'api/auth' ], function (
 
     $router->post('updateprofile', 'UserController@updateProfile');
 
+    $router->post('credit', 'walletsController@creditWallet');
 
+    $router->post('debit', 'walletsController@debitWallet');
+
+    $router->post('transfer', 'walletsController@transfer');
+
+    $router->post('balance', 'walletsController@getBalance');
+
+    $router->get('beneficiary', 'walletsController@getBeneficiaryName');
 
 });
 
