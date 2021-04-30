@@ -371,6 +371,10 @@ class AuthController extends Controller
     public function fetchVehicles($id)
     {
         $response = Vehicle::where("driver_id", $id)->get();
+        foreach($response as $car){
+
+            $car->car_picture = url('assets/uploads/images/'. $car->car_picture);
+        }
         return $response;
     }
 

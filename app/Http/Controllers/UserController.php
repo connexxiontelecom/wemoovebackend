@@ -54,6 +54,7 @@ class UserController extends Controller
 
     public function updateProfile(Request $request)
     {
+        $user = User::find(Auth::user()->id);
 
         if (!empty($request->file('profile_pic'))) {
             $extension = $request->file('profile_pic');
@@ -63,17 +64,14 @@ class UserController extends Controller
             $filename = uniqid() . '_' . time() . '_' . date('Ymd') . '.' . $extension;
             $request->file('profile_pic')->move($this->public_path($dir), $filename);
 
-            $user = User::find(Auth::user()->id);
-
             $user->profile_image =$filename;
+        }
 
             $user->address = $request->home;
 
             $user->work_address = $request->work;
 
             $user->save();
-
-
 
             $details =array();
 
@@ -85,9 +83,7 @@ class UserController extends Controller
            // $message = "success";
            // return response()->json(compact("message"));
 
-        } else {
-            $filename = '';
-        }
+
 
     }
 
