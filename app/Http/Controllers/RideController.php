@@ -488,7 +488,8 @@ class RideController extends Controller
         foreach ($array as $val) {
             if (!in_array($val[$key], $key_array)) {
                 $key_array[$i] = $val[$key];
-                $temp_array[$i] = $val;
+                //$temp_array[$i] = $val;
+                $temp_array[] = $val;
             }
             $i++;
         }
