@@ -315,7 +315,11 @@ class RideController extends Controller
     public function ridestatus(Request $request)
     {
 
-        $result = Ride::where('driver_id', Auth::user()->id)->first();
+        $this->validate($request, [
+            "id" => 'required',
+        ]);
+
+        $result = Ride::where('driver_id', Auth::user()->id)->where("id", $request->id)->first();
         $status = $result["status"];
         return response()->json(compact("status"));
     }

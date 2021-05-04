@@ -238,6 +238,7 @@ class AuthController extends Controller
 
             $details["profile"] = url("/assets/uploads/profile/" . $user->profile_image);
             $details["type"] = $user->user_type;
+            $details["cars"] = $this->fetchVehicles(Auth::user()->id);
 
             $message = "success";
             return response()->json(compact('message', 'details'));
