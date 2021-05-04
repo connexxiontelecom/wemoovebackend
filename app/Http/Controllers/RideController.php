@@ -211,7 +211,7 @@ class RideController extends Controller
         foreach ($passengers as $passenger) {
             $passenger->profile_image = url("/assets/uploads/profile/" . $passenger->profile_image);
         }
-        return response()->json(compact("passengers"));
+        return response()->json(compact("passengers", 'ride_id'));
     }
 
     public function fetchRequest(Request $request)
