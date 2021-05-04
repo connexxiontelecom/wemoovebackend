@@ -114,10 +114,9 @@ class RideController extends Controller
 
                         if ($matrix != null) {
 
+                            $pickup->time = $matrix["rows"][0]["elements"][0]["duration"]["text"];
+                            $pickup->seconds = $matrix["rows"][0]["elements"][0]["duration"]["value"];
                         }
-
-                        $pickup->time = $matrix["rows"][0]["elements"][0]["duration"]["text"];
-                        $pickup->seconds = $matrix["rows"][0]["elements"][0]["duration"]["value"];
 
                     }
 
