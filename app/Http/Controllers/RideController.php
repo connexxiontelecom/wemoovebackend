@@ -35,7 +35,7 @@ class RideController extends Controller
             'airconditioner' => 'required',
             'amount' => 'required',
             'departure' => 'required',
-            "car"=>'required',
+            "car" => 'required',
         ]);
 
         $ride = new Ride();
@@ -103,29 +103,30 @@ class RideController extends Controller
                     $ride["knockoffs"] = json_decode($ride["knockoffs"]);
                     $ride["pickups"] = json_decode($ride["pickups"]);
 
-                   /*  foreach ($ride["pickups"] as $pickup) {
+                    foreach ($ride["pickups"] as $pickup) {
 
                         //$start = $origin !=null ? $origin : "ChIJL3W5c0IKThAROqEfOKvXokE";
 
                         $start = "ChIJL3W5c0IKThAROqEfOKvXokE";
 
                         $destination = $pickup->place;
+                        $pickup->time = "0";
+                        $pickup->seconds = 0;
 
+                        if ($destination != null) {
 
+                            $matrix = $this->distanceMatrix($start, $destination);
 
-                        $matrix = $this->distanceMatrix($start, $destination);
-                        $pickup->time ="0";
-                        $pickup->seconds  = "0";
+                            if ($matrix != null) {
 
-                        if ($matrix != null) {
-
-                            $pickup->time = $matrix["rows"][0]["elements"][0]["duration"]["text"];
-                            $pickup->seconds = $matrix["rows"][0]["elements"][0]["duration"]["value"];
+                                $pickup->time = $matrix["rows"][0]["elements"][0]["duration"]["text"];
+                                $pickup->seconds = $matrix["rows"][0]["elements"][0]["duration"]["value"];
+                            }
                         }
 
-                    } */
+                    }
 
-                    //$ride["pickups"] = $this->SortPickups($ride["pickups"]);
+                    $ride["pickups"] = $this->SortPickups($ride["pickups"]);
 
                     $ride["passengers"] = $this->fetchPassengers($ride["driver_id"]);
                     $ride["driver"] = $this->driverInfo($ride["driver_id"]);
@@ -461,7 +462,7 @@ class RideController extends Controller
         $completed = 4;
         //fetch number of passengers driver has ridden with
         $passengers = Passenger::join('users', function ($join) {
-        $join->on('passengers.passenger_id', '=', 'users.id');
+            $join->on('passengers.passenger_id', '=', 'users.id');
         })->where('passengers.ride_id', $id)->get();
 
         //$passengers = Passenger::where("ride_id", $id)->get();
@@ -507,7 +508,6 @@ class RideController extends Controller
     public function distanceMatrix($start, $destination, $jsonFormat = true)
     {
 
-
         $key = "AIzaSyDAHdeQbSuLtDdpfhueU392zOUW6KAjGlA";
 
         $url = "https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=place_id:$start&destinations=place_id:$destination&key=$key";
@@ -531,11 +531,11 @@ class RideController extends Controller
 
         return $response;
 
-       /*  if ($jsonFormat == true) {
-            return $response; // response()->json( $response, 200 );
-        } else {
-            return $response;
-        } */
+        /*  if ($jsonFormat == true) {
+    return $response; // response()->json( $response, 200 );
+    } else {
+    return $response;
+    } */
     }
 
     //count accepted seats
@@ -590,7 +590,6 @@ class RideController extends Controller
         curl_close($ch);
     }
 
-
     public function registerVehicle(Request $request)
     {
 
@@ -604,7 +603,7 @@ class RideController extends Controller
             'carpicture' => 'required',
         ]);
 
-        if (!empty($request->file('carpicture')) ) {
+        if (!empty($request->file('carpicture'))) {
 
             //The Car's Front View Picture
             $extension = $request->file('carpicture');
@@ -629,7 +628,6 @@ class RideController extends Controller
             $vehicle->license = $previousVehicle->license;
             $vehicle->car_picture = $CarPicturefilename;
 
-
             $user->user_type = 1;
             $vehicle->save();
             $user->save();
@@ -643,30 +641,22 @@ class RideController extends Controller
             $filename = '';
         }
 
-
-
     }
-
-
-
 
     public function fetchVehicles($id)
     {
         $response = Vehicle::where("driver_id", $id)->get();
-        foreach($response as $car){
+        foreach ($response as $car) {
 
-            $car->car_picture = url('assets/uploads/images/'. $car->car_picture);
+            $car->car_picture = url('assets/uploads/images/' . $car->car_picture);
         }
         return $response;
     }
-
-
 
     public function public_path($path = null)
     {
         return rtrim(app()->basePath('public/' . $path), '/');
     }
-
 
     public function ToSpecificUser($title, $body, $userId)
     {
