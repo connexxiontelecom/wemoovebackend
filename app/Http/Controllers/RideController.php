@@ -114,8 +114,8 @@ class RideController extends Controller
                         $pickup->time =0;
                         $pickup->seconds  = 0;
 
-                        print_r($matrix);
-                        return;
+                       // print_r($matrix);
+                        //return;
 
                         if ($matrix != null) {
 
