@@ -115,7 +115,9 @@ class RideController extends Controller
                         $pickup->seconds  = 0;
 
                         $res =  json_encode($matrix);
-                        print($res);
+                       // print($res);
+
+                        return response()->json(compact("matrix"));
                         //return;
 
                         if ($matrix != null) {
