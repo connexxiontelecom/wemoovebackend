@@ -103,25 +103,29 @@ class RideController extends Controller
                     $ride["knockoffs"] = json_decode($ride["knockoffs"]);
                     $ride["pickups"] = json_decode($ride["pickups"]);
 
-                    foreach ($ride["pickups"] as $pickup) {
+                   /*  foreach ($ride["pickups"] as $pickup) {
 
                         //$start = $origin !=null ? $origin : "ChIJL3W5c0IKThAROqEfOKvXokE";
 
                         $start = "ChIJL3W5c0IKThAROqEfOKvXokE";
 
                         $destination = $pickup->place;
+
+
+
                         $matrix = $this->distanceMatrix($start, $destination);
                         $pickup->time ="0";
                         $pickup->seconds  = "0";
+
                         if ($matrix != null) {
 
                             $pickup->time = $matrix["rows"][0]["elements"][0]["duration"]["text"];
                             $pickup->seconds = $matrix["rows"][0]["elements"][0]["duration"]["value"];
                         }
 
-                    }
+                    } */
 
-                    $ride["pickups"] = $this->SortPickups($ride["pickups"]);
+                    //$ride["pickups"] = $this->SortPickups($ride["pickups"]);
 
                     $ride["passengers"] = $this->fetchPassengers($ride["driver_id"]);
                     $ride["driver"] = $this->driverInfo($ride["driver_id"]);
@@ -503,16 +507,12 @@ class RideController extends Controller
     public function distanceMatrix($start, $destination, $jsonFormat = true)
     {
 
+
         $key = "AIzaSyDAHdeQbSuLtDdpfhueU392zOUW6KAjGlA";
 
         $url = "https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=place_id:$start&destinations=place_id:$destination&key=$key";
 
-        $json = file_get_contents($url);
-        $result = json_decode($json, true);
-
-        return $result;
-
-       /*  // Create a curl call
+        // Create a curl call
         $ch = curl_init();
         $timeout = 0;
 
@@ -529,7 +529,9 @@ class RideController extends Controller
 
         curl_close($ch);
 
-        if ($jsonFormat == true) {
+        return $response;
+
+       /*  if ($jsonFormat == true) {
             return $response; // response()->json( $response, 200 );
         } else {
             return $response;
