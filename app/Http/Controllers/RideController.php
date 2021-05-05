@@ -111,15 +111,8 @@ class RideController extends Controller
 
                         $destination = $pickup->place;
                         $matrix = $this->distanceMatrix($start, $destination);
-                        $pickup->time =0;
-                        $pickup->seconds  = 0;
-
-                        $res =  json_encode($matrix);
-                       // print($res);
-
-                        return response()->json(compact("matrix"));
-                        //return;
-
+                        $pickup->time ="0";
+                        $pickup->seconds  = "0";
                         if ($matrix != null) {
 
                             $pickup->time = $matrix["rows"][0]["elements"][0]["duration"]["text"];
@@ -514,7 +507,12 @@ class RideController extends Controller
 
         $url = "https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=place_id:$start&destinations=place_id:$destination&key=$key";
 
-        // Create a curl call
+        $json = file_get_contents($url);
+        $result = json_decode($json, true);
+
+        return $result;
+
+       /*  // Create a curl call
         $ch = curl_init();
         $timeout = 0;
 
@@ -535,7 +533,7 @@ class RideController extends Controller
             return $response; // response()->json( $response, 200 );
         } else {
             return $response;
-        }
+        } */
     }
 
     //count accepted seats
