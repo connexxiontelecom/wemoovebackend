@@ -111,7 +111,8 @@ class RideController extends Controller
 
                         $destination = $pickup->place;
                         $matrix = $this->distanceMatrix($start, $destination);
-
+                        $pickup->time =0;
+                        $pickup->seconds  = 0;
                         if ($matrix != null) {
 
                             $pickup->time = $matrix["rows"][0]["elements"][0]["duration"]["text"];
