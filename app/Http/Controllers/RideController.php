@@ -81,6 +81,7 @@ class RideController extends Controller
     public function FetchPendingRides(){
         $pending = 1;//pending ride;
         $result = Ride::where('status',$pending)->get();
+        $results = array();
         if ($result != null && Count($result) > 0) {
             foreach ($result as $ride) {
                 $ride["knockoffs"] = json_decode($ride["knockoffs"]);
