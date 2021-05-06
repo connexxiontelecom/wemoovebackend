@@ -75,6 +75,37 @@ class RideController extends Controller
         return response()->json(compact("message", "rideId"));
     }
 
+
+
+
+    public function FetchPendingRides(){
+        $pending = 1;//pending ride;
+        $result = Ride::where('status',$pending)->get();
+        if ($result != null && Count($result) > 0) {
+            foreach ($result as $ride) {
+                $ride["knockoffs"] = json_decode($ride["knockoffs"]);
+                $ride["pickups"] = json_decode($ride["pickups"]);
+
+                foreach ($ride["pickups"] as $pickup) {
+                    $pickup->time = "0";
+                    $pickup->seconds = 0;
+                }
+
+                $ride["pickups"] = $this->SortPickups($ride["pickups"]);
+                $ride["passengers"] = $this->fetchPassengers($ride["driver_id"]);
+                $ride["driver"] = $this->driverInfo($ride["driver_id"]);
+                $ride["taken_seats"] = $this->countTakenSeats($ride["id"]);
+                $results[] = $ride;
+            }
+        }
+
+        $results = $this->uniqueArray($results, "id");
+
+        return response()->json(compact("results"));
+
+    }
+
+
     public function Search(Request $request)
     {
 
@@ -91,12 +122,15 @@ class RideController extends Controller
         $query = trim($query);
         $query = preg_replace('/\W+/', ' ', $query);
 
+        $pending = 1;//pending ride;
+
         $keywords = preg_split($pattern, $query);
 
         $results = array();
 
         foreach ($keywords as $term) {
-            $result = Ride::where('destination', 'like', "%" . $term . "%")->get();
+
+            $result = Ride::where('destination', 'like', "%" . $term . "%")->where('status',$pending)->get();
 
             if ($result != null && Count($result) > 0) {
                 foreach ($result as $ride) {
@@ -105,15 +139,15 @@ class RideController extends Controller
 
                     foreach ($ride["pickups"] as $pickup) {
 
-                        //$start = $origin !=null ? $origin : "ChIJL3W5c0IKThAROqEfOKvXokE";
+                        $start = $origin;
 
-                        $start = "ChIJL3W5c0IKThAROqEfOKvXokE";
+                        //$start = "ChIJL3W5c0IKThAROqEfOKvXokE";
 
                         $destination = $pickup->place;
                         $pickup->time = "0";
                         $pickup->seconds = 0;
 
-                        if ($destination != null) {
+                        if ($destination != null && $origin!=null && !empty($origin)) {
 
                             $matrix = $this->distanceMatrix($start, $destination);
 
@@ -149,6 +183,7 @@ class RideController extends Controller
         });
         return $array;
     }
+
 
     public function BookRide(Request $request)
     {
@@ -193,7 +228,7 @@ class RideController extends Controller
             'id' => 'required',
         ]);
 
-        $id = $request->id;
+        $id = Auth::user()->id;//$request->id;
 
         $pending = 1; //pending // requests awaiting acceptance
 
@@ -209,9 +244,21 @@ class RideController extends Controller
 
         //print($ride_id);
 
-        $passengers = DB::table('passengers as p')->leftJoin('users as u', function ($join) {
+     /*    $passengers = DB::table('passengers as p')->leftJoin('users as u', function ($join) {
             $join->on('u.id', '=', 'p.passenger_id');
-        })->select('p.id as pid', 'p.*', 'u.*')->where('p.request_status', $pending)->orWhere('p.request_status', $accepted)->where('p.ride_id', $ride_id)->get();
+        })->select('p.id as pid', 'p.*', 'u.*')->where('p.request_status', $pending)->orWhere('p.request_status', $accepted)->where('p.ride_id', $ride_id)->get(); */
+
+
+        $passengers = DB::table('passengers as p')
+        ->join('users as u', 'u.id', '=', 'p.passenger_id')
+        ->select('p.id as pid', 'p.*', 'u.*')
+        ->where('p.passenger_id', $id)->where(function ($query) use ($pending,$ride_id) {
+        $query->where('p.request_status', $pending)->where('p.ride_id', $ride_id);;
+    })->oRwhere(function ($query) use ($accepted, $ride_id) {
+        $query->where('p.request_status', $accepted)->where('p.ride_id', $ride_id);
+    })->get();
+
+
 
         foreach ($passengers as $passenger) {
             $passenger->profile_image = url("/assets/uploads/profile/" . $passenger->profile_image);
@@ -543,7 +590,7 @@ class RideController extends Controller
     {
 
         $accepted = 2;
-        $seats = Passenger::where("request_status", $accepted)->where("ride_id", $rideid)->count();
+        $seats = Passenger::where("request_status", $accepted)->where("ride_id", $rideid)->get()->sum('seats');
         return $seats;
     }
 

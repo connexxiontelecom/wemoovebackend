@@ -44,6 +44,8 @@ $router->group(['middleware' => ['jwt.auth'], 'prefix'=>'api/auth' ], function (
 
     $router->post('registercar', 'RideController@registerVehicle');
 
+    $router->get('rides', 'RideController@FetchPendingRides');
+
     $router->post('savechat', 'chatController@SaveChat');
 
     $router->post('deletechat', 'chatController@deleteChat');
