@@ -75,12 +75,10 @@ class RideController extends Controller
         return response()->json(compact("message", "rideId"));
     }
 
-
-
-
-    public function FetchPendingRides(){
-        $pending = 1;//pending ride;
-        $result = Ride::where('status',$pending)->get();
+    public function FetchPendingRides()
+    {
+        $pending = 1; //pending ride;
+        $result = Ride::where('status', $pending)->get();
         $results = array();
         if ($result != null && Count($result) > 0) {
             foreach ($result as $ride) {
@@ -106,7 +104,6 @@ class RideController extends Controller
 
     }
 
-
     public function Search(Request $request)
     {
 
@@ -119,11 +116,12 @@ class RideController extends Controller
 
         $query = $request->search_query;
         $origin = $request->origin;
+
         //Deal with all white spaces
         $query = trim($query);
         $query = preg_replace('/\W+/', ' ', $query);
 
-        $pending = 1;//pending ride;
+        $pending = 1; //pending ride;
 
         $keywords = preg_split($pattern, $query);
 
@@ -131,7 +129,7 @@ class RideController extends Controller
 
         foreach ($keywords as $term) {
 
-            $result = Ride::where('destination', 'like', "%" . $term . "%")->where('status',$pending)->get();
+            $result = Ride::where('destination', 'like', "%" . $term . "%")->where('status', $pending)->get();
 
             if ($result != null && Count($result) > 0) {
                 foreach ($result as $ride) {
@@ -148,7 +146,7 @@ class RideController extends Controller
                         $pickup->time = "0";
                         $pickup->seconds = 0;
 
-                        if ($destination != null && $origin!=null && !empty($origin)) {
+                        if ($destination != null && $origin != null && !empty($origin)) {
 
                             $matrix = $this->distanceMatrix($start, $destination);
 
@@ -184,7 +182,6 @@ class RideController extends Controller
         });
         return $array;
     }
-
 
     public function BookRide(Request $request)
     {
@@ -229,15 +226,22 @@ class RideController extends Controller
             'id' => 'required',
         ]);
 
-        $id = Auth::user()->id;//$request->id;
+        $id = Auth::user()->id; //$request->id;
 
         $pending = 1; //pending // requests awaiting acceptance
 
         $in_progress = 2;
 
-        $result = Ride::where('driver_id', $id)->where('status', $pending)->orWhere('status', $in_progress)->first();
+        $ride_id = 0;
 
-        $ride_id = $result["id"];
+        $result = Ride::where('driver_id', $id)->where('status', $pending)->first();
+
+        if (!is_null($result) && !empty($result) && !is_null($result->id)) {
+            $ride_id = $result->id;
+        } else {
+            $result = Ride::where('driver_id', $id)->where('status', $in_progress)->first();
+            $ride_id = $result->id;
+        }
 
         $pending = 1;
 
@@ -245,21 +249,18 @@ class RideController extends Controller
 
         //print($ride_id);
 
-     /*    $passengers = DB::table('passengers as p')->leftJoin('users as u', function ($join) {
-            $join->on('u.id', '=', 'p.passenger_id');
+        /*    $passengers = DB::table('passengers as p')->leftJoin('users as u', function ($join) {
+        $join->on('u.id', '=', 'p.passenger_id');
         })->select('p.id as pid', 'p.*', 'u.*')->where('p.request_status', $pending)->orWhere('p.request_status', $accepted)->where('p.ride_id', $ride_id)->get(); */
 
-
         $passengers = DB::table('passengers as p')
-        ->join('users as u', 'u.id', '=', 'p.passenger_id')
-        ->select('p.id as pid', 'p.*', 'u.*')
-        ->where('p.passenger_id', $id)->where(function ($query) use ($pending,$ride_id) {
-        $query->where('p.request_status', $pending)->where('p.ride_id', $ride_id);;
-    })->oRwhere(function ($query) use ($accepted, $ride_id) {
-        $query->where('p.request_status', $accepted)->where('p.ride_id', $ride_id);
-    })->get();
-
-
+            ->join('users as u', 'u.id', '=', 'p.passenger_id')
+            ->select('p.id as pid', 'p.*', 'u.*')
+            ->where('p.passenger_id', $id)->where(function ($query) use ($pending, $ride_id) {
+            $query->where('p.request_status', $pending)->where('p.ride_id', $ride_id);;
+        })->oRwhere(function ($query) use ($accepted, $ride_id) {
+            $query->where('p.request_status', $accepted)->where('p.ride_id', $ride_id);
+        })->get();
 
         foreach ($passengers as $passenger) {
             $passenger->profile_image = url("/assets/uploads/profile/" . $passenger->profile_image);
@@ -329,7 +330,6 @@ class RideController extends Controller
 
     public function startRide(Request $request)
     {
-
         $this->validate($request, [
             "id" => 'required',
         ]);
