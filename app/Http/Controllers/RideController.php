@@ -256,7 +256,7 @@ class RideController extends Controller
         $passengers = DB::table('passengers as p')
             ->join('users as u', 'u.id', '=', 'p.passenger_id')
             ->select('p.id as pid', 'p.*', 'u.*')
-            ->where('p.passenger_id', $id)->where(function ($query) use ($pending, $ride_id) {
+            ->where(function ($query) use ($pending, $ride_id) {
             $query->where('p.request_status', $pending)->where('p.ride_id', $ride_id);;
         })->oRwhere(function ($query) use ($accepted, $ride_id) {
             $query->where('p.request_status', $accepted)->where('p.ride_id', $ride_id);
