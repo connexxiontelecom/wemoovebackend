@@ -240,7 +240,10 @@ class RideController extends Controller
             $ride_id = $result->id;
         } else {
             $result = Ride::where('driver_id', $id)->where('status', $in_progress)->first();
-            $ride_id = $result->id;
+            if (!is_null($result)) {
+                $ride_id = $result->id;
+            }
+
         }
 
         $pending = 1;
@@ -257,8 +260,8 @@ class RideController extends Controller
             ->join('users as u', 'u.id', '=', 'p.passenger_id')
             ->select('p.id as pid', 'p.*', 'u.*')
             ->where(function ($query) use ($pending, $ride_id) {
-            $query->where('p.request_status', $pending)->where('p.ride_id', $ride_id);;
-        })->oRwhere(function ($query) use ($accepted, $ride_id) {
+                $query->where('p.request_status', $pending)->where('p.ride_id', $ride_id);;
+            })->oRwhere(function ($query) use ($accepted, $ride_id) {
             $query->where('p.request_status', $accepted)->where('p.ride_id', $ride_id);
         })->get();
 
@@ -302,7 +305,7 @@ class RideController extends Controller
         $pending = 1; //pending // requests awaiting acceptance
         $in_progress = 2;
 
-        $result = Ride::where('driver_id', $id)->where('status', $pending)->orWhere('status', $in_progress)->first();
+        $result = Ride::where('driver_id', $id)->where('status', $pending)->first();
 
         $ride_id = $result["id"];
         $ride = Ride::find($ride_id);
@@ -340,7 +343,7 @@ class RideController extends Controller
         $in_progress = 2;
         $ride_id = $request->id;
 
-        $result = Ride::where('driver_id', $id)->where('status', $pending)->orWhere('status', $in_progress)->first();
+        $result = Ride::where('driver_id', $id)->where('status', $pending)->first();
         $ride_id = $result["id"];
         $ride = Ride::find($ride_id);
 
@@ -364,6 +367,54 @@ class RideController extends Controller
         return response()->json(compact("message"));
 
     }
+
+
+
+    public function finishRide(Request $request)
+    {
+
+        $this->validate($request, [
+            "id" => 'required',
+        ]);
+
+        $id = $request->id;
+        $pending = 1; //pending // requests awaiting acceptance
+        $in_progress = 2;
+
+        $result = Ride::where('driver_id', $id)->where('status', $in_progress)->first();
+
+        $ride_id = $result["id"];
+        $ride = Ride::find($ride_id);
+
+        $finished = 4; //finished
+        $ride->status = $finished;
+        $ride->save();
+        $message = "success";
+
+        //notify passengers
+
+        $passengers = Passenger::where("ride_id", $ride_id)->get();
+
+        foreach ($passengers as $passenger) {
+
+            $title = "Ride Finished";
+            $body = "The Driver Finished this Ride!";
+            $userId = $passenger->passenger_id;
+            $this->ToSpecificUser($title, $body, $userId);
+
+        }
+
+        return response()->json(compact("message"));
+    }
+
+
+
+
+
+
+
+
+
 
     public function ridestatus(Request $request)
     {
@@ -394,17 +445,17 @@ class RideController extends Controller
 
         $declined = 3;
         $completed = 4;
+        $in_progress = 2;
         $id = Auth::user()->id;
         $usertype = Auth::user()->user_type;
 
         //get all rides where I was a passenger
         $rides = DB::table('passengers as p')
             ->join('rides as r', 'r.id', '=', 'p.ride_id')
-            ->select('p.id as pid', 'p.*', 'r.*')
-            ->where('p.passenger_id', $id)->where(function ($query) use ($completed) {
-            $query->where('r.status', $completed);
-        })->oRwhere(function ($query) use ($declined) {
-            $query->where('r.status', $declined);
+            ->select('p.id as pid', 'p.*', 'r.*')->where(function ($query) use ($completed, $id) {
+            $query->where('p.passenger_id', $id)->where('r.status', $completed);
+        })->oRwhere(function ($query) use ($in_progress,$id) {
+            $query->where('p.passenger_id', $id)->where('r.status', $in_progress);
         })->get();
 
         //  orWhere('r.status', $completed)->where('r.status', $declined)->get();
@@ -488,6 +539,14 @@ class RideController extends Controller
 
         $userId = $passenger->passenger_id;
         $this->ToSpecificUser($title, $body, $userId);
+
+
+        if(Auth::user()->id  ==  $passenger->passenger_id){
+            $rideId = $passenger->ride_id;
+            $ride = Ride::find($rideId);
+            $this->ToSpecificUser("Request Canceled", "Passenger Canceled Request", $ride->driver_id);
+        }
+
         return response()->json(compact("message"));
     }
 

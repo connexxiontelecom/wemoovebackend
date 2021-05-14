@@ -111,7 +111,7 @@ class chatController extends Controller
             $results[] =$result;
         }
 
-       return response()->json(compact("results"));
+       return response()->json(compact("results", 'ids', 'ride_id'));
 
       // return response()->json(['results'=>$results]);
     }
@@ -122,7 +122,7 @@ class chatController extends Controller
     public function countUnreadMsgs($id, $ride_id){
         $sender =  $id;
         $unread =  1;
-        $msgs  =  Chat::where("read", $unread)->where("sender", $sender) ->where("receiver",  Auth::user()->id)->where("ride_id", $ride_id)->count();
+        $msgs  =  Chat::where("read", $unread)->where("sender", $sender)->where("receiver",  Auth::user()->id)->where("ride_id", $ride_id)->count();
         if(is_null($msgs)){
         return 0;
         }
@@ -146,7 +146,7 @@ class chatController extends Controller
         $receiver =  $request->receiver;
         $ride_id = $request->ride_id;
 
-        $unreadChats =  Chat::where("read", $unread)->where("sender", $sender)->where("receiver", $receiver)->where("ride_id", $ride_id)->get();
+        $unreadChats =  Chat::where("read", $unread)->where("sender", $sender)->where("receiver", Auth::user()->id)->where("ride_id", $ride_id)->get();
 
         foreach($unreadChats as $unreadchat){
             $unreadchat->read =  0;

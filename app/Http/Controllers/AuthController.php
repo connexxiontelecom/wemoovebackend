@@ -321,7 +321,14 @@ class AuthController extends Controller
 
         $pending =1;    //yet to start
         $started = 2;   //in progress
-        $response = Ride::where("driver_id", $id)->where("status", 1)->orWhere("status", 2)->first();//get();
+        $response = //Ride::where("driver_id", $id)->where("status", 1)->orWhere("status", 2)->first();//get();
+
+        Ride::where(function ($query) use ($pending, $id) {
+            $query->where("driver_id", $id)->where("status", $pending);
+        })->oRwhere(function ($query) use ($started, $id) {
+            $query->where("driver_id", $id)->where("status", $started);
+        })->first();
+
         //$count = Count($response);
         if ($response!=null) {
             return $response->id;
