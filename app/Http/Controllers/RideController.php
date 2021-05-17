@@ -456,7 +456,7 @@ class RideController extends Controller
             $query->where('p.passenger_id', $id)->where('r.status', $completed);
         })->oRwhere(function ($query) use ($in_progress,$id) {
             $query->where('p.passenger_id', $id)->where('r.status', $in_progress);
-        })->get();
+        })->orderBy('r.id', 'DESC')->get();
 
         //  orWhere('r.status', $completed)->where('r.status', $declined)->get();
         /* $rides = DB::table('passengers as p')->Join('rides as r', function ($join) {
@@ -687,7 +687,7 @@ class RideController extends Controller
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        $result = curl_exec($ch);
+       //$result = curl_exec($ch);
         // print($result);
 
         //Send the request
@@ -767,7 +767,7 @@ class RideController extends Controller
 
     public function ToSpecificUser($title, $body, $userId)
     {
-        $users = User::where('users.id', $userId)->get();
+        $users = User::where('users.id', $userId)->orderBy('id', 'DESC')->get();
         foreach ($users as $user) {
             $token = $user['device_token'];
             if ($token != null && !empty($token)) {
