@@ -195,7 +195,7 @@ class chatController extends Controller
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        $result = curl_exec($ch);
+        //$result = curl_exec($ch);
        // print($result);
 
         //Send the request
