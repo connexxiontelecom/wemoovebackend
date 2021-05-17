@@ -398,7 +398,7 @@ class AuthController extends Controller
     {
         $wallet = new Wallet();
         $wallet->credit = $amount;
-        $user = Auth::user()->full_name;
+       // $user = Auth::user()->full_name;
         $narration = "Initial on-boarding credit bonus ";
         $wallet->narration = $narration;
         $wallet->user_id = $id;
