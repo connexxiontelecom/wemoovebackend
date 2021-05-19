@@ -59,8 +59,8 @@ class chatController extends Controller
 
         $chats = Chat::where(function ($query) use ($sender, $receiver, $ride_id) {
             $query->where('sender', $sender)->where('receiver', $receiver)->where("ride_id", $ride_id);
-        })->oRwhere(function ($query) use ($sender, $receiver) {
-            $query->where('sender', $receiver)->where('receiver', $sender);
+        })->oRwhere(function ($query) use ($sender, $receiver, $ride_id) {
+            $query->where('sender', $receiver)->where('receiver', $sender)->where("ride_id", $ride_id);
         })->get();
 
         return response()->json(compact("chats"));

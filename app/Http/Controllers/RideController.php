@@ -317,7 +317,7 @@ class RideController extends Controller
 
         //notify passengers
 
-        $passengers = Passenger::where("ride_id", $ride_id)->get();
+        $passengers = Passenger::where("ride_id", $ride_id)->where("request_status", 2)->get();
 
         foreach ($passengers as $passenger) {
 
@@ -353,7 +353,7 @@ class RideController extends Controller
         $message = "success";
 
         //notify passengers
-        $passengers = Passenger::where("ride_id", $ride_id)->get();
+        $passengers = Passenger::where("ride_id", $ride_id)->where("request_status", 2)->get();
 
         foreach ($passengers as $passenger) {
 
@@ -393,7 +393,7 @@ class RideController extends Controller
 
         //notify passengers
 
-        $passengers = Passenger::where("ride_id", $ride_id)->get();
+        $passengers = Passenger::where("ride_id", $ride_id)->where("request_status", 2)->get();
 
         foreach ($passengers as $passenger) {
 
