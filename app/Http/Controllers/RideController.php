@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Passenger;
+use App\Models\Rating;
 use App\Models\Ride;
 use App\Models\User;
 use App\Models\Vehicle;
@@ -368,8 +369,6 @@ class RideController extends Controller
 
     }
 
-
-
     public function finishRide(Request $request)
     {
 
@@ -406,15 +405,6 @@ class RideController extends Controller
 
         return response()->json(compact("message"));
     }
-
-
-
-
-
-
-
-
-
 
     public function ridestatus(Request $request)
     {
@@ -454,7 +444,7 @@ class RideController extends Controller
             ->join('rides as r', 'r.id', '=', 'p.ride_id')
             ->select('p.id as pid', 'p.*', 'r.*')->where(function ($query) use ($completed, $id) {
             $query->where('p.passenger_id', $id)->where('r.status', $completed);
-        })->oRwhere(function ($query) use ($in_progress,$id) {
+        })->oRwhere(function ($query) use ($in_progress, $id) {
             $query->where('p.passenger_id', $id)->where('r.status', $in_progress);
         })->orderBy('r.id', 'DESC')->get();
 
@@ -468,6 +458,7 @@ class RideController extends Controller
             $ride->pickups = json_decode($ride->pickups);
             //$ride->passengers = $this->ridePassengers($ride->id);
             $ride->driver = $this->driverInfo($ride->driver_id);
+            $ride->isRated = $this->isRated($ride->id, $id);
         }
 
         //$rides = Ride::where("driver_id", $id)->where("status", $declined)->orWhere("status",$completed)->get();
@@ -540,8 +531,7 @@ class RideController extends Controller
         $userId = $passenger->passenger_id;
         $this->ToSpecificUser($title, $body, $userId);
 
-
-        if(Auth::user()->id  ==  $passenger->passenger_id){
+        if (Auth::user()->id == $passenger->passenger_id) {
             $rideId = $passenger->ride_id;
             $ride = Ride::find($rideId);
             $this->ToSpecificUser("Request Canceled", "Passenger Canceled Request", $ride->driver_id);
@@ -592,7 +582,70 @@ class RideController extends Controller
 
         $driver->profile_image = url("/assets/uploads/profile/" . $driver->profile_image);
 
+        $driver->rating = $this->fetchDriverRating($id);
+
         return $driver;
+    }
+
+
+
+    public function saveRatings(Request $request)
+    {
+        $this->validate($request, [
+            'driver_id' => 'required',
+            "passenger_id" => 'required',
+            "ride_id" => 'required',
+            'rating' => 'required',
+            //'comment'=>'required'
+        ]);
+
+        $driver_id = $request->driver_id;
+        $passenger = $request->passenger_id;
+        $ride_id = $request->ride_id;
+        $rating = $request->rating;
+        $comment = $request->comment;
+
+        $_rating = new Rating();
+
+        $_rating->driver_id = $driver_id;
+        $_rating->passenger_id = $passenger;
+        $_rating->ride_id = $ride_id;
+        $_rating->rating = $rating;
+        if (!is_null($comment)) {
+            $_rating->comments = $comment;
+        }
+
+        $_rating->save();
+
+        $message = "success";
+        return response()->json(compact("message"));
+    }
+
+    public function isRated($ride_id, $passenger)
+    {
+        $rating = Rating::where("ride_id", $ride_id)->where('passenger_id', $passenger)->first();
+        if(!is_null($rating))
+        {
+            return 1;
+        }
+
+        else{
+            return 0;
+        }
+
+    }
+
+    public function fetchDriverRating($driver_id)
+    {
+        $summed_ratings = Rating::where("driver_id", $driver_id)->get()->sum('rating');
+        $count = Rating::where('driver_id', '=', $driver_id)->count();
+        $computed_rating = 0;
+        if (!is_null($summed_ratings) && $summed_ratings != 0 && !is_null($count) && $count != 0) {
+
+            $computed_rating = $summed_ratings / $count;
+        }
+
+        return $computed_rating;
     }
 
     public function uniqueArray($array, $key)
@@ -687,7 +740,7 @@ class RideController extends Controller
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-       //$result = curl_exec($ch);
+        //$result = curl_exec($ch);
         // print($result);
 
         //Send the request
