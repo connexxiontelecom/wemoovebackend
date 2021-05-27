@@ -31,7 +31,7 @@ class RideController extends Controller
             /* 'pickup1' => 'required|string', */
             'pickups' => 'required',
             'destination' => 'required',
-            'knockoffs' => 'required',
+            'dropoffs' => 'required',
             'capacity' => 'required',
             'airconditioner' => 'required',
             'amount' => 'required',
@@ -41,11 +41,11 @@ class RideController extends Controller
 
         $ride = new Ride();
 
-        $knockoffs = array();
-        $knockoffs = explode(",", $request->knockoffs);
-        $knockoffs = json_encode($knockoffs);
+        $dropoffs = array();
+        $dropoffs = explode(",", $request->dropoffs);
+        $dropoffs = json_encode($dropoffs);
 
-        $ride->knockoffs = $knockoffs;
+        $ride->dropoffs = $dropoffs;
         $ride->driver_id = Auth::user()->id;
         $ride->amount = $request->amount;
         $ride->departure_time = $request->departure;
@@ -130,7 +130,23 @@ class RideController extends Controller
 
         foreach ($keywords as $term) {
 
-            $result = Ride::where('destination', 'like', "%" . $term . "%")->where('status', $pending)->get();
+           //$result = Ride::where('destination', 'like', "%" . $term . "%")->where('status', $pending)->get();
+
+
+            $result = Ride::where(function ($query) use ($term, $pending) {
+                $query->where(DB::raw('LOWER(destination)'), 'like', "%" . strtolower($term) . "%")->where('status', $pending);
+            })->oRwhere(function ($query) use ($term, $pending) {
+                $query->where(DB::raw('LOWER(dropoffs)'), 'like', "%" . strtolower($term) . "%")->where('status', $pending);
+            })->get();
+
+
+
+       /*      foreach($searcher as $word) {
+                $list->where('LOWER(title)', 'LIKE', '%' . strtolower($word) . '%');
+                $list->orWhere('LOWER(name)', 'LIKE', '%' . strtolower($word) . '%');
+              }
+ */
+
 
             if ($result != null && Count($result) > 0) {
                 foreach ($result as $ride) {
@@ -169,6 +185,9 @@ class RideController extends Controller
                 }
             }
         }
+
+
+
 
         $results = $this->uniqueArray($results, "id");
 

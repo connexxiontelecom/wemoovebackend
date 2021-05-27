@@ -26,6 +26,8 @@ $router->group(['middleware' => ['jwt.auth'], 'prefix'=>'api/auth' ], function (
 
     $router->post('otp', 'OtpController@sendOtp');
 
+    $router->post('resendotp', 'OtpController@resendOtp');
+
     $router->post('otp/verify', 'OtpController@updateVerified');
 
     $router->post('publish', 'RideController@publishRide');
