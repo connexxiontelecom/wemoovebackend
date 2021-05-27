@@ -5,12 +5,12 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:wemoove/constants.dart';
-import 'package:wemoove/controllers/CarSignUpController.dart';
+import 'package:wemoove/controllers/RegisterCarController.dart';
 
 // A screen that allows users to take a picture using a given camera.
 class TakePictureScreen extends StatefulWidget {
   final CameraDescription camera;
-  final CarSignUpController carSignUpController;
+  final RegistarCarController carSignUpController;
   const TakePictureScreen({
     Key key,
     @required this.camera,
@@ -121,7 +121,7 @@ class TakePictureScreenState extends State<TakePictureScreen> {
 
 // A widget that displays the picture taken by the user.
 class DisplayPictureScreen extends StatelessWidget {
-  final CarSignUpController controller;
+  final RegistarCarController controller;
   final String imagePath;
 
   const DisplayPictureScreen({Key key, this.imagePath, this.controller})

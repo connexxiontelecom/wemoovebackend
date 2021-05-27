@@ -38,8 +38,12 @@ class Body extends StatelessWidget {
                   CircleAvatar(
                       radius: 25,
                       //child: Image.asset("assets/images/sample.jpg")
-                      backgroundImage: AssetImage(
-                          "assets/images/portrait.jpg") //NetworkImage(globals.user.avatar)
+                      backgroundImage: globals.user != null &&
+                              globals.user.profileImage != null &&
+                              globals.user.profileImage.isNotEmpty
+                          ? NetworkImage(globals.user.profileImage)
+                          : AssetImage(
+                              "assets/images/portrait.png") //NetworkImage(globals.user.avatar)
                       ),
                 ],
               ),

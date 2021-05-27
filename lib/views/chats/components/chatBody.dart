@@ -16,13 +16,15 @@ class ChatBody extends StatefulWidget {
   final dynamic recipient;
   final dynamic rideId;
   final String name;
+  final dynamic picture;
   ChatBody(
       {Key key,
       this.scaffoldkey,
       this.controller,
       this.recipient,
       this.rideId,
-      this.name})
+      this.name,
+      this.picture})
       : super(key: key);
   @override
   _ChatBodyState createState() => _ChatBodyState();
@@ -34,6 +36,7 @@ class _ChatBodyState extends State<ChatBody> {
   FocusNode focusnode;
   String replyingTo = "";
   int msgindex;
+  ChatController chatBloc;
   ScrollController scrollcontroller = new ScrollController();
 
   refocus() {
@@ -52,6 +55,12 @@ class _ChatBodyState extends State<ChatBody> {
   }
 
   @override
+  void dispose() {
+    chatBloc.destroy();
+    super.dispose();
+  }
+
+  @override
   void initState() {
     super.initState();
   }
@@ -59,7 +68,7 @@ class _ChatBodyState extends State<ChatBody> {
   @override
   Widget build(BuildContext context) {
     scroll();
-    final chatBloc = Provider.of<ChatController>(context);
+    chatBloc = Provider.of<ChatController>(context);
     focusnode = FocusNode();
     if (chatBloc.channel == null) {
       chatBloc.init(widget.rideId, widget.recipient);
@@ -109,13 +118,26 @@ class _ChatBodyState extends State<ChatBody> {
                             Navigator.pop(context);
                           },
                         ),
+                        GestureDetector(
+                          child: CircleAvatar(
+                            radius: 23,
+                            child: CircleAvatar(
+                              radius: 20,
+                              backgroundImage: NetworkImage(widget.picture),
+                            ),
+                          ),
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                        ),
                         SizedBox(
-                          width: 120,
+                          width: 15,
                         ),
                         Text(
                           widget.name,
                           style: TextStyle(fontSize: 20, color: kPrimaryColor),
                         ),
+
                       ],
                     )
                   ],
@@ -134,18 +156,6 @@ class _ChatBodyState extends State<ChatBody> {
                       controller: scrollcontroller,
                       child: Column(
                         children: [
-                          /* Container(
-                            height: 50,
-                            width: 200,
-                            decoration: BoxDecoration(
-                                color: Colors.grey.withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(20)),
-                            child: Center(
-                                child: Text(
-                              "30th March 2021",
-                              style: TextStyle(fontSize: 17),
-                            )),
-                          ),*/
                           chatBloc.messages.length <= 0
                               ? Center(
                                   child: Column(
@@ -297,28 +307,6 @@ class _ChatBodyState extends State<ChatBody> {
                   ),
                 ],
               )),
-
-          /* Positioned(
-            left: 10,
-            right: 10,
-            bottom: 0,
-            child: Container(
-              decoration: BoxDecoration(color: Colors.white),
-              child: TextField(
-                maxLines: null,
-                decoration: InputDecoration(
-                  enabledBorder: InputBorder.none,
-                  focusedBorder: InputBorder.none,
-                  border: InputBorder.none,
-                  hintText: "Type a message",
-                  suffix: Icon(
-                    LineAwesomeIcons.paper_plane,
-                    color: kTextColor,
-                  ),
-                ),
-              ),
-            ),
-          )*/
         ],
       ),
     );

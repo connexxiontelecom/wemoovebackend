@@ -37,12 +37,16 @@ class ProfileScreenController extends BaseViewModel {
   }
 
   SaveUpdates(BuildContext context) async {
-    String fileName = file.path.split('/').last;
+    String filename;
+    if (file != null) {
+      filename = file.path.split('/').last;
+    }
     FormData formData = FormData.fromMap({
       'work': workController.text,
       'home': homeController.text,
-      'profile_pic':
-          await MultipartFile.fromFile(file.path, filename: fileName),
+      if (file != null && filename.isNotEmpty)
+        'profile_pic':
+            await MultipartFile.fromFile(file.path, filename: filename),
     });
 
     showDialog(
@@ -58,7 +62,7 @@ class ProfileScreenController extends BaseViewModel {
 
     if (response == "success") {
       Navigator.pop(context);
-
+      Navigator.pop(context);
       showDialog(
           barrierDismissible: false,
           context: context,

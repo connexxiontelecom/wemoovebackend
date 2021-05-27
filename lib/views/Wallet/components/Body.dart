@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
+import 'package:wemoove/controllers/WalletController.dart';
 import 'package:wemoove/globals.dart' as globals;
 import 'package:wemoove/helper/BouncingTransition.dart';
 import 'package:wemoove/views/Wallet/TransactionDetails.dart';
@@ -8,7 +9,22 @@ import 'package:wemoove/views/Wallet/TransactionDetails.dart';
 import '../../../constants.dart';
 import '../../../size_config.dart';
 
-class Body extends StatelessWidget {
+class Body extends StatefulWidget {
+  final WalletController controller;
+
+  const Body({Key key, this.controller}) : super(key: key);
+
+  @override
+  _BodyState createState() => _BodyState();
+}
+
+class _BodyState extends State<Body> {
+  Future<void> refresh() async {
+    widget.controller.getWalletBalance();
+    setState(() {});
+    return;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -60,9 +76,11 @@ class Body extends StatelessWidget {
                   CircleAvatar(
                       radius: 25,
                       //child: Image.asset("assets/images/sample.jpg")
-                      backgroundImage: globals.user.profileImage.isEmpty
-                          ? AssetImage("assets/images/portrait.jpg")
-                          : NetworkImage(globals.user.profileImage)),
+                      backgroundImage: globals.user != null &&
+                              globals.user.profileImage != null &&
+                              globals.user.profileImage.isNotEmpty
+                          ? NetworkImage(globals.user.profileImage)
+                          : AssetImage("assets/images/portrait.png")),
                 ],
               ),
             ),
@@ -72,85 +90,105 @@ class Body extends StatelessWidget {
           top: getProportionateScreenHeight(120),
           left: 5,
           right: 5,
-          child: Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  height: 150,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                      color: kPrimaryColor,
-                      borderRadius: BorderRadius.circular(15)),
-                  child: Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(
-                          height: 20,
-                        ),
-                        Text(
-                          "Your Balance:",
-                          style: TextStyle(
-                              fontSize: 20, color: kPrimaryAlternateColor),
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          child: RefreshIndicator(
+            onRefresh: refresh,
+            child: SingleChildScrollView(
+              physics: AlwaysScrollableScrollPhysics(),
+              child: Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                          color: kPrimaryColor,
+                          borderRadius: BorderRadius.circular(15)),
+                      child: Padding(
+                        padding: const EdgeInsets.all(20.0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              "N1,000",
-                              style: TextStyle(
-                                  fontSize: 40,
-                                  color: kPrimaryAlternateColor,
-                                  fontWeight: FontWeight.bold),
+                            SizedBox(
+                              height: 20,
                             ),
-                            InkWell(
-                              child: Container(
-                                height: 50,
-                                width: 100,
-                                decoration: BoxDecoration(
-                                    color: kPrimaryAlternateColor,
-                                    borderRadius: BorderRadius.circular(10)),
-                                child: Center(
+                            Text(
+                              "Your Balance:",
+                              style: TextStyle(
+                                  fontSize: 20, color: kPrimaryAlternateColor),
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Expanded(
                                   child: Text(
-                                    "View History",
+                                    "N${globals.numFormatter.format(widget.controller.balance)}",
                                     style: TextStyle(
-                                      color: kPrimaryColor,
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                        fontSize: 40,
+                                        color: kPrimaryAlternateColor,
+                                        fontWeight: FontWeight.bold),
                                   ),
                                 ),
-                              ),
-                              onTap: () {
-                                Navigate.to(context, TransactionDetails());
-                              },
-                            )
+                                InkWell(
+                                  child: Container(
+                                    height: 50,
+                                    width: 100,
+                                    decoration: BoxDecoration(
+                                        color: kPrimaryAlternateColor,
+                                        borderRadius:
+                                            BorderRadius.circular(10)),
+                                    child: Center(
+                                      child: Text(
+                                        "View History",
+                                        style: TextStyle(
+                                          color: kPrimaryColor,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  onTap: () {
+                                    Navigate.to(
+                                        context,
+                                        TransactionDetails(
+                                          controller: widget.controller,
+                                        ));
+                                  },
+                                )
+                              ],
+                            ),
                           ],
                         ),
-                      ],
+                      ),
                     ),
-                  ),
+                    WalletMenuTile(
+                      icon: LineAwesomeIcons.wallet,
+                      title: "Fund Wallet",
+                      onTap: () {},
+                    ),
+                    WalletMenuTile(
+                      icon: LineAwesomeIcons.receipt,
+                      title: "Voucher",
+                      onTap: () {},
+                    ),
+                    /* WalletMenuTile(
+                      icon: LineAwesomeIcons.address_book,
+                      title: "Bank Details",
+                      onTap: () {},
+                    ),*/
+                    WalletMenuTile(
+                      icon: LineAwesomeIcons.arrow_right,
+                      title: "Transfer",
+                      onTap: () {
+                        widget.controller.transfer(context, widget.controller);
+                      },
+                    ),
+                  ],
                 ),
-                WalletMenuTile(
-                  icon: LineAwesomeIcons.wallet,
-                  title: "Deposit",
-                  onTap: () {},
-                ),
-                WalletMenuTile(
-                  icon: LineAwesomeIcons.receipt,
-                  title: "Voucher",
-                  onTap: () {},
-                ),
-                WalletMenuTile(
-                  icon: LineAwesomeIcons.address_book,
-                  title: "Bank Details",
-                  onTap: () {},
-                ),
-              ],
+              ),
             ),
           ),
         ),

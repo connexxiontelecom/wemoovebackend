@@ -1,5 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
@@ -11,6 +15,7 @@ import 'package:wemoove/globals.dart' as globals;
 import 'package:wemoove/helper/BouncingTransition.dart';
 import 'package:wemoove/models/Ride.dart';
 import 'package:wemoove/size_config.dart';
+import 'package:wemoove/views/Rides/RidesScreen.dart';
 import 'package:wemoove/views/booking/BookingScreen.dart';
 
 class Body extends StatefulWidget {
@@ -23,9 +28,33 @@ class Body extends StatefulWidget {
 
 class _BodyState extends State<Body> {
   //final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  static final LatLng _kMapCenter = LatLng(globals.lat, globals.lng);
+  static final CameraPosition _kInitialPosition =
+      CameraPosition(target: _kMapCenter, zoom: 18.0, tilt: 0, bearing: 0);
+
+  Timer timer;
+  static const oneSec = const Duration(minutes: 3);
+  // final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    timer = new Timer.periodic(oneSec, (Timer t) {
+      widget.controller.CountAvailableRides();
+    });
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    timer.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
+    FocusNode focus = FocusNode();
     Size size = MediaQuery.of(context).size;
     BorderRadiusGeometry radius = BorderRadius.only(
       topLeft: Radius.circular(24.0),
@@ -67,7 +96,10 @@ class _BodyState extends State<Body> {
               height: 65,
               child: TextField(
                 onChanged: (value) => widget.controller.searchPlaces(value),
-                onTap: () => widget.controller.clearSelectedLocation(),
+                onTap: () {
+                  widget.controller.clearSelectedLocation();
+                },
+                focusNode: focus,
 
                 /* onTap: () async {
                   Prediction p = await PlacesAutocomplete.show(
@@ -110,6 +142,11 @@ class _BodyState extends State<Body> {
                               style: TextStyle(color: Colors.black),
                             ),
                             onTap: () {
+                              FocusScope.of(context).requestFocus(FocusNode());
+                              focus.unfocus();
+                              FocusManager.instance.primaryFocus.unfocus();
+                              SystemChannels.textInput
+                                  .invokeMethod('TextInput.hide');
                               widget.controller.setSelectedLocation(widget
                                   .controller.searchResults[index].placeId);
                               widget.controller.setSelectedDestination(widget
@@ -228,6 +265,12 @@ class _BodyState extends State<Body> {
       ),
       body: Stack(
         children: [
+          if (widget.controller.currentLocation != null)
+            GoogleMap(
+              initialCameraPosition: _kInitialPosition,
+              myLocationButtonEnabled: true,
+              myLocationEnabled: true,
+            ),
           Positioned(
             top: 0,
             left: 0,
@@ -276,7 +319,7 @@ class _BodyState extends State<Body> {
             left: 15,
             right: 15,
             child: Container(
-              height: getProportionateScreenHeight(120),
+              height: getProportionateScreenHeight(145),
               decoration: BoxDecoration(
                   boxShadow: [
                     BoxShadow(
@@ -292,57 +335,163 @@ class _BodyState extends State<Body> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Howdy,",
-                          style: TextStyle(fontSize: 18),
-                        ),
-                        Text(globals.user.fullName.split(" ")[0],
-                            style:
-                                SmallHeadingStyle //TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                            ),
-                        SizedBox(
-                          height: 15,
-                        ),
-                        Row(
-                          children: [
-                            Icon(LineAwesomeIcons.map_marker),
-                            Text(
-                              "Maitama,",
-                              style: TextStyle(fontSize: 18),
-                            ),
-                            SizedBox(
-                              width: 5,
-                            ),
-                            Text(
+                    Expanded(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Howdy,",
+                            style: TextStyle(fontSize: 18),
+                          ),
+                          Text(
+                              globals.user != null
+                                  ? globals.user.fullName.split(" ")[0]
+                                  : "",
+                              style:
+                                  SmallHeadingStyle //TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                              ),
+                          SizedBox(
+                            height: 15,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Icon(LineAwesomeIcons.map_marker),
+                              if (widget.controller.CurrentLocationArea != null)
+                                Expanded(
+                                    child: widget.controller.CurrentLocationArea
+                                                .split(",")
+                                                .length >
+                                            1
+                                        ? Text(
+                                            widget.controller
+                                                    .CurrentLocationArea
+                                                    .split(",")[0] +
+                                                " " +
+                                                widget.controller
+                                                    .CurrentLocationArea
+                                                    .split(",")[1],
+                                            style: TextStyle(fontSize: 18),
+                                          )
+                                        : widget.controller.CurrentLocationArea
+                                                    .split(",")
+                                                    .length >
+                                                0
+                                            ? Text(
+                                                widget.controller
+                                                    .CurrentLocationArea
+                                                    .split(",")[0],
+                                                style: TextStyle(fontSize: 18),
+                                              )
+                                            : Text(
+                                                widget.controller
+                                                    .CurrentLocationArea,
+                                                style: TextStyle(fontSize: 18),
+                                              )),
+                              SizedBox(
+                                width: 5,
+                              ),
+                              /* Text(
                               "Abuja",
                               style: TextStyle(fontSize: 18),
-                            ),
-                          ],
-                        )
-                      ],
+                            ),*/
+                            ],
+                          )
+                        ],
+                      ),
                     ),
                     CircleAvatar(
                         radius: 35,
                         //child: Image.asset("assets/images/sample.jpg")
-                        backgroundImage: globals.user.profileImage.isEmpty
-                            ? AssetImage("assets/images/portrait.jpg")
-                            : NetworkImage(globals.user.profileImage)),
-
-                    /*  CircleAvatar(
-                        radius: 35,
-                        //child: Image.asset("assets/images/sample.jpg")
-                        backgroundImage: AssetImage(
-                            "assets/images/portrait.jpg") //NetworkImage(globals.user.avatar)
-                        ),*/
+                        backgroundImage: globals.user != null &&
+                                globals.user.profileImage != null &&
+                                globals.user.profileImage.isNotEmpty
+                            ? NetworkImage(globals.user.profileImage)
+                            : AssetImage("assets/images/portrait.png")),
                   ],
                 ),
               ),
             ),
           ),
+          Positioned(
+            top: getProportionateScreenHeight(320),
+            left: 15,
+            right: 15,
+            child: Container(
+              height: getProportionateScreenHeight(140),
+              decoration: BoxDecoration(
+                  boxShadow: [
+                    BoxShadow(
+                      offset: Offset(0, 1),
+                      blurRadius: 5,
+                      color: Color(0xffb0cce1).withOpacity(0.9),
+                    ),
+                  ],
+                  color: kprimarywhite,
+                  borderRadius: BorderRadius.all(Radius.circular(10))),
+              child: Padding(
+                padding: const EdgeInsets.all(15.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Available Rides",
+                      style: TextStyle(
+                          fontSize: 17,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black),
+                    ),
+                    SizedBox(
+                      height: 15,
+                    ),
+                    Container(
+                      height: 1,
+                      width: double.infinity,
+                      color: kTextColor.withOpacity(0.3),
+                    ),
+                    SizedBox(
+                      height: 15,
+                    ),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        SummaryWidget(
+                          title: "Total Rides",
+                          value: "${widget.controller.TotalAvailableRides}",
+                          icon: LineAwesomeIcons.car,
+                        ),
+                        SizedBox(
+                          width: 25,
+                        ),
+                        GestureDetector(
+                          child: Container(
+                            height: 40,
+                            width: 100,
+                            padding: EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                color: Colors.grey.withOpacity(0.2)),
+                            child: Center(child: Text("view rides")),
+                          ),
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => RidesScreen()));
+                          },
+                        )
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+
           /* SizedBox.expand(
               child: DraggableScrollableSheet(
                 initialChildSize: 0.4,
@@ -600,9 +749,13 @@ class _RideCardState extends State<RideCard> {
                                   width: 5,
                                 ),
                                 Text(
-                                  widget.ride.takenSeats == widget.ride.capacity
+                                  widget.ride.takenSeats >= widget.ride.capacity
                                       ? "Full"
-                                      : "${widget.ride.capacity - widget.ride.takenSeats}",
+                                      : widget.ride.capacity -
+                                                  widget.ride.takenSeats <
+                                              0
+                                          ? "Full"
+                                          : "${widget.ride.capacity - widget.ride.takenSeats}",
                                   style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 20,
@@ -792,6 +945,50 @@ class _RideCardState extends State<RideCard> {
           ),
         ),
       ),
+    );
+  }
+}
+
+class SummaryWidget extends StatelessWidget {
+  final String value;
+  final String title;
+  final IconData icon;
+  const SummaryWidget({
+    Key key,
+    this.value,
+    this.title,
+    this.icon,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: TextStyle(fontSize: 18),
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Icon(
+              icon,
+              color: kPrimaryColor,
+              size: 30,
+            ),
+            SizedBox(
+              width: 5,
+            ),
+            Text(
+              value,
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+          ],
+        )
+      ],
     );
   }
 }

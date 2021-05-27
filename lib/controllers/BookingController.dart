@@ -17,7 +17,6 @@ class BookingController extends BaseViewModel {
   String pickup;
   int isPickupSelected = -1;
   BookingController(this.ride);
-
   int seats = 1;
 
   increment() {

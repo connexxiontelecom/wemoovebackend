@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
+import 'package:wemoove/controllers/RideHistoryController.dart';
 import 'package:wemoove/globals.dart' as globals;
 import 'package:wemoove/models/Boarded.dart';
 
@@ -9,8 +10,8 @@ import '../../../size_config.dart';
 
 class Body extends StatefulWidget {
   final Boarded boarded;
-
-  const Body({Key key, this.boarded}) : super(key: key);
+  final RideHistoryController controller;
+  const Body({Key key, this.boarded, this.controller}) : super(key: key);
   @override
   _BodyState createState() => _BodyState();
 }
@@ -18,7 +19,10 @@ class Body extends StatefulWidget {
 class _BodyState extends State<Body> {
   @override
   Widget build(BuildContext context) {
-    return Stack(
+    return /*ViewModelBuilder<RatingsController>.reactive(
+        viewModelBuilder: () => RatingsController(),
+        builder: (context, controller, child) =>*/
+        Stack(
       children: [
         Positioned(
           top: 0,
@@ -50,7 +54,7 @@ class _BodyState extends State<Body> {
                         ),
                         Text(
                           "Back",
-                          style: TextStyle(fontSize: 20, color: kPrimaryColor),
+                          style: TextStyle(fontSize: 18, color: kPrimaryColor),
                         )
                       ],
                     ),
@@ -64,7 +68,11 @@ class _BodyState extends State<Body> {
                   ),
                   CircleAvatar(
                     radius: 25,
-                    backgroundImage: NetworkImage(globals.user.profileImage),
+                    backgroundImage: globals.user != null &&
+                            globals.user.profileImage != null &&
+                            globals.user.profileImage.isNotEmpty
+                        ? NetworkImage(globals.user.profileImage)
+                        : AssetImage("assets/images/portrait.png"),
                   ),
                   /*Image.asset(
                     "assets/images/appbarlogo.png",
@@ -112,32 +120,38 @@ class _BodyState extends State<Body> {
                           color: kprimarywhite,
                           borderRadius: BorderRadius.all(Radius.circular(10))),
                       child: Details(
-                        boarded: widget.boarded,
+                        boarded: widget
+                            .controller.boarded[widget.controller.currentIndex],
+                        controller: widget.controller,
                       )),
                   SizedBox(
                     height: 20,
                   ),
-                  GestureDetector(
-                    child: Padding(
-                      padding: const EdgeInsets.all(0.0),
-                      child: Container(
-                          height: 60,
-                          //width: SizeConfig.screenWidth * 0.7,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            color: kPrimaryAlternateColor,
-                          ),
-                          child: Center(
-                              child: Icon(
-                            LineAwesomeIcons.arrow_left,
-                            size: 35,
-                            color: kPrimaryColor,
-                          ))),
+                  if (widget.controller.boarded[widget.controller.currentIndex]
+                          .isRated !=
+                      1)
+                    GestureDetector(
+                      child: Padding(
+                        padding: const EdgeInsets.all(0.0),
+                        child: Container(
+                            height: 60,
+                            //width: SizeConfig.screenWidth * 0.7,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              color: kPrimaryAlternateColor,
+                            ),
+                            child: Center(
+                                child: Text(
+                              "Submit",
+                              style:
+                                  TextStyle(color: kPrimaryColor, fontSize: 18),
+                            ))),
+                      ),
+                      onTap: () {
+                        //Navigator.pop(context);
+                        widget.controller.submit(context, widget.boarded);
+                      },
                     ),
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
-                  ),
                 ],
               ),
             ),
@@ -145,15 +159,30 @@ class _BodyState extends State<Body> {
         ),
       ],
     );
+    //);
   }
 }
 
-class Details extends StatelessWidget {
+class Details extends StatefulWidget {
   final Boarded boarded;
+  final RideHistoryController controller;
   const Details({
     Key key,
     this.boarded,
+    this.controller,
   }) : super(key: key);
+
+  @override
+  _DetailsState createState() => _DetailsState();
+}
+
+class _DetailsState extends State<Details> {
+  int selectedRating = -1;
+  updateSelectedRating(int rating) {
+    setState(() {
+      selectedRating = rating;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -171,7 +200,7 @@ class Details extends StatelessWidget {
                 color: kPrimaryAlternateColor),
           ),
           TimeLine(
-            boarded: boarded,
+            boarded: widget.boarded,
           ),
           SizedBox(
             height: 30,
@@ -190,7 +219,11 @@ class Details extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 50.0,
-                backgroundImage: NetworkImage(boarded.driver.profileImage),
+                backgroundImage: NetworkImage(widget
+                    .controller
+                    .boarded[widget.controller.currentIndex]
+                    .driver
+                    .profileImage),
                 backgroundColor: Colors.transparent,
               ),
               SizedBox(
@@ -201,7 +234,7 @@ class Details extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "${boarded.driver.fullName}",
+                    "${widget.controller.boarded[widget.controller.currentIndex].driver.fullName}",
                     style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: kPrimaryAlternateColor,
@@ -214,7 +247,8 @@ class Details extends StatelessWidget {
                     height: 10,
                   ),
                   Text(
-                    "${boarded.driver.plateNumber}".toUpperCase(),
+                    "${widget.controller.boarded[widget.controller.currentIndex].driver.plateNumber}"
+                        .toUpperCase(),
                     style: TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
@@ -230,7 +264,7 @@ class Details extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "${boarded.driver.brand} ${boarded.driver.model}:",
+                            "${widget.controller.boarded[widget.controller.currentIndex].driver.brand} ${widget.controller.boarded[widget.controller.currentIndex].driver.model}:",
                             style: TextStyle(fontSize: 18),
                           ),
                         ],
@@ -243,7 +277,7 @@ class Details extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "${boarded.driver.colour}",
+                            "${widget.controller.boarded[widget.controller.currentIndex].driver.colour}",
                             style: TextStyle(
                                 color: kPrimaryAlternateColor, fontSize: 18),
                           ),
@@ -280,7 +314,7 @@ class Details extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    "${boarded.seats} seat(s)",
+                    "${widget.controller.boarded[widget.controller.currentIndex].seats} seat(s)",
                     style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -297,7 +331,7 @@ class Details extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    "N${boarded.amount}",
+                    "N${widget.controller.boarded[widget.controller.currentIndex].amount}",
                     style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -349,7 +383,11 @@ class Details extends StatelessWidget {
                     width: 10,
                   ),
                   Text(
-                    boarded.status == 4 ? "Completed" : "Cancelled",
+                    widget.controller.boarded[widget.controller.currentIndex]
+                                .status ==
+                            4
+                        ? "Completed"
+                        : "Cancelled",
                     style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -360,19 +398,56 @@ class Details extends StatelessWidget {
             ],
           ),
           SizedBox(height: 20),
-          Row(
-            children: [
-              Text(
-                "Your Rating",
-                style: TextStyle(fontSize: 18, color: kPrimaryAlternateColor),
-              ),
-              SizedBox(
-                width: 10,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+          if (widget
+                  .controller.boarded[widget.controller.currentIndex].isRated !=
+              1)
+            Row(
+              children: [
+                Text(
+                  "Your Rating",
+                  style: TextStyle(fontSize: 18, color: kPrimaryAlternateColor),
+                ),
+                SizedBox(
+                  width: 10,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: List.generate(5, (index) {
+                    if (selectedRating >= index) {
+                      return GestureDetector(
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 10),
+                          child: Icon(
+                            LineAwesomeIcons.star_1,
+                            size: getProportionateScreenHeight(25),
+                            color: kPrimaryColor,
+                          ),
+                        ),
+                        onTap: () {
+                          updateSelectedRating(index);
+                          widget.controller.setSelectedRating(index + 1);
+                        },
+                      );
+                    } else {
+                      return GestureDetector(
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 10),
+                          child: Icon(
+                            LineAwesomeIcons.star,
+                            size: getProportionateScreenHeight(25),
+                            color: kPrimaryColor,
+                          ),
+                        ),
+                        onTap: () {
+                          updateSelectedRating(index);
+                          widget.controller.setSelectedRating(index + 1);
+                        },
+                      );
+                    }
+                  }),
+
+                  /* [
                   Icon(
                     LineAwesomeIcons.star_1,
                     size: getProportionateScreenHeight(20),
@@ -398,13 +473,17 @@ class Details extends StatelessWidget {
                     size: getProportionateScreenHeight(20),
                     color: kPrimaryColor,
                   ),
-                ],
-              ),
-            ],
-          ),
-          SizedBox(
-            height: 30,
-          ),
+
+                ],*/
+                ),
+              ],
+            ),
+          if (widget
+                  .controller.boarded[widget.controller.currentIndex].isRated !=
+              1)
+            SizedBox(
+              height: 30,
+            ),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Container(
@@ -416,34 +495,41 @@ class Details extends StatelessWidget {
           SizedBox(
             height: 20,
           ),
-          Text("Additional feedback",
-              style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: kPrimaryAlternateColor)),
+          if (widget
+                  .controller.boarded[widget.controller.currentIndex].isRated !=
+              1)
+            Text("Additional feedback",
+                style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: kPrimaryAlternateColor)),
           SizedBox(
             height: getProportionateScreenHeight(10),
           ),
           SizedBox(
             height: 20,
           ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Container(
-              height: 200,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                  color: kprimarywhiteshade,
-                  borderRadius: BorderRadius.circular(10)),
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextFormField(
-                  maxLines: null,
-                  decoration: getInputDecoration("Leave a comment"),
+          if (widget
+                  .controller.boarded[widget.controller.currentIndex].isRated !=
+              1)
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                height: 200,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                    color: kprimarywhiteshade,
+                    borderRadius: BorderRadius.circular(10)),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextFormField(
+                    maxLines: null,
+                    controller: widget.controller.commentController,
+                    decoration: getInputDecoration("Leave a comment"),
+                  ),
                 ),
               ),
             ),
-          ),
         ],
       ),
     );
@@ -540,7 +626,7 @@ class _TimeLineState extends State<TimeLine> {
                             /* CircleAvatar(
                               radius: 25.0,
                               backgroundImage:
-                                  AssetImage("assets/images/portrait.jpg"),
+                                  AssetImage("assets/images/portrait.png"),
                               backgroundColor: Colors.transparent,
                             ),*/
                             SizedBox(

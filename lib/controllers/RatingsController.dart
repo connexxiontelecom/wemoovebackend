@@ -7,37 +7,12 @@ import 'package:wemoove/components/ValidationErrorModal.dart';
 import 'package:wemoove/components/successModal.dart';
 import 'package:wemoove/globals.dart' as globals;
 import 'package:wemoove/models/Boarded.dart';
-import 'package:wemoove/models/Driven.dart';
 import 'package:wemoove/models/request_errors.dart';
 import 'package:wemoove/services/UserServices.dart';
 
-class RideHistoryController extends BaseViewModel {
-  List<Driven> drivens = [];
-  List<Boarded> boarded = [];
-  int currentIndex = -1;
+class RatingsController extends BaseViewModel {
   int Rating = -1;
   TextEditingController commentController = TextEditingController();
-
-  void fetchridehistory() async {
-    drivens = globals.drivens;
-    boarded = globals.boarded;
-    await UserServices.ridehistory(globals.token);
-    drivens = globals.drivens;
-    boarded = globals.boarded;
-    print(drivens);
-    print(boarded);
-    notifyListeners();
-  }
-
-  RideHistoryController() {
-    fetchridehistory();
-  }
-
-  //to know the current ride selected
-
-  setCurrentRideIndex(int index) {
-    this.currentIndex = index;
-  }
 
   setSelectedRating(int index) {
     this.Rating = index;
@@ -82,10 +57,6 @@ class RideHistoryController extends BaseViewModel {
           builder: (_) => successProcessingModal(
                 sucessmsg: "Response Saved",
               ));
-      globals.boarded[currentIndex].isRated = 1;
-      this.boarded[currentIndex].isRated = 1;
-      this.boarded = globals.boarded;
-      notifyListeners();
     } else if (result == RequestError.CONNECTION_ERROR) {
       Navigator.pop(context);
       showDialog(

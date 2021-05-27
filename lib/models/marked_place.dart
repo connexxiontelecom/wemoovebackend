@@ -1,6 +1,6 @@
 class MarkedPlace {
   //Location points;
-  String place;
+  String place = "ChIJL3W5c0IKThAROqEfOKvXokE";
   String name;
 
   MarkedPlace({this.name, this.place /*this.points*/});
@@ -17,7 +17,8 @@ class MarkedPlace {
     /*if (this.points != null) {
       data['points'] = this.points.toJson();
     }*/
-    data['place'] = this.place;
+    data['place'] =
+        this.place != null ? this.place : "ChIJL3W5c0IKThAROqEfOKvXokE";
     data['name'] = this.name;
     return data;
   }

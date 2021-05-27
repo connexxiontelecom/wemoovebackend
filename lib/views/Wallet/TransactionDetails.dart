@@ -1,14 +1,32 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
+import 'package:wemoove/controllers/WalletController.dart';
 import 'package:wemoove/globals.dart' as globals;
 
 import '../../constants.dart';
 import '../../size_config.dart';
 
-class TransactionDetails extends StatelessWidget {
+class TransactionDetails extends StatefulWidget {
   static String routeName = "/wallet";
+  final WalletController controller;
+
+  const TransactionDetails({Key key, this.controller}) : super(key: key);
+
+  @override
+  _TransactionDetailsState createState() => _TransactionDetailsState();
+}
+
+class _TransactionDetailsState extends State<TransactionDetails> {
+  String parseDate(String date) {
+    DateTime parsedDate = DateTime.tryParse(date);
+    return formatDate(parsedDate);
+  }
+
+  String formatDate(DateTime date) => new DateFormat("d MMM y").format(date);
+
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
@@ -67,9 +85,11 @@ class TransactionDetails extends StatelessWidget {
                   CircleAvatar(
                       radius: 25,
                       //child: Image.asset("assets/images/sample.jpg")
-                      backgroundImage: globals.user.profileImage.isEmpty
-                          ? AssetImage("assets/images/portrait.jpg")
-                          : NetworkImage(globals.user.profileImage)),
+                      backgroundImage: globals.user != null &&
+                              globals.user.profileImage != null &&
+                              globals.user.profileImage.isNotEmpty
+                          ? NetworkImage(globals.user.profileImage)
+                          : AssetImage("assets/images/portrait.png")),
                 ],
               ),
             ),
@@ -80,47 +100,57 @@ class TransactionDetails extends StatelessWidget {
           left: 5,
           right: 5,
           child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 10, right: 10, bottom: 30),
-                child: Container(
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    border: Border(
-                      bottom: BorderSide(
-                          width: 1.0, color: Colors.grey.withOpacity(0.5)),
-                    ),
-                    color: Colors.white,
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "N1,000",
-                        style: TextStyle(
-                            color: kPrimaryAlternateColor,
-                            fontSize: 25,
-                            fontWeight: FontWeight.bold),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 10),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text("Initial Credit Bonus"),
-                            Text("April 4, 2020")
-                          ],
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: List.generate(
+                  widget.controller.walletHistories.length,
+                  (index) => Container(
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                                width: 1.0,
+                                color: Colors.grey.withOpacity(0.5)),
+                          ),
+                          color: Colors.white,
                         ),
-                      )
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        )
+                        child: Padding(
+                          padding: const EdgeInsets.only(
+                              left: 10, right: 10, top: 10),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                widget.controller.walletHistories[index]
+                                            .credit >
+                                        0
+                                    ? "${widget.controller.walletHistories[index].credit.toDouble()}"
+                                    : "${widget.controller.walletHistories[index].debit.toDouble()}",
+                                style: TextStyle(
+                                    color: kPrimaryAlternateColor,
+                                    fontSize: 25,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 10),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(widget.controller
+                                        .walletHistories[index].narration),
+                                    Text(parseDate(widget.controller
+                                        .walletHistories[index].createdAt))
+                                  ],
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ))),
+        ),
       ],
     ));
   }

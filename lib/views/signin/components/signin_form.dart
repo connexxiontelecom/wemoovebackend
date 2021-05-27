@@ -142,7 +142,7 @@ class _SignFormState extends State<SignForm> {
   TextFormField buildEmailFormField({TextEditingController controller}) {
     return TextFormField(
       controller: controller,
-      keyboardType: TextInputType.emailAddress,
+      keyboardType: TextInputType.text,
       onSaved: (newValue) => email = newValue,
       onChanged: (value) {
         if (value.isNotEmpty) {
@@ -156,15 +156,16 @@ class _SignFormState extends State<SignForm> {
         if (value.isEmpty) {
           addError(error: kEmailNullError);
           return "";
-        } else if (!emailValidatorRegExp.hasMatch(value)) {
+        }
+        /*else if (!emailValidatorRegExp.hasMatch(value)) {
           addError(error: kInvalidEmailError);
           return "";
-        }
+        }*/
         return null;
       },
       decoration: InputDecoration(
-          labelText: "Email",
-          hintText: "Enter your email",
+          labelText: "Email / Phone Number",
+          hintText: "Email or Phone Number",
           // If  you are using latest version of flutter then lable text and hint text shown like this
           // if you r using flutter less then 1.20.* then maybe this is not working properly
           floatingLabelBehavior: FloatingLabelBehavior.always,

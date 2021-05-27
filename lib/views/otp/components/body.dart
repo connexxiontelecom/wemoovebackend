@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:overlay_support/overlay_support.dart';
 import 'package:read_otp_plugin/read_otp_plugin.dart';
 import 'package:stacked/stacked.dart';
 import 'package:wemoove/controllers/OtpController.dart';
@@ -83,15 +84,17 @@ class _BodyState extends State<Body> {
                       OtpForm(
                         controller: controller,
                       ),
-                      Text(
+                      /* Text(
                         _textContent,
                         style: TextStyle(fontSize: 20),
-                      ),
+                      ),*/
                       SizedBox(height: SizeConfig.screenHeight * 0.1),
                       GestureDetector(
                         onTap: () {
                           controller.resendOtpValue();
                           _startListening();
+                          toast("OTP code sent",
+                              duration: Duration(seconds: 5));
                         },
                         child: Text(
                           "Resend OTP Code",

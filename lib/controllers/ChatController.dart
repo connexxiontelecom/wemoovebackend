@@ -29,6 +29,16 @@ class ChatController extends BaseViewModel {
     this.recipient = recipient;
     fetchChats();
     markChatAsRead();
+    //notifyListeners();
+  }
+
+  destroy() {
+    channel = null;
+    this.recipient = null;
+    this.rideId = null;
+    realtimeInstance = null;
+    chatChannel.detach();
+    this.messages.clear();
   }
 
   String parseDate(String date) {
@@ -117,9 +127,11 @@ class ChatController extends BaseViewModel {
     messageStream.listen((ably.Message message) {
       Message newChatMsg;
       messageData = message.data;
-
-      if (messageData["recipient"].toInt() == globals.user.id ||
-          messageData["senderId"].toInt() == globals.user.id) {
+      if ((messageData["recipient"].toInt() == globals.user.id &&
+              messageData["senderId"].toInt() == recipient) ||
+          (messageData["senderId"].toInt() == globals.user.id &&
+                  messageData["recipient"].toInt() == recipient) &&
+              messageData != null) {
         print("New message arrived ${message.data}");
         var hoursIn12HrFormat = message.timestamp.hour > 12
             ? (message.timestamp.hour - 12)
@@ -143,6 +155,7 @@ class ChatController extends BaseViewModel {
           unread: false,
         );
         messages.add(newChatMsg);
+        messageData = null;
         notifyListeners();
         markChatAsRead();
       }

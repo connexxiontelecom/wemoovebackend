@@ -75,13 +75,20 @@ class _BodyState extends State<Body> {
                                   child: CircleAvatar(
                                     radius: 50,
                                     backgroundColor: kPrimaryColor,
-                                    backgroundImage:
-                                        controller.profileImage != null
-                                            ? Image.file(
-                                                controller.profileImage,
-                                              ).image
-                                            : NetworkImage(
-                                                globals.user.profileImage),
+                                    backgroundImage: controller.profileImage !=
+                                            null
+                                        ? Image.file(
+                                            controller.profileImage,
+                                          ).image
+                                        : globals.user != null &&
+                                                globals.user.profileImage !=
+                                                    null &&
+                                                globals.user.profileImage
+                                                    .isNotEmpty
+                                            ? NetworkImage(
+                                                globals.user.profileImage)
+                                            : AssetImage(
+                                                "assets/images/portrait.png"),
                                   ),
                                 ),
                                 Positioned(
@@ -118,7 +125,7 @@ class _BodyState extends State<Body> {
                                 radius: 48,
                                 backgroundColor: kPrimaryColor,
                                 backgroundImage:
-                                    AssetImage("assets/images/portrait.jpg"),
+                                    AssetImage("assets/images/portrait.png"),
                               ),
                             ),
                           ),*/

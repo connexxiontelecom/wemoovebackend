@@ -120,7 +120,12 @@ class CarSignUpController extends BaseViewModel {
   }
 
   RegisterVehicle(BuildContext context) async {
+    String profileName;
+    if (profileImage != null) {
+      profileName = profileImage.path.split('/').last;
+    }
     String fileName = file.path.split('/').last;
+    String carPicture = capturedPicture.split('/').last;
     FormData formData = FormData.fromMap({
       'brand': brandController.text,
       'model': modelController.text,
@@ -129,10 +134,11 @@ class CarSignUpController extends BaseViewModel {
       'capacity': capacityController.text,
       'plate_number': plateNumberController.text,
       'license': await MultipartFile.fromFile(file.path, filename: fileName),
-      'profileImage':
-          await MultipartFile.fromFile(profileImage.path, filename: fileName),
+      if (profileImage != null)
+        'profileImage': await MultipartFile.fromFile(profileImage.path,
+            filename: profileName),
       'carpicture':
-          await MultipartFile.fromFile(capturedPicture, filename: fileName),
+          await MultipartFile.fromFile(capturedPicture, filename: carPicture),
     });
 
     showDialog(

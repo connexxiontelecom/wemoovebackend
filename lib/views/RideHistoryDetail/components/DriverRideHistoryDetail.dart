@@ -65,7 +65,11 @@ class _BodyState extends State<DriverRideHistoryDetail> {
                   ),
                   CircleAvatar(
                     radius: 25,
-                    backgroundImage: NetworkImage(globals.user.profileImage),
+                    backgroundImage: globals.user != null &&
+                            globals.user.profileImage != null &&
+                            globals.user.profileImage.isNotEmpty
+                        ? NetworkImage(globals.user.profileImage)
+                        : AssetImage("assets/images/portrait.png"),
                   ),
                   /*Image.asset(
                     "assets/images/appbarlogo.png",
@@ -478,7 +482,7 @@ class _TimeLineState extends State<TimeLine> {
                             /* CircleAvatar(
                               radius: 25.0,
                               backgroundImage:
-                                  AssetImage("assets/images/portrait.jpg"),
+                                  AssetImage("assets/images/portrait.png"),
                               backgroundColor: Colors.transparent,
                             ),*/
                             SizedBox(

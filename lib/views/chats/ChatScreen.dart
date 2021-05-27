@@ -25,9 +25,9 @@ class _ChatScreenState extends State<ChatScreen> {
     return /*ViewModelBuilder<ChatController>.reactive(
         viewModelBuilder: () => ChatController(),
         builder: (context, controller, child) => */
-        Scaffold(
-            body: Body(
-                //controller: controller,
-                )); //);
+      Scaffold(
+          body: Body(
+            //controller: controller,
+          )); //);
   }
 }

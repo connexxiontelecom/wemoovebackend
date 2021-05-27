@@ -6,8 +6,9 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:wemoove/components/CustomButton.dart';
 import 'package:wemoove/components/ExpandableSection.dart';
 import 'package:wemoove/controllers/ReservationController.dart';
+import 'package:wemoove/globals.dart' as globals;
 import 'package:wemoove/helper/BouncingTransition.dart';
-import 'package:wemoove/views/chat/components/chatBody.dart';
+import 'package:wemoove/views/chats/components/chatBody.dart';
 
 import '../../../constants.dart';
 import '../../../size_config.dart';
@@ -105,17 +106,17 @@ class _BodyState extends State<Body> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    "Good Afternoon,",
+                                    "Hi,",
                                     style: TextStyle(fontSize: 18),
                                   ),
-                                  Text("Jason",
+                                  Text(globals.user.fullName.split(",")[0],
                                       style:
                                           SmallHeadingStyle //TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                                       ),
                                   SizedBox(
                                     height: 15,
                                   ),
-                                  Row(
+                                  /* Row(
                                     children: [
                                       Icon(LineAwesomeIcons.map_marker),
                                       Text(
@@ -130,15 +131,18 @@ class _BodyState extends State<Body> {
                                         style: TextStyle(fontSize: 18),
                                       ),
                                     ],
-                                  )
+                                  )*/
                                 ],
                               ),
                               CircleAvatar(
                                   radius: 35,
                                   //child: Image.asset("assets/images/sample.jpg")
-                                  backgroundImage: AssetImage(
-                                      "assets/images/portrait.jpg") //NetworkImage(globals.user.avatar)
-                                  ),
+                                  backgroundImage: globals.user != null &&
+                                          globals.user.profileImage != null &&
+                                          globals.user.profileImage.isNotEmpty
+                                      ? NetworkImage(globals.user.profileImage)
+                                      : AssetImage(
+                                          "assets/images/portrait.png")),
                             ],
                           ),
                         ),
@@ -201,18 +205,42 @@ class _BodyState extends State<Body> {
                             InkWell(
                               child: Column(
                                 children: [
-                                  Container(
-                                    height: 50,
-                                    width: 50,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(50),
-                                      color: kPrimaryAlternateColor,
-                                    ),
-                                    child: Icon(
-                                      LineAwesomeIcons.comments,
-                                      color: kPrimaryColor,
-                                      size: 30,
-                                    ),
+                                  Stack(
+                                    children: [
+                                      Container(
+                                        height: 50,
+                                        width: 50,
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(50),
+                                          color: kPrimaryAlternateColor,
+                                        ),
+                                        child: Icon(
+                                          LineAwesomeIcons.comments,
+                                          color: kPrimaryColor,
+                                          size: 30,
+                                        ),
+                                      ),
+                                      if (widget.controller.unreads != null &&
+                                          widget.controller.unreads.length >
+                                              0 &&
+                                          widget.controller.unreads[0] != 0)
+                                        Container(
+                                          height: 25,
+                                          width: 25,
+                                          decoration: BoxDecoration(
+                                              color: Colors.red,
+                                              borderRadius:
+                                                  BorderRadius.circular(20)),
+                                          child: Center(
+                                            child: Text(
+                                              "${widget.controller.unreads[0]}",
+                                              style: TextStyle(
+                                                  color: Colors.white),
+                                            ),
+                                          ),
+                                        )
+                                    ],
                                   ),
                                   SizedBox(
                                     height: 8,
@@ -227,8 +255,12 @@ class _BodyState extends State<Body> {
                                 Navigate.to(
                                     context,
                                     ChatBody(
+                                        name: widget.controller.reservation
+                                            .driver.fullName,
                                         rideId: widget
                                             .controller.reservation.rideId,
+                                        picture: widget.controller.reservation
+                                            .driver.profileImage,
                                         recipient: widget.controller.reservation
                                             .driver.driverId));
                               },
@@ -838,7 +870,7 @@ class _TimeLineState extends State<TimeLine> {
                             /* CircleAvatar(
                               radius: 25.0,
                               backgroundImage:
-                                  AssetImage("assets/images/portrait.jpg"),
+                                  AssetImage("assets/images/portrait.png"),
                               backgroundColor: Colors.transparent,
                             ),*/
                             SizedBox(

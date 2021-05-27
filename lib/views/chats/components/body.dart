@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:wemoove/controllers/ChatController.dart';
 import 'package:wemoove/helper/BouncingTransition.dart';
-import 'package:wemoove/views/chat/components/chatBody.dart';
+import 'package:wemoove/views/chats/components/chatBody.dart';
 
 import '../../../constants.dart';
 import '../../../size_config.dart';

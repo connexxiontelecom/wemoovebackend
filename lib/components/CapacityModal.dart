@@ -2,12 +2,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:wemoove/constants.dart';
-import 'package:wemoove/controllers/CarSignUpController.dart';
 
 import 'CustomButton.dart';
 
 class CapacityModal extends StatefulWidget {
-  CarSignUpController controller;
+  dynamic controller;
 
   CapacityModal({Key key, this.controller}) : super(key: key);
 

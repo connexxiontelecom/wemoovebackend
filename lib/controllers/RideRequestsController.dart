@@ -78,6 +78,7 @@ class RideRequestController extends BaseViewModel {
     }
   }
 
+//marks the index that represents a user's unread as Zero
   void updateUnread(int index) {
     unreads[index] = 0;
     notifyListeners();
@@ -96,12 +97,14 @@ class RideRequestController extends BaseViewModel {
     if (requests != null && requests.length > 0) {
       for (Request request in requests) {
         ids.add(request.passengerId);
+        print(request.passengerId);
       }
+      var data = {"ids": ids.toList(), "ride_id": globals.postedRide};
+      dynamic response = await UserServices.fetchunread(data, globals.token);
+      print(response);
+      unreads = response;
+      notifyListeners();
     }
-    var data = {"ids": ids.toList()};
-    dynamic response = await UserServices.fetchunread(data, globals.token);
-    unreads = response;
-    notifyListeners();
     // print(response);
   }
 
@@ -230,6 +233,56 @@ class RideRequestController extends BaseViewModel {
           context: context,
           builder: (_) => successProcessingModal(
                 sucessmsg: "Ride Canceled!",
+              ));
+      Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => SearchScreen()),
+          (Route<dynamic> route) => false);
+      // Navigate.to(context, SearchScreen());
+    } else if (response == RequestError.CONNECTION_ERROR) {
+      Navigator.pop(context);
+      showDialog(
+          barrierDismissible: false,
+          context: context,
+          builder: (_) => errorProcessingModal(
+                error_message: "Connection error",
+              ));
+    } else {
+      Navigator.pop(context);
+      String msg = "Error Processing Request";
+      showDialog(
+          barrierDismissible: false,
+          context: context,
+          builder: (_) => errorProcessingModal(
+                error_message: msg,
+              ));
+    }
+  }
+
+  void Finish(BuildContext context) async {
+    //print(id);
+    var data = {
+      "id": globals.user.id,
+    };
+    showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (_) => ProcessModal(
+              title: "Please Wait",
+            ));
+
+    dynamic response = await UserServices.FinishRide(data, globals.token);
+
+    if (response == "success") {
+      Navigator.pop(context);
+      var data = {
+        "id": globals.user.id,
+      };
+
+      showDialog(
+          barrierDismissible: false,
+          context: context,
+          builder: (_) => successProcessingModal(
+                sucessmsg: "Ride is Finished",
               ));
       Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => SearchScreen()),

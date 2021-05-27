@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:wemoove/constants.dart';
 import 'package:wemoove/controllers/SearchScreenController.dart';
@@ -21,6 +22,12 @@ class DriverBody extends StatefulWidget {
 
 class _DriverBodyState extends State<DriverBody> {
   // final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+
+  static final LatLng _kMapCenter = LatLng(globals.lat, globals.lng);
+
+  static final CameraPosition _kInitialPosition =
+      CameraPosition(target: _kMapCenter, zoom: 18.0, tilt: 0, bearing: 0);
+
   @override
   Widget build(BuildContext context) {
     BorderRadiusGeometry radius = BorderRadius.only(
@@ -31,6 +38,12 @@ class _DriverBodyState extends State<DriverBody> {
     //return SizedBox.expand(
     return Stack(
       children: [
+        if (widget.controller.currentLocation != null)
+          GoogleMap(
+            initialCameraPosition: _kInitialPosition,
+            myLocationButtonEnabled: true,
+            myLocationEnabled: true,
+          ),
         Positioned(
           top: 0,
           left: 0,
@@ -78,7 +91,7 @@ class _DriverBodyState extends State<DriverBody> {
           left: 15,
           right: 15,
           child: Container(
-            height: getProportionateScreenHeight(120),
+            height: getProportionateScreenHeight(145),
             decoration: BoxDecoration(
                 boxShadow: [
                   BoxShadow(
@@ -94,48 +107,80 @@ class _DriverBodyState extends State<DriverBody> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Welcome back!,",
-                        style: TextStyle(fontSize: 18),
-                      ),
-                      Text(
-                          globals.user != null
-                              ? globals.user.fullName.split(" ")[0]
-                              : "",
-                          style:
-                              SmallHeadingStyle //TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                          ),
-                      SizedBox(
-                        height: 15,
-                      ),
-                      Row(
-                        children: [
-                          Icon(LineAwesomeIcons.map_marker),
-                          Text(
-                            "Maitama,",
-                            style: TextStyle(fontSize: 18),
-                          ),
-                          SizedBox(
-                            width: 5,
-                          ),
-                          Text(
-                            "Abuja",
-                            style: TextStyle(fontSize: 18),
-                          ),
-                        ],
-                      )
-                    ],
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Welcome back!,",
+                          style: TextStyle(fontSize: 18),
+                        ),
+                        Text(
+                            globals.user != null
+                                ? globals.user.fullName.split(" ")[0]
+                                : "",
+                            style:
+                                SmallHeadingStyle //TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                            ),
+                        SizedBox(
+                          height: 15,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Icon(LineAwesomeIcons.map_marker),
+                            if (widget.controller.CurrentLocationArea != null)
+                              Expanded(
+                                  child: widget.controller.CurrentLocationArea
+                                              .split(",")
+                                              .length >
+                                          1
+                                      ? Text(
+                                          widget.controller.CurrentLocationArea
+                                                  .split(",")[0] +
+                                              " " +
+                                              widget.controller
+                                                  .CurrentLocationArea
+                                                  .split(",")[1],
+                                          style: TextStyle(fontSize: 18),
+                                        )
+                                      : widget.controller.CurrentLocationArea
+                                                  .split(",")
+                                                  .length >
+                                              0
+                                          ? Text(
+                                              widget.controller
+                                                  .CurrentLocationArea
+                                                  .split(",")[0],
+                                              style: TextStyle(fontSize: 18),
+                                            )
+                                          : Text(
+                                              widget.controller
+                                                  .CurrentLocationArea,
+                                              style: TextStyle(fontSize: 18),
+                                            )),
+                            SizedBox(
+                              width: 5,
+                            ),
+                            /* Text(
+                              "Abuja",
+                              style: TextStyle(fontSize: 18),
+                            ),*/
+                          ],
+                        )
+                      ],
+                    ),
                   ),
                   CircleAvatar(
                       radius: 35,
                       //child: Image.asset("assets/images/sample.jpg")
-                      backgroundImage: globals.user.profileImage.isEmpty
-                          ? AssetImage("assets/images/portrait.jpg")
-                          : NetworkImage(globals.user.profileImage)),
+                      backgroundImage: globals.user != null &&
+                              globals.user.profileImage != null &&
+                              globals.user.profileImage.isNotEmpty
+                          ? NetworkImage(globals.user.profileImage)
+                          : AssetImage("assets/images/portrait.png")),
                 ],
               ),
             ),
@@ -432,9 +477,11 @@ class RIdeCard extends StatelessWidget {
                       CircleAvatar(
                           radius: 25,
                           //child: Image.asset("assets/images/sample.jpg")
-                          backgroundImage: globals.user.profileImage.isEmpty
-                              ? AssetImage("assets/images/portrait.jpg")
-                              : NetworkImage(globals.user.profileImage)),
+                          backgroundImage: globals.user != null &&
+                                  globals.user.profileImage != null &&
+                                  globals.user.profileImage.isNotEmpty
+                              ? NetworkImage(globals.user.profileImage)
+                              : AssetImage("assets/images/portrait.png")),
                       SizedBox(
                         width: 10,
                       ),

@@ -1,13 +1,20 @@
+import 'package:flutter/services.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:hive/hive.dart';
+import 'package:intl/intl.dart';
+import 'package:wemoove/controllers/ReservationController.dart';
+import 'package:wemoove/controllers/RideRequestsController.dart';
 import 'package:wemoove/models/Boarded.dart';
 
 import 'models/Driven.dart';
 import 'models/DriverDetail.dart';
+import 'models/WalletBalance.dart';
 import 'models/user.dart';
 
 bool isDriverMode = false;
-String baseUrl =
-    "http://192.168.88.92:8001/api"; //"https://wemove.cnx247.com/api";
+final numFormatter = new NumberFormat("#,##0.00", "en_US");
+String baseUrl = "https://wemove.cnx247.com/api";
+//"https://wemove.cnx247.com/api"; //"http://192.168.88.108:8001/api";
 User user;
 String token;
 String otp;
@@ -21,3 +28,12 @@ DriverDetails details;
 Box box;
 List<Driven> drivens = [];
 List<Boarded> boarded = [];
+double Balance = 0.0;
+double percentage = 5.0;
+List<WalletHistory> walletHistories = [];
+
+const MethodChannel platform = MethodChannel('dexterx.dev/wemoove');
+FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
+RideRequestController rideRequestController; // = RideRequestController();
+ReservationController reservationController; // = ReservationController();

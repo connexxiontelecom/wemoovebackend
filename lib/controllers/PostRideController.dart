@@ -11,10 +11,14 @@ import 'package:wemoove/components/AddDestinationModal.dart';
 import 'package:wemoove/components/AddPickupModal.dart';
 import 'package:wemoove/components/ErrorModal.dart';
 import 'package:wemoove/components/ProcessModal.dart';
+import 'package:wemoove/components/SelectCarModal.dart';
 import 'package:wemoove/components/ValidationErrorModal.dart';
+import 'package:wemoove/components/WalletBalanceError.dart';
 import 'package:wemoove/components/successModal.dart';
+import 'package:wemoove/controllers/ScheduleAlarm.dart';
 import 'package:wemoove/globals.dart' as globals;
 import 'package:wemoove/helper/BouncingTransition.dart';
+import 'package:wemoove/models/Vehicle.dart';
 import 'package:wemoove/models/marked_place.dart';
 import 'package:wemoove/models/place.dart';
 import 'package:wemoove/models/place_search.dart';
@@ -30,6 +34,8 @@ class PostRideController extends BaseViewModel {
   TextEditingController pickupController = new TextEditingController();
   TextEditingController destinationController = new TextEditingController();
   TextEditingController timeController = new TextEditingController();
+  Vehicles car = globals.user.vehicles[0];
+  String SelectedCar;
 
   final geoLocatorService = GeolocatorService();
   final placesService = PlacesService();
@@ -38,14 +44,14 @@ class PostRideController extends BaseViewModel {
   List<String> pickups = [];
   List<MarkedPlace> locations = [];
   String destination = "";
-  List<String> knockoffs = [];
+  List<String> dropoffs = [];
   int seats = 3;
   bool airConditioner = false;
   String fare = "";
   String selectedPlaceId;
-
+  int isCarSelected = -1;
   String timerror = "at least 1 hour before departure";
-
+  ScheduleAlarm alarm = ScheduleAlarm();
   String _hour, _minute, _time;
   TimeOfDay selectedTime = TimeOfDay(hour: 00, minute: 00);
 
@@ -58,6 +64,20 @@ class PostRideController extends BaseViewModel {
   String placeType;
   List<Place> placeResults;
   List<Marker> markers = [];
+
+  int SelectedCarId;
+
+  PostRideController() {
+    print(globals.user.vehicles.length.toString());
+    if (globals.user.vehicles.length == 1) {
+      SelectedCar = car.brand + " " + car.model;
+      SelectedCarId = globals.user.vehicles[0].id;
+    }
+
+    TimeOfDay now = TimeOfDay.now();
+    now = now.replacing(hour: now.hour + 1);
+    timeController.text = formatTimeOfDay(now);
+  }
 
   Future<Null> selectTime(BuildContext context) async {
     final TimeOfDay picked = await showTimePicker(
@@ -91,7 +111,6 @@ class PostRideController extends BaseViewModel {
         timeController.text = "";
         notifyListeners();
       }
-
       return;
     }
   }
@@ -133,6 +152,15 @@ class PostRideController extends BaseViewModel {
     notifyListeners();
   }
 
+  setSelectedCar(value) {
+    SelectedCar = globals.user.vehicles[value].brand +
+        " " +
+        globals.user.vehicles[value].model;
+    isCarSelected = value;
+    SelectedCarId = globals.user.vehicles[value].id;
+    notifyListeners();
+  }
+
   setSelectedDestination(String destination) {
     destinationController = new TextEditingController(text: destination);
     searchResults = null;
@@ -155,6 +183,15 @@ class PostRideController extends BaseViewModel {
     searchResults = null;
     placeType = null;
     notifyListeners();
+  }
+
+  chooseCar(BuildContext context) {
+    showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (_) => SelectCarModal(
+              controller: this,
+            ));
   }
 
   showAddPickupModal(BuildContext context) {
@@ -209,9 +246,9 @@ class PostRideController extends BaseViewModel {
     }
   }
 
-  updateKnockOffs(List<String> values) {
+  updateDropOffs(List<String> values) {
     // print(values.length);
-    knockoffs = values;
+    dropoffs = values;
   }
 
   updateDestination(value) {
@@ -241,22 +278,30 @@ class PostRideController extends BaseViewModel {
     notifyListeners();
   }
 
+  double calculatePercentage(price, seats) {
+    double rate = double.parse(price);
+    int totalSeats = seats;
+    double fee = (globals.percentage / 100) * (rate * totalSeats);
+    return fee;
+  }
+
   PublishRide(BuildContext context) async {
-    // print(knockoffs.length);
+    // print(dropoffs.length);
     String error = "";
     if (pickups.isEmpty || pickups.length <= 0) {
-      error = "Provide at least on Pick-Up location";
+      error = "Provide at least one Pick-Up location";
       showerror(context, error);
       return;
     } else if (destinationController.text.isEmpty) {
       error = "Provide destination";
       showerror(context, error);
       return;
-    } else if (knockoffs.isEmpty || knockoffs.length <= 0) {
+    } /* else if (dropoffs.isEmpty || dropoffs.length <= 0) {
       error = "Provide at least a knockoff location";
       showerror(context, error);
       return;
-    } else if (fare.isEmpty) {
+    }*/
+    else if (fare.isEmpty) {
       error = "Specify fee for the trip";
       showerror(context, error);
       return;
@@ -264,18 +309,22 @@ class PostRideController extends BaseViewModel {
       error = "Provide departure time";
       showerror(context, error);
       return;
+    } else if (globals.Balance < calculatePercentage(fare, seats)) {
+      error =
+          "Your wallet balance is insufficient for the expected charged percentage for this Trip";
+      showBalanceError(context, error, calculatePercentage(fare, seats));
+      return;
     }
 
     var data = {
-      /* "pickup1": pickups[0],
-      "pickup2": pickups.length > 1 ? pickups[1] : null,*/
       "pickups": locations,
-      "knockoffs": knockoffs.join(","),
+      "dropoffs": dropoffs.length > 0 ? dropoffs.join(",") : "NIL",
       "destination": destinationController.text,
       "capacity": seats,
       "airconditioner": airConditioner ? "1" : "0",
       "amount": fare,
       "departure": timeController.text,
+      "car": SelectedCarId,
     };
 
     print(data);
@@ -298,6 +347,8 @@ class PostRideController extends BaseViewModel {
           builder: (_) => successProcessingModal(
                 sucessmsg: "Ride Posted Successfully",
               ));
+      alarm.zonedScheduleNotification(
+          globals.postedRide, timeController.text.toUpperCase());
 
       Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => RequestsScreen()),
@@ -324,10 +375,20 @@ class PostRideController extends BaseViewModel {
 
   showerror(BuildContext context, String error) {
     showDialog(
-        barrierDismissible: false,
+        barrierDismissible: true,
         context: context,
         builder: (_) => ValidationErrorModal(
               error_message: error,
+            ));
+  }
+
+  showBalanceError(BuildContext context, String error, double percentage) {
+    showDialog(
+        barrierDismissible: true,
+        context: context,
+        builder: (_) => WalletBalanceError(
+              error_message: error,
+              percentage: percentage,
             ));
   }
 } //end of class

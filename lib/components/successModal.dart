@@ -7,7 +7,10 @@ import 'CustomButton.dart';
 
 class successProcessingModal extends StatelessWidget {
   final String sucessmsg;
-  const successProcessingModal({Key key, this.sucessmsg = ""})
+  final String heading;
+  final Widget icon;
+  const successProcessingModal(
+      {Key key, this.sucessmsg = "", this.heading, this.icon})
       : super(key: key);
   @override
   Widget build(BuildContext context) {
@@ -27,19 +30,27 @@ class successProcessingModal extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Icon(
-                  LineAwesomeIcons.check_circle,
-                  color: kPrimaryColor,
-                  size: 35,
+                icon != null
+                    ? icon
+                    : Icon(
+                        LineAwesomeIcons.check_circle,
+                        color: kPrimaryColor,
+                        size: 35,
+                      ),
+                SizedBox(
+                  width: 5,
                 ),
                 Text(
-                  "Success",
+                  heading != null && heading.isNotEmpty ? heading : "Success",
                   style: TextStyle(
-                      fontSize: 30,
+                      fontSize: 25,
                       fontWeight: FontWeight.w500,
                       color: kPrimaryAlternateColor),
                 ),
               ],
+            ),
+            SizedBox(
+              height: 10,
             ),
             Text(
               sucessmsg,

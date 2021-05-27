@@ -8,6 +8,7 @@ import 'package:wemoove/globals.dart' as globals;
 import 'package:wemoove/helper/BouncingTransition.dart';
 import 'package:wemoove/models/Boarded.dart';
 import 'package:wemoove/size_config.dart';
+import 'package:wemoove/views/ReservationDetailScreen/ReservationDetailScreen.dart';
 import 'package:wemoove/views/RideHistoryDetail/RideHistoryDetailScreen.dart';
 
 class Body extends StatefulWidget {
@@ -66,12 +67,16 @@ class _BodyState extends State<Body> {
                     },
                   ),
                   Text(
-                    "Ride's History",
+                    "Trip History",
                     style: TextStyle(fontSize: 20, color: kPrimaryColor),
                   ),
                   CircleAvatar(
                     radius: 25,
-                    backgroundImage: NetworkImage(globals.user.profileImage),
+                    backgroundImage: globals.user != null &&
+                            globals.user.profileImage != null &&
+                            globals.user.profileImage.isNotEmpty
+                        ? NetworkImage(globals.user.profileImage)
+                        : AssetImage("assets/images/portrait.png"),
                   ),
                   /*Image.asset(
                     "assets/images/appbarlogo.png",
@@ -79,7 +84,7 @@ class _BodyState extends State<Body> {
                     //width: getProportionateScreenWidth(235),
                   ),*/
                   /*  InkWell(
-                    child: Container(
+                    child: Container(5
                       height: 50,
                       width: 50,
                       decoration: BoxDecoration(
@@ -106,6 +111,8 @@ class _BodyState extends State<Body> {
                         children: List.generate(
                             widget.controller.boarded.length,
                             (index) => RideTile(
+                                controller: widget.controller,
+                                index: index,
                                 boarded: widget.controller.boarded[index])),
                       )
                     : Center(
@@ -119,7 +126,7 @@ class _BodyState extends State<Body> {
                             ),
                             Text(
                               "You currently do not have any"
-                              "\n Rides History as a Passenger",
+                              "\n Trip History as a Passenger",
                               style: TextStyle(fontSize: 15),
                               textAlign: TextAlign.center,
                             )
@@ -135,9 +142,13 @@ class _BodyState extends State<Body> {
 
 class RideTile extends StatelessWidget {
   final Boarded boarded;
+  final RideHistoryController controller;
+  final int index;
   const RideTile({
     Key key,
     this.boarded,
+    this.controller,
+    this.index,
   }) : super(key: key);
 
   String parseDate(String date) {
@@ -320,11 +331,21 @@ class RideTile extends StatelessWidget {
         ),
       ),
       onTap: () {
-        Navigate.to(
-            context,
-            RideHistoryDetailScreen(
-              boarded: boarded,
-            ));
+        if (boarded.status == 2) {
+          Navigate.to(
+              context,
+              ReservationDetailScreen(
+                redirect: false,
+              ));
+        } else {
+          controller.setCurrentRideIndex(index);
+          Navigate.to(
+              context,
+              RideHistoryDetailScreen(
+                boarded: boarded,
+                controller: controller,
+              ));
+        }
       },
     );
   }

@@ -1,8 +1,10 @@
+import 'Vehicle.dart';
+
 class User {
   int id;
   String fullName;
   String email;
-  dynamic emailVerifiedAt;
+  Null emailVerifiedAt;
   String profileImage;
   String phoneNumber;
   dynamic address;
@@ -17,6 +19,7 @@ class User {
   int currentRideStatus;
   int currentRequestStatus;
   int hasvehicle;
+  List<Vehicles> vehicles;
 
   User(
       {this.id,
@@ -26,6 +29,7 @@ class User {
       this.profileImage,
       this.phoneNumber,
       this.address,
+      this.workAddress,
       this.userType,
       this.status,
       this.verified,
@@ -35,7 +39,8 @@ class User {
       this.updatedAt,
       this.currentRideStatus,
       this.currentRequestStatus,
-      this.hasvehicle});
+      this.hasvehicle,
+      this.vehicles});
 
   User.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -56,6 +61,12 @@ class User {
     currentRideStatus = json['current_ride_status'];
     currentRequestStatus = json['current_request_status'];
     hasvehicle = json['hasvehicle'];
+    if (json['vehicles'] != null) {
+      vehicles = [];
+      json['vehicles'].forEach((v) {
+        vehicles.add(new Vehicles.fromJson(v));
+      });
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -78,6 +89,9 @@ class User {
     data['current_ride_status'] = this.currentRideStatus;
     data['current_request_status'] = this.currentRequestStatus;
     data['hasvehicle'] = this.hasvehicle;
+    if (this.vehicles != null) {
+      data['vehicles'] = this.vehicles.map((v) => v.toJson()).toList();
+    }
     return data;
   }
 }

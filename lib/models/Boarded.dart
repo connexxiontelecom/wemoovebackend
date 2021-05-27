@@ -12,14 +12,16 @@ class Boarded {
   int driverId;
   String amount;
   String destination;
-  Null pickup1;
-  Null pickup2;
+  dynamic pickup1;
+  dynamic pickup2;
   List<String> knockoffs;
   List<Pickups> pickups;
   String departureTime;
   int capacity;
   int status;
+  int car;
   Driver driver;
+  int isRated;
 
   Boarded(
       {this.pid,
@@ -42,7 +44,9 @@ class Boarded {
       this.departureTime,
       this.capacity,
       this.status,
-      this.driver});
+      this.car,
+      this.driver,
+      this.isRated});
 
   Boarded.fromJson(Map<String, dynamic> json) {
     pid = json['pid'];
@@ -70,8 +74,10 @@ class Boarded {
     departureTime = json['departure_time'];
     capacity = json['capacity'];
     status = json['status'];
+    car = json['car'];
     driver =
         json['driver'] != null ? new Driver.fromJson(json['driver']) : null;
+    isRated = json['isRated'];
   }
 
   Map<String, dynamic> toJson() {
@@ -98,9 +104,11 @@ class Boarded {
     data['departure_time'] = this.departureTime;
     data['capacity'] = this.capacity;
     data['status'] = this.status;
+    data['car'] = this.car;
     if (this.driver != null) {
       data['driver'] = this.driver.toJson();
     }
+    data['isRated'] = this.isRated;
     return data;
   }
 }
@@ -131,8 +139,8 @@ class Driver {
   dynamic emailVerifiedAt;
   String profileImage;
   String phoneNumber;
-  dynamic address;
-  dynamic workAddress;
+  String address;
+  String workAddress;
   int userType;
   int status;
   int verified;
@@ -149,6 +157,7 @@ class Driver {
   String brand;
   String license;
   String carPicture;
+  dynamic rating;
 
   Driver(
       {this.id,
@@ -174,7 +183,8 @@ class Driver {
       this.modelYear,
       this.brand,
       this.license,
-      this.carPicture});
+      this.carPicture,
+      this.rating});
 
   Driver.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -201,6 +211,7 @@ class Driver {
     brand = json['brand'];
     license = json['license'];
     carPicture = json['car_picture'];
+    rating = json['rating'];
   }
 
   Map<String, dynamic> toJson() {
@@ -229,6 +240,7 @@ class Driver {
     data['brand'] = this.brand;
     data['license'] = this.license;
     data['car_picture'] = this.carPicture;
+    data['rating'] = this.rating;
     return data;
   }
 }

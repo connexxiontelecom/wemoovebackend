@@ -10,6 +10,7 @@ import 'package:wemoove/views/driver/CompleteProfileScreen.dart';
 import 'package:wemoove/views/profile/ProfileScreen.dart';
 import 'package:wemoove/views/ridehistory/RideHistoryScreen.dart';
 import 'package:wemoove/views/signin/SignInScreen.dart';
+import 'package:wemoove/views/vehicles/VehiclesScreen.dart';
 
 class MainDrawer extends StatefulWidget {
   MainDrawer(this.currentPage, this.controller);
@@ -52,9 +53,11 @@ class _MainDrawerState extends State<MainDrawer> {
                     CircleAvatar(
                         radius: 35,
                         //child: Image.asset("assets/images/sample.jpg")
-                        backgroundImage: globals.user.profileImage.isEmpty
-                            ? AssetImage("assets/images/portrait.jpg")
-                            : NetworkImage(globals.user.profileImage)),
+                        backgroundImage: globals.user != null &&
+                                globals.user.profileImage != null &&
+                                globals.user.profileImage.isNotEmpty
+                            ? NetworkImage(globals.user.profileImage)
+                            : AssetImage("assets/images/portrait.png")),
                     SizedBox(
                       width: 10,
                     ),
@@ -100,7 +103,10 @@ class _MainDrawerState extends State<MainDrawer> {
                 InkWell(
                   child: MenuItem(
                     icon: LineAwesomeIcons.history,
-                    title: "Ride History",
+                    title: globals.isDriverMode == true &&
+                            globals.user.userType == 1
+                        ? "Ride History"
+                        : "Trip History",
                   ),
                   onTap: () {
                     // Navigator.pop(context);
@@ -119,6 +125,18 @@ class _MainDrawerState extends State<MainDrawer> {
                     Scaffold.of(context).openEndDrawer();
                   },
                 ),
+                if (globals.user.userType == 1 && globals.isDriverMode)
+                  InkWell(
+                    child: MenuItem(
+                      icon: LineAwesomeIcons.car,
+                      title: "My Cars",
+                    ),
+                    onTap: () {
+                      // Navigator.pop(context);
+                      Navigate.to(context, VehiclesScreen());
+                      Scaffold.of(context).openEndDrawer();
+                    },
+                  ),
                 globals.isDriverMode
                     ? Container()
                     : InkWell(

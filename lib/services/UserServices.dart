@@ -1,10 +1,15 @@
+import 'dart:developer';
+
 import 'package:dio/dio.dart';
 import 'package:wemoove/globals.dart' as globals;
 import 'package:wemoove/models/Boarded.dart';
+import 'package:wemoove/models/Credentials.dart';
 import 'package:wemoove/models/Driven.dart';
 import 'package:wemoove/models/DriverDetail.dart';
 import 'package:wemoove/models/MyRequest.dart';
 import 'package:wemoove/models/Ride.dart';
+import 'package:wemoove/models/Vehicle.dart';
+import 'package:wemoove/models/WalletBalance.dart';
 import 'package:wemoove/models/chat.dart';
 import 'package:wemoove/models/request.dart';
 import 'package:wemoove/models/request_errors.dart';
@@ -13,20 +18,28 @@ import 'package:wemoove/services/client.dart';
 
 class UserServices {
   static loginUser(data) async {
+    print(data);
     try {
       // var data = {"email": email, 'password': password};
       String token = ""; // initially a user doesn't have a token
       Response response = await Client(token).post(data, '/login');
+      print(response);
+      log(response.toString());
       var body = response.data;
+      print(body);
       if (body["token"] != null && body["user"] != null) {
         final String authtoken = body["token"];
         User user = User.fromJson(body["user"]);
         globals.token = authtoken;
-
         if (globals.devicetoken != null &&
             globals.devicetoken.isNotEmpty &&
             user is User) {
           //save the device token
+          //print(data['email']);
+          saveLocaLStorage(
+              "credentials",
+              Credentials(
+                  username: data['username'], password: data['password']));
           saveDeviceToken({"device_token": globals.devicetoken}, globals.token);
           ridehistory(globals.token);
         }
@@ -52,6 +65,7 @@ class UserServices {
         print(e.response.data);
         print(e.response.headers);
         print(e.response.request);
+        print(e.response.statusCode);
         return RequestError.RESPONSE_ERROR;
       } else {
         // Something happened in setting up or sending the request that triggered an Error
@@ -126,6 +140,57 @@ class UserServices {
       final dynamic details = body["details"];
       globals.user.profileImage = details["profile"];
       globals.user.userType = details["type"];
+
+      final dynamic cars = details["cars"] as List;
+      List<Vehicles> vehicles = [];
+      if (cars != null && cars.length > 0) {
+        for (var car in cars) {
+          if (car != null) {
+            Vehicles ride = Vehicles.fromJson(car);
+            vehicles.add(ride);
+          }
+        }
+      }
+      globals.user.vehicles = vehicles;
+      globals.isDriverMode = true;
+      return message;
+    } on DioError catch (e) {
+      // The request was made and the server responded with a status code
+      // that falls out of the range of 2xx and is also not 304.
+      if (e.response != null) {
+        print(e.response.data);
+        print(e.response.headers);
+        print(e.response.request);
+        return RequestError.RESPONSE_ERROR;
+      } else {
+        // Something happened in setting up or sending the request that triggered an Error
+        print(e.request);
+        print(e.message);
+        return RequestError.CONNECTION_ERROR;
+      }
+    }
+  }
+
+  static registerCar(data, token) async {
+    Dio dio = new Dio();
+    dio.options.headers["Authorization"] = 'Bearer $token';
+    try {
+      Response response =
+          await dio.post(globals.baseUrl + '/auth/registercar', data: data);
+      var body = response.data;
+      print(body);
+      final String message = body["message"];
+      final dynamic cars = body["cars"] as List;
+      List<Vehicles> vehicles = [];
+      if (cars != null && cars.length > 0) {
+        for (var car in cars) {
+          if (car != null) {
+            Vehicles ride = Vehicles.fromJson(car);
+            vehicles.add(ride);
+          }
+        }
+      }
+      globals.user.vehicles = vehicles;
       globals.isDriverMode = true;
       return message;
     } on DioError catch (e) {
@@ -225,7 +290,8 @@ class UserServices {
       Response response = await Client(token).get(data, '/auth/search');
       var body = response.data;
       print(body);
-      List results = body["results"] as List;
+      List results = body["results"];
+      print(results);
       List<Ride> rides = [];
       if (results != null && results.length > 0) {
         for (var result in results) {
@@ -235,7 +301,40 @@ class UserServices {
           }
         }
       }
+      return rides;
+    } on DioError catch (e) {
+      // The request was made and the server responded with a status code
+      // that falls out of the range of 2xx and is also not 304.
+      if (e.response != null) {
+        print(e.response.data);
+        print(e.response.headers);
+        print(e.response.request);
+        return RequestError.RESPONSE_ERROR;
+      } else {
+        // Something happened in setting up or sending the request that triggered an Error
+        print(e.request);
+        print(e.message);
+        return RequestError.CONNECTION_ERROR;
+      }
+    }
+  }
 
+  static fetchRides(data, token) async {
+    try {
+      Response response = await Client(token).get(data, '/auth/rides');
+      var body = response.data;
+      print(body);
+      List results = body["results"];
+      print(results);
+      List<Ride> rides = [];
+      if (results != null && results.length > 0) {
+        for (var result in results) {
+          if (result != null) {
+            Ride ride = Ride.fromJson(result);
+            rides.add(ride);
+          }
+        }
+      }
       return rides;
     } on DioError catch (e) {
       // The request was made and the server responded with a status code
@@ -282,7 +381,10 @@ class UserServices {
     try {
       Response response = await Client(token).get(data, '/auth/requests');
       var body = response.data;
-      //print(body);
+      print(body);
+      var ride = body['ride_id'];
+      globals.postedRide = ride;
+
       List results = body["passengers"] as List;
       List<Request> requests = [];
       if (results != null && results.length > 0) {
@@ -532,9 +634,57 @@ class UserServices {
     }
   }
 
+  static FinishRide(data, token) async {
+    try {
+      Response response = await Client(token).post(data, '/auth/finishride');
+      var body = response.data;
+      print(body);
+      final String message = body["message"];
+      return message;
+    } on DioError catch (e) {
+      // The request was made and the server responded with a status code
+      // that falls out of the range of 2xx and is also not 304.
+      if (e.response != null) {
+        print(e.response.data);
+        print(e.response.headers);
+        print(e.response.request);
+        return RequestError.RESPONSE_ERROR;
+      } else {
+        // Something happened in setting up or sending the request that triggered an Error
+        print(e.request);
+        print(e.message);
+        return RequestError.CONNECTION_ERROR;
+      }
+    }
+  }
+
   static startRide(data, token) async {
     try {
       Response response = await Client(token).post(data, '/auth/startride');
+      var body = response.data;
+      print(body);
+      final String message = body["message"];
+      return message;
+    } on DioError catch (e) {
+      // The request was made and the server responded with a status code
+      // that falls out of the range of 2xx and is also not 304.
+      if (e.response != null) {
+        print(e.response.data);
+        print(e.response.headers);
+        print(e.response.request);
+        return RequestError.RESPONSE_ERROR;
+      } else {
+        // Something happened in setting up or sending the request that triggered an Error
+        print(e.request);
+        print(e.message);
+        return RequestError.CONNECTION_ERROR;
+      }
+    }
+  }
+
+  static saveRating(data, token) async {
+    try {
+      Response response = await Client(token).post(data, '/auth/saveratings');
       var body = response.data;
       print(body);
       final String message = body["message"];
@@ -614,7 +764,7 @@ class UserServices {
 
   static fetchridestatus(token) async {
     try {
-      var data = {"id": globals.user.id};
+      var data = {"id": globals.postedRide};
       Response response = await Client(token).get(data, '/auth/ridestatus');
       //print(response);
       var body = response.data;
@@ -698,9 +848,7 @@ class UserServices {
           await dio.post(globals.baseUrl + '/auth/updateprofile', data: data);
       var body = response.data;
       print(body);
-
       dynamic result = body["details"];
-
       globals.user.profileImage = result["profile"];
       globals.user.address = result["home"];
       globals.user.workAddress = result["work"];
@@ -721,4 +869,148 @@ class UserServices {
       }
     }
   }
+
+  static getWalletBalance(data, token) async {
+    try {
+      Response response = await Client(token).post(data, '/auth/balance');
+      var body = response.data;
+      print(body);
+      final String bal = body["result"].toString();
+
+      final double balance = double.parse(bal);
+
+      var _results = body["history"] as List; //returned wallet histories
+      List<WalletHistory> results = [];
+      for (var result in _results) {
+        if (result != null) {
+          results.add(WalletHistory.fromJson(result));
+          //histories.add(RideHistory.fromJson(history));
+        }
+      }
+      globals.Balance = balance;
+      globals.walletHistories = results;
+
+      return "success";
+    } on DioError catch (e) {
+      // The request was made and the server responded with a status code
+      // that falls out of the range of 2xx and is also not 304.
+      if (e.response != null) {
+        print(e.response.data);
+        print(e.response.headers);
+        print(e.response.request);
+        return RequestError.RESPONSE_ERROR;
+      } else {
+        // Something happened in setting up or sending the request that triggered an Error
+        print(e.request);
+        print(e.message);
+        return RequestError.CONNECTION_ERROR;
+      }
+    }
+  }
+
+  static debit(data, token) async {
+    try {
+      Response response = await Client(token).post(data, '/auth/debit');
+      var body = response.data;
+      print(body);
+      final String message = body["message"];
+      return message;
+    } on DioError catch (e) {
+      // The request was made and the server responded with a status code
+      // that falls out of the range of 2xx and is also not 304.
+      if (e.response != null) {
+        print(e.response.data);
+        print(e.response.headers);
+        print(e.response.request);
+        return RequestError.RESPONSE_ERROR;
+      } else {
+        // Something happened in setting up or sending the request that triggered an Error
+        print(e.request);
+        print(e.message);
+        return RequestError.CONNECTION_ERROR;
+      }
+    }
+  }
+
+  static credit(data, token) async {
+    try {
+      Response response = await Client(token).post(data, '/auth/credit');
+      var body = response.data;
+      print(body);
+      final String message = body["message"];
+      return message;
+    } on DioError catch (e) {
+      // The request was made and the server responded with a status code
+      // that falls out of the range of 2xx and is also not 304.
+      if (e.response != null) {
+        print(e.response.data);
+        print(e.response.headers);
+        print(e.response.request);
+        return RequestError.RESPONSE_ERROR;
+      } else {
+        // Something happened in setting up or sending the request that triggered an Error
+        print(e.request);
+        print(e.message);
+        return RequestError.CONNECTION_ERROR;
+      }
+    }
+  }
+
+  static transfer(data, token) async {
+    try {
+      Response response = await Client(token).post(data, '/auth/transfer');
+      var body = response.data;
+      print(body);
+      final String message = body["message"];
+      return message;
+    } on DioError catch (e) {
+      // The request was made and the server responded with a status code
+      // that falls out of the range of 2xx and is also not 304.
+      if (e.response != null) {
+        print(e.response.data);
+        print(e.response.headers);
+        print(e.response.request);
+        return RequestError.RESPONSE_ERROR;
+      } else {
+        // Something happened in setting up or sending the request that triggered an Error
+        print(e.request);
+        print(e.message);
+        return RequestError.CONNECTION_ERROR;
+      }
+    }
+  }
+
+  static getBeneficiary(data, token) async {
+    try {
+      Response response = await Client(token).get(data, '/auth/beneficiary');
+      var body = response.data;
+      print(body);
+      final String beneficiary = body["response"];
+      final String message = body["message"];
+      List<String> responses = [];
+      responses.add(message);
+      responses.add(beneficiary);
+      return responses;
+    } on DioError catch (e) {
+      // The request was made and the server responded with a status code
+      // that falls out of the range of 2xx and is also not 304.
+      if (e.response != null) {
+        print(e.response.data);
+        print(e.response.headers);
+        print(e.response.request);
+        return RequestError.RESPONSE_ERROR;
+      } else {
+        // Something happened in setting up or sending the request that triggered an Error
+        print(e.request);
+        print(e.message);
+        return RequestError.CONNECTION_ERROR;
+      }
+    }
+  }
+
+  static saveLocaLStorage(dynamic key, dynamic data) {
+    globals.box.put(key, data);
+    print("Saved to Local");
+  }
 } //end of class
+//registercar

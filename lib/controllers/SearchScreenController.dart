@@ -2,11 +2,14 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:geocoder/geocoder.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:stacked/stacked.dart';
 import 'package:wemoove/components/ErrorModal.dart';
 import 'package:wemoove/components/ProcessModal.dart';
+import 'package:wemoove/components/successModal.dart';
 import 'package:wemoove/globals.dart' as globals;
 import 'package:wemoove/models/DriverDetail.dart';
 import 'package:wemoove/models/Ride.dart';
@@ -23,6 +26,7 @@ class SearchScreenController extends BaseViewModel {
   final geoLocatorService = GeolocatorService();
   final placesService = PlacesService();
   final markerService = MarkerService();
+  String CurrentLocationArea = '';
 
   //Variables
   Position currentLocation;
@@ -34,7 +38,10 @@ class SearchScreenController extends BaseViewModel {
   List<Place> placeResults;
   List<Marker> markers = [];
 
+  int TotalAvailableRides = 0;
+
   TextEditingController queryController = new TextEditingController();
+
   void changeMode() {
     isDriverMode = globals.isDriverMode;
     notifyListeners();
@@ -58,6 +65,20 @@ class SearchScreenController extends BaseViewModel {
     if (globals.user.userType == 1) {
       fetchdriversdetail();
     }
+    CountAvailableRides();
+  }
+
+  CountAvailableRides() async {
+    var data = {'id': globals.user.id};
+    dynamic response = await UserServices.fetchRides(data, globals.token);
+    if (response is List<Ride>) {
+      TotalAvailableRides = response.length;
+      notifyListeners();
+    }
+  }
+
+  showprint() {
+    print('alarm done');
   }
 
   void fetchdriversdetail() async {
@@ -69,12 +90,31 @@ class SearchScreenController extends BaseViewModel {
   }
 
   void Search(BuildContext context) async {
+    FocusScope.of(context).requestFocus(FocusNode());
+    FocusManager.instance.primaryFocus.unfocus();
+    SystemChannels.textInput.invokeMethod('TextInput.hide');
+
+    if (globals.currentPlaceId == null || globals.currentPlaceId.isEmpty) {
+      showDialog(
+          barrierDismissible: false,
+          context: context,
+          builder: (_) => errorProcessingModal(
+                error_message: "Please Enable Location for this App!",
+              ));
+
+      return;
+    }
+
+    List<String> searchKeywords = queryController.text.split(",");
+    searchKeywords.removeAt(searchKeywords.length - 1);
+    String query = searchKeywords.join(",");
+    print(query);
     var data = {
-      "search_query": queryController.text,
+      "search_query": query,
       "origin": globals.currentPlaceId,
     };
 
-    print(queryController.text);
+    //print(queryController.text);
     showDialog(
         barrierDismissible: false,
         context: context,
@@ -90,12 +130,12 @@ class SearchScreenController extends BaseViewModel {
       if (response.isEmpty || response.length <= 0) {
         showNotFound(true);
       }
-      /*showDialog(
+      showDialog(
           barrierDismissible: false,
           context: context,
           builder: (_) => successProcessingModal(
-                sucessmsg: "Successfully",
-              ));*/
+                sucessmsg: "${response.length} Ride(s) Found!",
+              ));
     } else if (response == RequestError.CONNECTION_ERROR) {
       Navigator.pop(context);
       showDialog(
@@ -123,6 +163,18 @@ class SearchScreenController extends BaseViewModel {
     globals.lat = currentLocation.latitude;
     globals.lng = currentLocation.longitude;
     PlacesService().getPlaceId(globals.lat, globals.lng);
+    notifyListeners();
+
+    final coordinates =
+        new Coordinates(currentLocation.latitude, currentLocation.longitude);
+    var addresses =
+        await Geocoder.local.findAddressesFromCoordinates(coordinates);
+    var first = addresses.first;
+    CurrentLocationArea = first.addressLine;
+    print(first);
+    print(
+        ' ${first.locality}, ${first.adminArea},${first.subLocality}, ${first.subAdminArea},${first.addressLine}, ${first.featureName},${first.thoroughfare}, ${first.subThoroughfare}');
+
     notifyListeners();
   }
 

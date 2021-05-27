@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wemoove/controllers/RideHistoryController.dart';
 import 'package:wemoove/globals.dart' as globals;
 import 'package:wemoove/models/Boarded.dart';
 import 'package:wemoove/models/Driven.dart';
@@ -10,9 +11,11 @@ import 'components/body.dart';
 class RideHistoryDetailScreen extends StatelessWidget {
   final Boarded boarded;
   final Driven driven;
+  final RideHistoryController controller;
   static String routeName = "/history_detail";
 
-  const RideHistoryDetailScreen({Key key, this.boarded, this.driven})
+  const RideHistoryDetailScreen(
+      {Key key, this.boarded, this.driven, this.controller})
       : super(key: key);
   @override
   Widget build(BuildContext context) {
@@ -24,6 +27,7 @@ class RideHistoryDetailScreen extends StatelessWidget {
             )
           : Body(
               boarded: boarded,
+              controller: controller,
             ),
     );
   }

@@ -71,7 +71,11 @@ class _BodyState extends State<DriverHistoryBody> {
                   ),
                   CircleAvatar(
                     radius: 25,
-                    backgroundImage: NetworkImage(globals.user.profileImage),
+                    backgroundImage: globals.user != null &&
+                            globals.user.profileImage != null &&
+                            globals.user.profileImage.isNotEmpty
+                        ? NetworkImage(globals.user.profileImage)
+                        : AssetImage("assets/images/portrait.png"),
                   ),
                   /*Image.asset(
                     "assets/images/appbarlogo.png",

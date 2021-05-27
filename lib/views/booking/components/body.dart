@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:wemoove/components/ExpandableSection.dart';
 import 'package:wemoove/controllers/BookingController.dart';
+import 'package:wemoove/globals.dart' as globals;
 import 'package:wemoove/helper/BouncingTransition.dart';
 
 import '../../../constants.dart';
@@ -46,8 +47,12 @@ class _BodyState extends State<Body> {
                   CircleAvatar(
                       radius: 25,
                       //child: Image.asset("assets/images/sample.jpg")
-                      backgroundImage: AssetImage(
-                          "assets/images/portrait.jpg") //NetworkImage(globals.user.avatar)
+                      backgroundImage: globals.user != null &&
+                              globals.user.profileImage != null &&
+                              globals.user.profileImage.isNotEmpty
+                          ? NetworkImage(globals.user.profileImage)
+                          : AssetImage(
+                              "assets/images/portrait.png") //NetworkImage(globals.user.avatar)
                       ),
                 ],
               ),
@@ -335,7 +340,8 @@ class _DetailsState extends State<Details> {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12),
                     image: DecorationImage(
-                        image: AssetImage("assets/images/driver.jpg"),
+                        image: NetworkImage(
+                            widget.controller.ride.driver.profileImage),
                         fit: BoxFit.cover),
                   ),
                 ),
@@ -601,10 +607,14 @@ class _DetailsState extends State<Details> {
                     width: 10,
                   ),
                   Text(
-                    widget.controller.ride.capacity ==
-                            widget.controller.ride.takenSeats
-                        ? " Full"
-                        : "${widget.controller.ride.capacity - widget.controller.ride.takenSeats} left / ${widget.controller.ride.capacity}",
+                    widget.controller.ride.takenSeats >=
+                            widget.controller.ride.capacity
+                        ? "Full"
+                        : widget.controller.ride.capacity -
+                                    widget.controller.ride.takenSeats <
+                                0
+                            ? "Full"
+                            : "${widget.controller.ride.capacity - widget.controller.ride.takenSeats}",
                     style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -715,7 +725,7 @@ class _TimeLineState extends State<TimeLine> {
                             /* CircleAvatar(
                               radius: 25.0,
                               backgroundImage:
-                                  AssetImage("assets/images/portrait.jpg"),
+                                  AssetImage("assets/images/portrait.png"),
                               backgroundColor: Colors.transparent,
                             ),*/
                             SizedBox(

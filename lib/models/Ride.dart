@@ -117,11 +117,11 @@ class Driver {
   Null emailVerifiedAt;
   String profileImage;
   String phoneNumber;
-  Null address;
+  dynamic address;
   int userType;
   int status;
   int verified;
-  Null rememberToken;
+  dynamic rememberToken;
   String createdAt;
   String updatedAt;
   int driverId;

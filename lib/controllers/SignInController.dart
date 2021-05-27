@@ -21,7 +21,7 @@ class SignInController extends BaseViewModel {
 
   void signIn(BuildContext context) async {
     var data = {
-      "email": usernameController.text,
+      "username": usernameController.text,
       "password": passwordController.text,
     };
     showDialog(
@@ -30,7 +30,6 @@ class SignInController extends BaseViewModel {
         builder: (_) => ProcessModal());
 
     dynamic response = await UserServices.loginUser(data);
-
     if (response == "success") {
       Navigator.pop(context);
       // Navigate.to(context, SearchScreen());
@@ -72,9 +71,18 @@ class SignInController extends BaseViewModel {
       print("hello");
       Navigator.pop(context);
       //displayErrors(response);
+    } else if (response == RequestError.RESPONSE_ERROR) {
+      Navigator.pop(context);
+      showDialog(
+          barrierDismissible: false,
+          context: context,
+          builder: (_) => errorProcessingModal(
+                error_message: "error processing request",
+              ));
     } else {
       Navigator.pop(context);
       String msg = response;
+      print(response);
       showDialog(
           barrierDismissible: false,
           context: context,

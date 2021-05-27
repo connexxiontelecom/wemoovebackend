@@ -14,7 +14,7 @@ import 'package:wemoove/globals.dart' as globals;
 import 'package:wemoove/helper/BouncingTransition.dart';
 import 'package:wemoove/models/request.dart';
 import 'package:wemoove/size_config.dart';
-import 'package:wemoove/views/chat/components/chatBody.dart';
+import 'package:wemoove/views/chats/components/chatBody.dart';
 
 class Body extends StatefulWidget {
   final GlobalKey<ScaffoldState> scaffoldkey;
@@ -137,7 +137,7 @@ class _BodyState extends State<Body> {
                       SizedBox(
                         height: 15,
                       ),
-                      Row(
+                      /* Row(
                         children: [
                           Icon(LineAwesomeIcons.map_marker),
                           Text(
@@ -152,15 +152,17 @@ class _BodyState extends State<Body> {
                             style: TextStyle(fontSize: 18),
                           ),
                         ],
-                      )
+                      )*/
                     ],
                   ),
                   CircleAvatar(
                       radius: 35,
                       //child: Image.asset("assets/images/sample.jpg")
-                      backgroundImage: globals.user.profileImage.isEmpty
-                          ? AssetImage("assets/images/portrait.jpg")
-                          : NetworkImage(globals.user.profileImage)),
+                      backgroundImage: globals.user != null &&
+                              globals.user.profileImage != null &&
+                              globals.user.profileImage.isNotEmpty
+                          ? NetworkImage(globals.user.profileImage)
+                          : AssetImage("assets/images/portrait.png")),
                 ],
               ),
             ),
@@ -250,18 +252,38 @@ class _BodyState extends State<Body> {
                                   controller: widget.controller,
                                 );
                               }),
-                      if (widget.controller.ride_current_status != 3)
-                        SizedBox(
-                          height: 50,
+                      //if (widget.controller.ride_current_status != 3)
+                      SizedBox(
+                        height: 50,
+                      ),
+
+                      if (widget.controller.ride_current_status == 1)
+                        Padding(
+                          padding: const EdgeInsets.only(left: 20),
+                          child: Row(
+                            children: [
+                              Icon(LineAwesomeIcons.arrow_left),
+                              SizedBox(
+                                width: 20,
+                              ),
+                              Text("Swipe Left to Cancel"),
+                            ],
+                          ),
                         ),
+
                       SwipeTo(
                         animationDuration: const Duration(milliseconds: 375),
                         iconOnRightSwipe: LineAwesomeIcons.arrow_right,
+                        onLeftSwipe: () {
+                          if (widget.controller.ride_current_status == 1) {
+                            widget.controller.Cancel(context);
+                          } else {}
+                        },
                         onRightSwipe: () {
                           if (widget.controller.ride_current_status == 1) {
                             widget.controller.Start(context);
                           } else {
-                            widget.controller.Cancel(context);
+                            widget.controller.Finish(context);
                           }
                         },
                         //animationDuration: const Duration(milliseconds: 300),
@@ -274,13 +296,15 @@ class _BodyState extends State<Body> {
                                   ? Text(
                                       "Swipe to Start Ride",
                                       style: TextStyle(
+                                          color: Colors.white,
                                           fontWeight: FontWeight.bold,
                                           fontSize: 17),
                                     )
                                   : widget.controller.ride_current_status == 2
                                       ? Text(
-                                          "Swipe to Cancel Ride",
+                                          "Swipe to Finish Ride",
                                           style: TextStyle(
+                                              color: Colors.white,
                                               fontWeight: FontWeight.bold,
                                               fontSize: 17),
                                         )
@@ -572,7 +596,7 @@ class _PassengerRequestState extends State<PassengerRequest> {
                     CircleAvatar(
                       backgroundColor: kPrimaryColor,
                       radius: 30,
-                      backgroundImage: AssetImage("assets/images/portrait.jpg"),
+                      backgroundImage: AssetImage("assets/images/portrait.png"),
                     ),
                     SizedBox(
                       width: 10,
@@ -746,6 +770,7 @@ class _PassengerRequestState extends State<PassengerRequest> {
                                   ChatBody(
                                       rideId: widget.request.rideId,
                                       name: widget.request.fullName,
+                                      picture: widget.request.profileImage,
                                       recipient: widget.request.passengerId));
                             },
                           ),

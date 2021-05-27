@@ -17,6 +17,7 @@ class Body extends StatefulWidget {
 }
 
 class _BodyState extends State<Body> {
+  FocusNode focusnode;
   @override
   Widget build(BuildContext context) {
     final applicationBloc = Provider.of<PostRideController>(context);
@@ -51,7 +52,7 @@ class _BodyState extends State<Body> {
                       radius: 25,
                       //child: Image.asset("assets/images/sample.jpg")
                       backgroundImage: globals.user.profileImage.isEmpty
-                          ? AssetImage("assets/images/portrait.jpg")
+                          ? AssetImage("assets/images/portrait.png")
                           : NetworkImage(globals.user.profileImage)),
                 ],
               ),
@@ -102,6 +103,9 @@ class _BodyState extends State<Body> {
                           ),
                         ),
                         onTap: () {
+                          if (focusnode != null) {
+                            focusnode.unfocus();
+                          }
                           Navigate.pop(context);
                         },
                       ),
@@ -177,7 +181,7 @@ class _DetailsState extends State<Details> {
   _onDelete(index) {
     setState(() {
       _values.removeAt(index);
-      widget.controller.updateKnockOffs(_values);
+      widget.controller.updateDropOffs(_values);
     });
   }
 
@@ -212,6 +216,7 @@ class _DetailsState extends State<Details> {
           ),
           TimeLine(
             controller: widget.controller,
+            focusnode: _focusNode,
           ),
           SizedBox(
             height: 30,
@@ -229,14 +234,14 @@ class _DetailsState extends State<Details> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "Knock-Off Locations",
+                "Drop-Off Locations",
                 style: TextStyle(
                     fontWeight: FontWeight.w500,
                     fontSize: 20,
                     color: kPrimaryAlternateColor),
               ),
               Text(
-                "(Areas you won't be stopping)",
+                "(Other areas you can also drop-off passengers)",
                 style: TextStyle(
                     fontWeight: FontWeight.w500,
                     fontSize: 14,
@@ -254,7 +259,7 @@ class _DetailsState extends State<Details> {
                 onSubmitted: (outstandingValue) {
                   setState(() {
                     _values.add(outstandingValue);
-                    widget.controller.updateKnockOffs(_values);
+                    widget.controller.updateDropOffs(_values);
                   });
                 },
                 inputDecoration: const InputDecoration(
@@ -264,7 +269,7 @@ class _DetailsState extends State<Details> {
                 onTagChanged: (newValue) {
                   setState(() {
                     _values.add(newValue);
-                    widget.controller.updateKnockOffs(_values);
+                    widget.controller.updateDropOffs(_values);
                   });
                 },
                 tagBuilder: (context, index) => _Chip(
@@ -309,6 +314,7 @@ class _DetailsState extends State<Details> {
                       size: 20,
                     ),
                     Ontap: () {
+                      _focusNode.unfocus();
                       widget.controller.decrement();
                     },
                   ),
@@ -342,6 +348,7 @@ class _DetailsState extends State<Details> {
                       size: 20,
                     ),
                     Ontap: () {
+                      _focusNode.unfocus();
                       widget.controller.increment();
                     },
                   )
@@ -382,6 +389,7 @@ class _DetailsState extends State<Details> {
                 padding: 8.0,
                 showOnOff: false,
                 onToggle: (val) {
+                  _focusNode.unfocus();
                   widget.controller.turnOnairConditioner();
                 },
               ),
@@ -434,6 +442,7 @@ class _DetailsState extends State<Details> {
               ],
             ),
             onTap: () {
+              _focusNode.unfocus();
               widget.controller.showAddAmountModal(context);
             },
           ),
@@ -489,7 +498,106 @@ class _DetailsState extends State<Details> {
                 widget.controller.timerror,
               ),
             ],
-          )
+          ),
+          if (globals.user.vehicles.length == 1)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Car",
+                  style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: kPrimaryAlternateColor),
+                ),
+                InkWell(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Container(
+                      height: 50,
+                      width: 200,
+                      decoration: BoxDecoration(
+                          color: kprimarywhite,
+                          borderRadius: BorderRadius.circular(15),
+                          border: Border.all(
+                            color: kTextColor.withOpacity(0.3),
+                          )),
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 10, right: 10),
+                        child: Row(
+                          children: [
+                            Icon(
+                              LineAwesomeIcons.car,
+                              color: kPrimaryColor,
+                            ),
+                            Text(
+                              widget.controller.SelectedCar,
+                              style: TextStyle(
+                                  fontSize: 20, color: kPrimaryAlternateColor),
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  onTap: () {
+                    //widget.controller.selectTime(context);
+                    _focusNode.unfocus();
+                  },
+                ),
+              ],
+            ),
+          if (globals.user.vehicles.length >= 2)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Car",
+                  style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: kPrimaryAlternateColor),
+                ),
+                InkWell(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Container(
+                      height: 50,
+                      width: 200,
+                      decoration: BoxDecoration(
+                          color: kprimarywhite,
+                          borderRadius: BorderRadius.circular(15),
+                          border: Border.all(
+                            color: kTextColor.withOpacity(0.3),
+                          )),
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 10, right: 10),
+                        child: Row(
+                          children: [
+                            Icon(
+                              LineAwesomeIcons.car,
+                              color: kPrimaryColor,
+                            ),
+                            Text(
+                              widget.controller.SelectedCar != null &&
+                                      widget.controller.SelectedCar.isNotEmpty
+                                  ? widget.controller.SelectedCar
+                                  : "choose car",
+                              style: TextStyle(
+                                  fontSize: 20, color: kPrimaryAlternateColor),
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  onTap: () {
+                    _focusNode.unfocus();
+                    widget.controller.chooseCar(context);
+                  },
+                ),
+              ],
+            ),
         ],
       ),
     );
@@ -524,11 +632,9 @@ class counterButton extends StatelessWidget {
 }
 
 class TimeLine extends StatefulWidget {
+  FocusNode focusnode;
   PostRideController controller;
-  TimeLine({
-    Key key,
-    this.controller,
-  }) : super(key: key);
+  TimeLine({Key key, this.controller, this.focusnode}) : super(key: key);
   @override
   _TimeLineState createState() => _TimeLineState();
 }
@@ -643,6 +749,7 @@ class _TimeLineState extends State<TimeLine> {
                                             ),
                                           ),
                                           onTap: () {
+                                            widget.focusnode.unfocus();
                                             widget.controller
                                                 .clearSelectedDestination();
 
@@ -700,6 +807,7 @@ class _TimeLineState extends State<TimeLine> {
                                             ),
                                           ),
                                           onTap: () {
+                                            widget.focusnode.unfocus();
                                             widget.controller
                                                 .showAddPickupModal(context);
                                             widget.controller
@@ -792,6 +900,8 @@ class _TimeLineState extends State<TimeLine> {
                                                               kPrimaryAlternateColor,
                                                         ),
                                                         onTap: () {
+                                                          widget.focusnode
+                                                              .unfocus();
                                                           widget.controller
                                                               .removefromPickup(
                                                                   1);

@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:stacked/stacked.dart';
+import 'package:wemoove/controllers/WalletController.dart';
 import 'package:wemoove/views/Wallet/components/Body.dart';
 
 import '../../size_config.dart';
@@ -15,6 +17,10 @@ class WalletScreen extends StatelessWidget {
       statusBarColor: Colors.transparent,
       systemNavigationBarColor: Colors.transparent,
     ));
-    return Scaffold(body: Body());
+    return ViewModelBuilder<WalletController>.reactive(
+        viewModelBuilder: () => WalletController(),
+        builder: (context, controller, child) => Scaffold(
+            resizeToAvoidBottomInset: false,
+            body: Body(controller: controller)));
   }
 }

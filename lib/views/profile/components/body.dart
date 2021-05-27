@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:line_awesome_flutter/line_awesome_flutter.dart';
+import 'package:overlay_support/overlay_support.dart';
 import 'package:wemoove/constants.dart';
 import 'package:wemoove/controllers/ProfileScreenController.dart';
 import 'package:wemoove/globals.dart' as globals;
@@ -13,6 +15,9 @@ class Body extends StatefulWidget {
 }
 
 class _BodyState extends State<Body> {
+  bool editHome = false;
+  bool editWork = false;
+
   @override
   Widget build(BuildContext context) {
     BorderRadiusGeometry radius = BorderRadius.only(
@@ -75,14 +80,19 @@ class _BodyState extends State<Body> {
                             radius: 80,
                             backgroundColor: kPrimaryColor,
                             child: CircleAvatar(
-                              radius: 75,
-                              backgroundColor: kPrimaryColor,
-                              backgroundImage: widget.controller.file != null
-                                  ? Image.file(
-                                      widget.controller.file,
-                                    ).image
-                                  : NetworkImage(globals.user.profileImage),
-                            ),
+                                radius: 75,
+                                backgroundColor: kPrimaryColor,
+                                backgroundImage: widget.controller.file != null
+                                    ? Image.file(
+                                        widget.controller.file,
+                                      ).image
+                                    : globals.user != null &&
+                                            globals.user.profileImage != null &&
+                                            globals.user.profileImage.isNotEmpty
+                                        ? NetworkImage(
+                                            globals.user.profileImage)
+                                        : AssetImage(
+                                            "assets/images/portrait.png")),
                           ),
                           Positioned(
                             right: 0,
@@ -211,27 +221,55 @@ class _BodyState extends State<Body> {
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                "Home",
-                                style: TextStyle(fontSize: 18),
-                              ),
-                              Container(
-                                height: 100,
-                                width: SizeConfig.screenWidth * 0.8,
-                                decoration: BoxDecoration(
-                                    color: kprimarywhiteshade,
-                                    borderRadius: BorderRadius.circular(10)),
-                                child: Padding(
-                                  padding: const EdgeInsets.only(left: 10),
-                                  child: TextFormField(
-                                    controller:
-                                        widget.controller.homeController,
-                                    maxLines: null,
-                                    decoration: getInputDecoration(
-                                        "Enter Home Location"),
-                                  ),
+                              GestureDetector(
+                                child: Row(
+                                  children: [
+                                    Text(
+                                      "Home",
+                                      style: TextStyle(fontSize: 18),
+                                    ),
+                                    Icon(LineAwesomeIcons.pen)
+                                  ],
                                 ),
-                              )
+                                onTap: () {
+                                  setState(() {
+                                    editHome = !editHome;
+                                  });
+                                },
+                              ),
+                              if (!editHome)
+                                GestureDetector(
+                                  child: Text(
+                                    widget.controller.homeController.text
+                                            .isEmpty
+                                        ? "Add Home Address"
+                                        : widget.controller.homeController.text,
+                                    style: TextStyle(fontSize: 18),
+                                  ),
+                                  onTap: () {
+                                    setState(() {
+                                      editHome = !editHome;
+                                    });
+                                  },
+                                ),
+                              if (editHome)
+                                Container(
+                                  height: 100,
+                                  width: SizeConfig.screenWidth * 0.8,
+                                  decoration: BoxDecoration(
+                                      color: kprimarywhiteshade,
+                                      borderRadius: BorderRadius.circular(10)),
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(left: 10),
+                                    child: TextFormField(
+                                      controller:
+                                          widget.controller.homeController,
+                                      maxLines: null,
+                                      decoration: getInputDecoration(
+                                          "Enter Home Location"),
+                                    ),
+                                  ),
+                                )
                             ],
                           ),
                         ],
@@ -246,31 +284,99 @@ class _BodyState extends State<Body> {
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                "Work",
-                                style: TextStyle(fontSize: 18),
-                              ),
-                              Container(
-                                height: 100,
-                                width: SizeConfig.screenWidth * 0.8,
-                                decoration: BoxDecoration(
-                                    color: kprimarywhiteshade,
-                                    borderRadius: BorderRadius.circular(10)),
-                                child: Padding(
-                                  padding: const EdgeInsets.only(left: 10),
-                                  child: TextFormField(
-                                    controller:
-                                        widget.controller.workController,
-                                    maxLines: null,
-                                    decoration: getInputDecoration(
-                                        "Enter Work Location"),
-                                  ),
+                              GestureDetector(
+                                child: Row(
+                                  children: [
+                                    Text(
+                                      "Work",
+                                      style: TextStyle(fontSize: 18),
+                                    ),
+                                    Icon(LineAwesomeIcons.pen)
+                                  ],
                                 ),
-                              )
+                                onTap: () {
+                                  setState(() {
+                                    editWork = !editWork;
+                                  });
+                                },
+                              ),
+                              if (!editWork)
+                                GestureDetector(
+                                  child: Text(
+                                    widget.controller.workController.text
+                                            .isEmpty
+                                        ? "Add work Address"
+                                        : widget.controller.workController.text,
+                                    style: TextStyle(fontSize: 18),
+                                  ),
+                                  onTap: () {
+                                    setState(() {
+                                      editWork = !editWork;
+                                    });
+                                  },
+                                ),
+                              if (editWork)
+                                Container(
+                                  height: 100,
+                                  width: SizeConfig.screenWidth * 0.8,
+                                  decoration: BoxDecoration(
+                                      color: kprimarywhiteshade,
+                                      borderRadius: BorderRadius.circular(10)),
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(left: 10),
+                                    child: TextFormField(
+                                      controller:
+                                          widget.controller.workController,
+                                      maxLines: null,
+                                      decoration: getInputDecoration(
+                                          "Enter Work Location"),
+                                    ),
+                                  ),
+                                )
                             ],
                           ),
                         ],
                       ),
+                      /*  SizedBox(
+                        height: 20,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: InkWell(
+                          child: Container(
+                              height: 60,
+                              //width: SizeConfig.screenWidth * 0.7,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                color: kPrimaryColor,
+                              ),
+                              child: Center(
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      LineAwesomeIcons.plus_square,
+                                      color: kPrimaryAlternateColor,
+                                    ),
+                                    SizedBox(
+                                      width: 10,
+                                    ),
+                                    Text(
+                                      "Add Vehicle",
+                                      style: TextStyle(
+                                          color: kPrimaryAlternateColor,
+                                          fontWeight: FontWeight.w500,
+                                          fontSize: 20),
+                                    ),
+                                  ],
+                                ),
+                              )),
+                          onTap: () {
+                            Navigate.to(context, RegisterVehicle());
+                          },
+                        ),
+                      ),*/
                       SizedBox(
                         height: 20,
                       ),
@@ -295,7 +401,16 @@ class _BodyState extends State<Body> {
                               )),
                           onTap: () {
                             // Navigate.pop(context);
-                            widget.controller.SaveUpdates(context);
+                            if (widget.controller.file != null ||
+                                widget.controller.workController.text
+                                    .isNotEmpty ||
+                                widget.controller.homeController.text
+                                    .isNotEmpty) {
+                              widget.controller.SaveUpdates(context);
+                            } else {
+                              toast("Nothing to update",
+                                  duration: Toast.LENGTH_LONG);
+                            }
                           },
                         ),
                       ),
