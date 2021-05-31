@@ -44,7 +44,7 @@ class OtpController extends Controller
         CURLOPT_POSTFIELDS =>' {
                   "to": "'.$phone.'",
                    "from": "'.$sender.'",
-                   "sms":  "Your wemoove confirmation'.$otp.'",
+                   "sms":  "Your wemoove confirmation code is '.$otp.'. It expires in 10 minutes",
                    "type": "plain",
                    "channel": "'.$channel.'",
                    "api_key": "'.$this->API_KEY.'"
@@ -60,7 +60,6 @@ class OtpController extends Controller
         return response()->json(compact("response"));
 
     }
-
 
 
 
@@ -98,7 +97,7 @@ class OtpController extends Controller
         CURLOPT_POSTFIELDS =>' {
                   "to": "'.$phone.'",
                    "from": "'.$sender.'",
-                   "sms":  "Your wemoove confirmation code is'.$otp.'It expires in 10 minutes",
+                   "sms":  "Your wemoove confirmation code is '.$otp.'. It expires in 10 minutes",
                    "type": "plain",
                    "channel": "'.$channel.'",
                    "api_key": "'.$this->API_KEY.'"
