@@ -57,7 +57,8 @@ class OtpController extends Controller
         $response = curl_exec($curl);
 
         curl_close($curl);
-        return response()->json(compact("response"));
+        //return response()->json(compact("response"));
+        return response()->json(compact('otp', "response"));
 
     }
 
@@ -110,7 +111,10 @@ class OtpController extends Controller
         $response = curl_exec($curl);
 
         curl_close($curl);
-        return response()->json(compact("response"));
+
+        return response()->json(compact('otp', "response"));
+
+       // return response()->json(compact("response"));
 
     }
 
