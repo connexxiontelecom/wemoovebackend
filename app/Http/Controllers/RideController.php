@@ -83,7 +83,8 @@ class RideController extends Controller
         $results = array();
         if ($result != null && Count($result) > 0) {
             foreach ($result as $ride) {
-                $ride["knockoffs"] = json_decode($ride["knockoffs"]);
+                //$ride["dropoffs"] = json_decode($ride["dropoffs"]);
+                $ride["dropoffs"] = json_decode($ride["dropoffs"]);
                 $ride["pickups"] = json_decode($ride["pickups"]);
 
                 foreach ($ride["pickups"] as $pickup) {
@@ -130,8 +131,7 @@ class RideController extends Controller
 
         foreach ($keywords as $term) {
 
-           //$result = Ride::where('destination', 'like', "%" . $term . "%")->where('status', $pending)->get();
-
+            //$result = Ride::where('destination', 'like', "%" . $term . "%")->where('status', $pending)->get();
 
             $result = Ride::where(function ($query) use ($term, $pending) {
                 $query->where(DB::raw('LOWER(destination)'), 'like', "%" . strtolower($term) . "%")->where('status', $pending);
@@ -139,18 +139,16 @@ class RideController extends Controller
                 $query->where(DB::raw('LOWER(dropoffs)'), 'like', "%" . strtolower($term) . "%")->where('status', $pending);
             })->get();
 
-
-
-       /*      foreach($searcher as $word) {
-                $list->where('LOWER(title)', 'LIKE', '%' . strtolower($word) . '%');
-                $list->orWhere('LOWER(name)', 'LIKE', '%' . strtolower($word) . '%');
-              }
- */
-
+            /*      foreach($searcher as $word) {
+            $list->where('LOWER(title)', 'LIKE', '%' . strtolower($word) . '%');
+            $list->orWhere('LOWER(name)', 'LIKE', '%' . strtolower($word) . '%');
+            }
+             */
 
             if ($result != null && Count($result) > 0) {
                 foreach ($result as $ride) {
-                    $ride["knockoffs"] = json_decode($ride["knockoffs"]);
+                    //$ride["dropoffs"] = json_decode($ride["dropoffs"]);
+                    $ride["dropoffs"] = json_decode($ride["dropoffs"]);
                     $ride["pickups"] = json_decode($ride["pickups"]);
 
                     foreach ($ride["pickups"] as $pickup) {
@@ -185,9 +183,6 @@ class RideController extends Controller
                 }
             }
         }
-
-
-
 
         $results = $this->uniqueArray($results, "id");
 
@@ -305,7 +300,7 @@ class RideController extends Controller
         $ride_request = DB::table('passengers as p')->leftJoin('rides as r', function ($join) {
             $join->on('r.id', '=', 'p.ride_id');
         })->select('p.id as pid', 'p.*', 'r.*')->where('p.passenger_id', $id)->where('p.passenger_ride_status', 1)->where('p.request_status', $pending)->orWhere('p.request_status', $accepted)->first();
-        $ride_request->knockoffs = json_decode($ride_request->knockoffs);
+        $ride_request->dropoffs = json_decode($ride_request->dropoffs);
         $ride_request->pickups = json_decode($ride_request->pickups);
         $ride_request->passengers = $this->fetchPassengers($ride_request->driver_id);
         $ride_request->driver = $this->driverInfo($ride_request->driver_id);
@@ -473,7 +468,7 @@ class RideController extends Controller
         })->select('p.id as pid', 'p.*', 'r.*')->where('p.passenger_id', $id)->where('r.status', $declined)->orWhere('r.status', $completed)->get();*/
 
         foreach ($rides as $ride) {
-            $ride->knockoffs = json_decode($ride->knockoffs);
+            $ride->dropoffs = json_decode($ride->dropoffs);
             $ride->pickups = json_decode($ride->pickups);
             //$ride->passengers = $this->ridePassengers($ride->id);
             $ride->driver = $this->driverInfo($ride->driver_id);
@@ -491,7 +486,7 @@ class RideController extends Controller
         // $drivens = Ride::where('driver_id', $id)->where('status', $declined)->orWhere('status', $completed)->get();
 
         foreach ($drivens as $driven) {
-            $driven->knockoffs = json_decode($driven->knockoffs);
+            $driven->dropoffs = json_decode($driven->dropoffs);
             $driven->pickups = json_decode($driven->pickups);
             $driven->passengers = $this->ridePassengers($driven->id);
             //$driven->driver = $this->driverInfo($driven->driver_id);
@@ -562,7 +557,6 @@ class RideController extends Controller
     public function fetchPassengers($id)
     {
         $status = 3; // status of request is done
-
         //fetch number of passengers driver has ridden with
         $passengers = Passenger::leftJoin('rides', function ($join) {
             $join->on('passengers.ride_id', '=', 'rides.id');
@@ -586,7 +580,7 @@ class RideController extends Controller
         foreach ($passengers as $passenger) {
             //$user_passenger = User::find($passenger->passenger_id);
             $passenger->profile_image = url("/assets/uploads/profile/" . $passenger->profile_image);
-            //$passenger->knockoffs = json_decode($passenger->knockoffs);
+            //$passenger->dropoffs = json_decode($passenger->dropoffs);
             //$passenger->pickups = json_decode($passenger->pickups);
         }
 
@@ -605,8 +599,6 @@ class RideController extends Controller
 
         return $driver;
     }
-
-
 
     public function saveRatings(Request $request)
     {
@@ -643,12 +635,9 @@ class RideController extends Controller
     public function isRated($ride_id, $passenger)
     {
         $rating = Rating::where("ride_id", $ride_id)->where('passenger_id', $passenger)->first();
-        if(!is_null($rating))
-        {
+        if (!is_null($rating)) {
             return 1;
-        }
-
-        else{
+        } else {
             return 0;
         }
 
