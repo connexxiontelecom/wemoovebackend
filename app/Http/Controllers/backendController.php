@@ -20,7 +20,7 @@ class backendController extends Controller
         $user_id = $request->user_id;
         $user = User::find($user_id);
         $user->profile_image = url("/assets/uploads/profile/" . $user->profile_image);
-        $user->license = url("/assets/uploads/profile/" . $user->license);
+        $user->license = url("assets/uploads/license/" . $user->license);
         $image =   $user->profile_image ;
         return response()->json(compact("user"));
 
