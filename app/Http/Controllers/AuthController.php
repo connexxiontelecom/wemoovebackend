@@ -226,10 +226,10 @@ class AuthController extends Controller
             $vehicle->colour = $request->colour;
             $vehicle->capacity = $request->capacity;
             $vehicle->plate_number = $request->plate_number;
-            $vehicle->license = $license_filename;
+            //$vehicle->license = $license_filename;
             $vehicle->car_picture = $CarPicturefilename;
 
-
+            $user->license = $license_filename;
             $user->user_type = 1;
             $vehicle->save();
             $user->save();
@@ -392,6 +392,47 @@ class AuthController extends Controller
         $user = User::find($userid);
         $user->device_token = $request->device_token;
         $user->save();
+    }
+
+
+
+    public function IdentifyAccount(Request $request){
+        $this->validate($request, [
+            'phone' => 'required',
+        ]);
+        $phone = $request->phone;
+        $user = User::where('phone_number', $phone)->first();
+        if(!is_null($user)){
+            $message = "success";
+            return response()->json(compact("message"));
+        }
+        else{
+            $message = "User Not Found";
+            return response()->json(compact("message"));
+        }
+    }
+
+
+
+    public function resetPassword(Request $request){
+        $this->validate($request, [
+            'phone' => 'required',
+            'password' => 'required',
+        ]);
+
+        $phone = $request->phone;
+        $password = $request->password;
+
+        $user = User::where('phone_number', $phone)->first();
+
+        $user->password =  app('hash')->make($password);
+
+        $user->save();
+
+        $message = "success";
+
+        return response()->json(compact("message"));
+
     }
 
     private function credit($amount, $id)

@@ -26,6 +26,8 @@ class CreatePassengersTable extends Migration
 
             $table->tinyInteger('seats');
 
+            $table->tinyInteger('negotiated');
+
             $table->string('pickup');
 
             $table->timestamps();

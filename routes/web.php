@@ -90,12 +90,27 @@ $router->group(['middleware' => ['jwt.auth'], 'prefix'=>'api/auth' ], function (
 
     $router->get('beneficiary', 'walletsController@getBeneficiaryName');
 
+
+
+
+
 });
 
 //un-authenticated route
 $router->group(['prefix'=>'api'], function () use ($router) {
     $router->post('register', 'AuthController@register');
     $router->post('login', 'AuthController@login');
+
+    $router->post('identifyaccount', 'AuthController@IdentifyAccount');
+    $router->post('resetpassword', 'AuthController@IdentifyAccount');
+
+    $router->post('code', 'OtpController@sendOtp');
+
+    $router->post('resendcode', 'OtpController@resendOtp');
+
+    $router->get('fetchuser', 'backendController@fetchUser');
+    $router->get('fetchcars', 'backendController@fetchCars');
+
 });
 
 

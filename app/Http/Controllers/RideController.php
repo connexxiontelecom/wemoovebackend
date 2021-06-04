@@ -10,6 +10,7 @@ use App\Models\Vehicle;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use App\Models\Wallet;
 
 class RideController extends Controller
 {
@@ -215,6 +216,24 @@ class RideController extends Controller
         $passenger->request_status = $request->status;
         $passenger->seats = $request->seats;
         $passenger->pickup = $request->pickup;
+        $ride = Ride::find($request->ride_id);
+        if($request->amount !=null){
+            $passenger->fare = $request->amount;
+        }
+        else{
+
+            $passenger->fare = $ride->amount;
+        }
+
+        if($request->dropoff){
+
+            $passenger->dropoff = $request->dropoff;
+        }
+        else{
+
+            $passenger->dropoff = $ride->destination;
+        }
+
         $passenger->save();
 
         $message = "success";
@@ -241,7 +260,7 @@ class RideController extends Controller
             'id' => 'required',
         ]);
 
-        $id = Auth::user()->id; //$request->id;
+        $id = $request->id;//Auth::user()->id; //$request->id;
 
         $pending = 1; //pending // requests awaiting acceptance
 
@@ -502,9 +521,26 @@ class RideController extends Controller
             'id' => 'required',
         ]);
 
+
         $id = $request->id;
 
         $passenger = Passenger::find($id);
+
+        /**Charge Driver the percentage for the Passenger  */
+
+        $percentage = 5;
+
+        $amount  = doubleval($passenger->seats) * doubleval($passenger->fare);
+
+        $account = Auth::user()->id;
+
+        $amount = ($percentage/100) * $amount;
+
+        $this->debit($amount, $account);
+
+        /**End Charges*/
+
+
 
         $passenger->request_status = 2; //accepted
 
@@ -793,7 +829,7 @@ class RideController extends Controller
             $vehicle->colour = $request->colour;
             $vehicle->capacity = $request->capacity;
             $vehicle->plate_number = $request->plate_number;
-            $vehicle->license = $previousVehicle->license;
+            //$vehicle->license = $previousVehicle->license;
             $vehicle->car_picture = $CarPicturefilename;
 
             $user->user_type = 1;
@@ -835,6 +871,19 @@ class RideController extends Controller
                 $this->pushtoToken($token, $title, $body, $userId);
             }
         }
+    }
+
+
+    private function debit($amount, $account)
+    {
+        $wallet = new Wallet();
+        $wallet->debit = $amount;
+        $user = Auth::user()->full_name;
+        $narration = "Debit of " . $amount . " as percentage charge by weemoove" ;
+        $wallet->narration = $narration;
+        $wallet->user_id = $account;
+        $wallet->credit = 0;
+        $wallet->save();
     }
 
 }

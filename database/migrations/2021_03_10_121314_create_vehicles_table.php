@@ -28,7 +28,7 @@ class CreateVehiclesTable extends Migration
 
             $table->string('model_year')->nullable(false);
 
-            $table->string('license')->nullable(false);
+            $table->string('license')->nullable();
 
             $table->timestamps();
         });

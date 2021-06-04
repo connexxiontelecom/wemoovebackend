@@ -26,6 +26,8 @@ class CreateUsersTable extends Migration
 
             $table->string('profile_image')->default('avatar.png');
 
+            $table->string('license')->nullable();
+
             $table->string('phone_number')->nullable(false);
 
             //address of user
