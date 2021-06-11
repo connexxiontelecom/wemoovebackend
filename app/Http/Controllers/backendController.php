@@ -26,12 +26,12 @@ class backendController extends Controller
 
     }
 
-    public function fetchCars(Request $request){
-        $this->validate($request, [
+    public function fetchCars($driver_id){
+       /*  $this->validate($request, [
             'driver_id' => 'required',
         ]);
-
-        $driver_id = $request->driver_id;
+ */
+        $driver_id = $driver_id;
         $cars = Vehicle::where("driver_id", $driver_id);
 
         foreach($cars as $car)
