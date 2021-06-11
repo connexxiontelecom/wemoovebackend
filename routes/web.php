@@ -108,7 +108,7 @@ $router->group(['prefix'=>'api'], function () use ($router) {
 
     $router->post('resendcode', 'OtpController@resendOtp');
 
-    $router->get('fetchuser', 'backendController@fetchUser');
+    $router->get('fetchuser/{user_id}', 'backendController@fetchUser');
     $router->get('fetchcars', 'backendController@fetchCars');
 
 });

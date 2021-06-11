@@ -101,10 +101,12 @@ class chatController extends Controller
 
         $results = array();
 
-        $ids = $request->ids;
+        $ids = json_decode($request->ids);
         $ride_id = $request->ride_id;
 
-        foreach($ids as $id){
+
+
+      foreach($ids as $id){
 
             $result = $this->countUnreadMsgs($id, $ride_id);
 

@@ -12,12 +12,12 @@ use App\Models\Wallet;
 class backendController extends Controller
 {
     //
-    public function fetchUser(Request $request){
-        $this->validate($request, [
+    public function fetchUser($user_id){
+     /*    $this->validate($request, [
             'user_id' => 'required',
-        ]);
+        ]); */
 
-        $user_id = $request->user_id;
+        $user_id = $user_id;//$request->user_id;
         $user = User::find($user_id);
         $user->profile_image = url("/assets/uploads/profile/" . $user->profile_image);
         $user->license = url("assets/uploads/license/" . $user->license);
