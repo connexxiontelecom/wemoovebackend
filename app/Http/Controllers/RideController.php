@@ -319,13 +319,15 @@ class RideController extends Controller
         $ride_request = DB::table('passengers as p')->leftJoin('rides as r', function ($join) {
             $join->on('r.id', '=', 'p.ride_id');
         })->select('p.id as pid', 'p.*', 'r.*')->where('p.passenger_id', $id)->where('p.passenger_ride_status', 1)->where('p.request_status', $pending)->orWhere('p.request_status', $accepted)->first();
-      /*   $ride_request->dropoffs = json_decode($ride_request->dropoffs);
+
+        if(!is_null($ride_request)){
+        $ride_request->dropoffs = json_decode($ride_request->dropoffs);
         $ride_request->pickups = json_decode($ride_request->pickups);
         $ride_request->passengers = $this->fetchPassengers($ride_request->driver_id);
-        $ride_request->driver = $this->driverInfo($ride_request->driver_id); */
+        $ride_request->driver = $this->driverInfo($ride_request->driver_id);
+        }
 
         return response()->json(compact("ride_request"));
-
     }
 
     public function cancelRide(Request $request)
