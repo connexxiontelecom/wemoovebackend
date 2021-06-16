@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:dio/dio.dart';
@@ -59,17 +60,17 @@ class UserServices {
         return message;
       }
     } on DioError catch (e) {
-      // The request was made and the server responded with a status code
+      // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
         print(e.response.data);
         print(e.response.headers);
-        print(e.response.request);
+        //print(e.response.request);
         print(e.response.statusCode);
         return RequestError.RESPONSE_ERROR;
       } else {
         // Something happened in setting up or sending the request that triggered an Error
-        print(e.request);
+        //print(e.request);
         print(e.message);
         return RequestError.CONNECTION_ERROR;
       }
@@ -80,9 +81,10 @@ class UserServices {
     //8return "success";
     try {
       String token = ""; // initially a user doesn't have a token
+      data = jsonEncode(data);
       Response response = await Client(token).post(data, '/register');
       var body = response.data;
-      //print(body);
+      print(body);
       final String authtoken = body["token"];
       User user = User.fromJson(body["user"]);
       globals.token = authtoken;
@@ -92,10 +94,13 @@ class UserServices {
       }
       return "success";
     } on DioError catch (e) {
-      // The request was made and the server responded with a status code
+      print(e);
+      // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
         var errorbody = e.response.data;
+        print(errorbody);
+        return;
         List<String> errors = [];
         /**iterate through and fetch errors
          * attempt to parse the response, to extract the message
@@ -119,7 +124,7 @@ class UserServices {
         }
       } else {
         // Something happened in setting up or sending the request that triggered an Error
-        print(e.request);
+        //print(e.request);
         print(e.message);
         return RequestError.CONNECTION_ERROR;
       }
@@ -155,16 +160,16 @@ class UserServices {
       globals.isDriverMode = true;
       return message;
     } on DioError catch (e) {
-      // The request was made and the server responded with a status code
+      // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
         print(e.response.data);
         print(e.response.headers);
-        print(e.response.request);
+        //print(e.response.request);
         return RequestError.RESPONSE_ERROR;
       } else {
         // Something happened in setting up or sending the request that triggered an Error
-        print(e.request);
+        //print(e.request);
         print(e.message);
         return RequestError.CONNECTION_ERROR;
       }
@@ -194,16 +199,16 @@ class UserServices {
       globals.isDriverMode = true;
       return message;
     } on DioError catch (e) {
-      // The request was made and the server responded with a status code
+      // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
         print(e.response.data);
         print(e.response.headers);
-        print(e.response.request);
+        //print(e.response.request);
         return RequestError.RESPONSE_ERROR;
       } else {
         // Something happened in setting up or sending the request that triggered an Error
-        print(e.request);
+        //print(e.request);
         print(e.message);
         return RequestError.CONNECTION_ERROR;
       }
@@ -219,16 +224,41 @@ class UserServices {
       globals.otp = otp;
       return;
     } on DioError catch (e) {
-      // The request was made and the server responded with a status code
+      // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
         /*print(e.response.data);
         print(e.response.headers);
-        print(e.response.request);*/
+        //print(e.response.request);*/
         return RequestError.RESPONSE_ERROR;
       } else {
         // Something happened in setting up or sending the request that triggered an Error
-        /*print(e.request);
+        /*//print(e.request);
+        print(e.message);*/
+        return RequestError.CONNECTION_ERROR;
+      }
+    }
+  }
+
+  static resendOTP(data, token) async {
+    try {
+      Response response = await Client(token).post(data, '/auth/resendotp');
+      var body = response.data;
+      final String otp = body["otp"].toString();
+      print(body);
+      globals.otp = otp;
+      return;
+    } on DioError catch (e) {
+      // The request was made and the server responded with a status views.code
+      // that falls out of the range of 2xx and is also not 304.
+      if (e.response != null) {
+        /*print(e.response.data);
+        print(e.response.headers);
+        //print(e.response.request);*/
+        return RequestError.RESPONSE_ERROR;
+      } else {
+        // Something happened in setting up or sending the request that triggered an Error
+        /*//print(e.request);
         print(e.message);*/
         return RequestError.CONNECTION_ERROR;
       }
@@ -243,16 +273,16 @@ class UserServices {
       final String message = body["message"];
       return message;
     } on DioError catch (e) {
-      // The request was made and the server responded with a status code
+      // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
         print(e.response.data);
         print(e.response.headers);
-        print(e.response.request);
+        //print(e.response.request);
         return RequestError.RESPONSE_ERROR;
       } else {
         // Something happened in setting up or sending the request that triggered an Error
-        print(e.request);
+        //print(e.request);
         print(e.message);
         return RequestError.CONNECTION_ERROR;
       }
@@ -269,16 +299,16 @@ class UserServices {
       globals.postedRide = id;
       return message;
     } on DioError catch (e) {
-      // The request was made and the server responded with a status code
+      // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
         print(e.response.data);
         print(e.response.headers);
-        print(e.response.request);
+        //print(e.response.request);
         return RequestError.RESPONSE_ERROR;
       } else {
         // Something happened in setting up or sending the request that triggered an Error
-        print(e.request);
+        //print(e.request);
         print(e.message);
         return RequestError.CONNECTION_ERROR;
       }
@@ -303,16 +333,16 @@ class UserServices {
       }
       return rides;
     } on DioError catch (e) {
-      // The request was made and the server responded with a status code
+      // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
         print(e.response.data);
         print(e.response.headers);
-        print(e.response.request);
+        //print(e.response.request);
         return RequestError.RESPONSE_ERROR;
       } else {
         // Something happened in setting up or sending the request that triggered an Error
-        print(e.request);
+        //print(e.request);
         print(e.message);
         return RequestError.CONNECTION_ERROR;
       }
@@ -324,6 +354,7 @@ class UserServices {
       Response response = await Client(token).get(data, '/auth/rides');
       var body = response.data;
       print(body);
+      //return;
       List results = body["results"];
       print(results);
       List<Ride> rides = [];
@@ -337,16 +368,16 @@ class UserServices {
       }
       return rides;
     } on DioError catch (e) {
-      // The request was made and the server responded with a status code
+      // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
         print(e.response.data);
         print(e.response.headers);
-        print(e.response.request);
+        //print(e.response.request);
         return RequestError.RESPONSE_ERROR;
       } else {
         // Something happened in setting up or sending the request that triggered an Error
-        print(e.request);
+        //print(e.request);
         print(e.message);
         return RequestError.CONNECTION_ERROR;
       }
@@ -361,16 +392,16 @@ class UserServices {
       final String message = body["message"];
       return message;
     } on DioError catch (e) {
-      // The request was made and the server responded with a status code
+      // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
         print(e.response.data);
         print(e.response.headers);
-        print(e.response.request);
+        //print(e.response.request);
         return RequestError.RESPONSE_ERROR;
       } else {
         // Something happened in setting up or sending the request that triggered an Error
-        print(e.request);
+        //print(e.request);
         print(e.message);
         return RequestError.CONNECTION_ERROR;
       }
@@ -397,16 +428,16 @@ class UserServices {
       }
       return requests;
     } on DioError catch (e) {
-      // The request was made and the server responded with a status code
+      // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
         print(e.response.data);
         print(e.response.headers);
-        print(e.response.request);
+        //print(e.response.request);
         return RequestError.RESPONSE_ERROR;
       } else {
         // Something happened in setting up or sending the request that triggered an Error
-        print(e.request);
+        //print(e.request);
         print(e.message);
         return RequestError.CONNECTION_ERROR;
       }
@@ -421,16 +452,16 @@ class UserServices {
       final String message = body["message"];
       return message;
     } on DioError catch (e) {
-      // The request was made and the server responded with a status code
+      // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
         print(e.response.data);
         print(e.response.headers);
-        print(e.response.request);
+        //print(e.response.request);
         return RequestError.RESPONSE_ERROR;
       } else {
         // Something happened in setting up or sending the request that triggered an Error
-        print(e.request);
+        //print(e.request);
         print(e.message);
         return RequestError.CONNECTION_ERROR;
       }
@@ -445,16 +476,16 @@ class UserServices {
       final String message = body["message"];
       return message;
     } on DioError catch (e) {
-      // The request was made and the server responded with a status code
+      // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
         print(e.response.data);
         print(e.response.headers);
-        print(e.response.request);
+        //print(e.response.request);
         return RequestError.RESPONSE_ERROR;
       } else {
         // Something happened in setting up or sending the request that triggered an Error
-        print(e.request);
+        //print(e.request);
         print(e.message);
         return RequestError.CONNECTION_ERROR;
       }
@@ -469,16 +500,16 @@ class UserServices {
       MyRequest result = MyRequest.fromJson(body["ride_request"]);
       return result;
     } on DioError catch (e) {
-      // The request was made and the server responded with a status code
+      // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
         print(e.response.data);
         print(e.response.headers);
-        print(e.response.request);
+        //print(e.response.request);
         return RequestError.RESPONSE_ERROR;
       } else {
         // Something happened in setting up or sending the request that triggered an Error
-        print(e.request);
+        //print(e.request);
         print(e.message);
         return RequestError.CONNECTION_ERROR;
       }
@@ -493,16 +524,16 @@ class UserServices {
       //final String message = body["message"];
       return; //message;
     } on DioError catch (e) {
-      // The request was made and the server responded with a status code
+      // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
         print(e.response.data);
         print(e.response.headers);
-        print(e.response.request);
+        //print(e.response.request);
         return RequestError.RESPONSE_ERROR;
       } else {
         // Something happened in setting up or sending the request that triggered an Error
-        print(e.request);
+        //print(e.request);
         print(e.message);
         return RequestError.CONNECTION_ERROR;
       }
@@ -523,16 +554,16 @@ class UserServices {
       }
       return chats;
     } on DioError catch (e) {
-      // The request was made and the server responded with a status code
+      // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
         print(e.response.data);
         print(e.response.headers);
-        print(e.response.request);
+        //print(e.response.request);
         return RequestError.RESPONSE_ERROR;
       } else {
         // Something happened in setting up or sending the request that triggered an Error
-        print(e.request);
+        //print(e.request);
         print(e.message);
         return RequestError.CONNECTION_ERROR;
       }
@@ -549,16 +580,16 @@ class UserServices {
       //globals.otp = otp;
       return;
     } on DioError catch (e) {
-      // The request was made and the server responded with a status code
+      // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
         /*print(e.response.data);
         print(e.response.headers);
-        print(e.response.request);*/
+        //print(e.response.request);*/
         return RequestError.RESPONSE_ERROR;
       } else {
         // Something happened in setting up or sending the request that triggered an Error
-        /*print(e.request);
+        /*//print(e.request);
         print(e.message);*/
         return RequestError.CONNECTION_ERROR;
       }
@@ -594,16 +625,16 @@ class UserServices {
 
       return "success";
     } on DioError catch (e) {
-      // The request was made and the server responded with a status code
+      // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
         print(e.response.data);
         print(e.response.headers);
-        print(e.response.request);
+        //print(e.response.request);
         return RequestError.RESPONSE_ERROR;
       } else {
         // Something happened in setting up or sending the request that triggered an Error
-        print(e.request);
+        //print(e.request);
         print(e.message);
         return RequestError.CONNECTION_ERROR;
       }
@@ -618,16 +649,16 @@ class UserServices {
       final String message = body["message"];
       return message;
     } on DioError catch (e) {
-      // The request was made and the server responded with a status code
+      // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
         print(e.response.data);
         print(e.response.headers);
-        print(e.response.request);
+        //print(e.response.request);
         return RequestError.RESPONSE_ERROR;
       } else {
         // Something happened in setting up or sending the request that triggered an Error
-        print(e.request);
+        //print(e.request);
         print(e.message);
         return RequestError.CONNECTION_ERROR;
       }
@@ -642,16 +673,16 @@ class UserServices {
       final String message = body["message"];
       return message;
     } on DioError catch (e) {
-      // The request was made and the server responded with a status code
+      // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
         print(e.response.data);
         print(e.response.headers);
-        print(e.response.request);
+        //print(e.response.request);
         return RequestError.RESPONSE_ERROR;
       } else {
         // Something happened in setting up or sending the request that triggered an Error
-        print(e.request);
+        //print(e.request);
         print(e.message);
         return RequestError.CONNECTION_ERROR;
       }
@@ -666,16 +697,16 @@ class UserServices {
       final String message = body["message"];
       return message;
     } on DioError catch (e) {
-      // The request was made and the server responded with a status code
+      // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
         print(e.response.data);
         print(e.response.headers);
-        print(e.response.request);
+        //print(e.response.request);
         return RequestError.RESPONSE_ERROR;
       } else {
         // Something happened in setting up or sending the request that triggered an Error
-        print(e.request);
+        //print(e.request);
         print(e.message);
         return RequestError.CONNECTION_ERROR;
       }
@@ -690,16 +721,16 @@ class UserServices {
       final String message = body["message"];
       return message;
     } on DioError catch (e) {
-      // The request was made and the server responded with a status code
+      // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
         print(e.response.data);
         print(e.response.headers);
-        print(e.response.request);
+        //print(e.response.request);
         return RequestError.RESPONSE_ERROR;
       } else {
         // Something happened in setting up or sending the request that triggered an Error
-        print(e.request);
+        //print(e.request);
         print(e.message);
         return RequestError.CONNECTION_ERROR;
       }
@@ -722,16 +753,16 @@ class UserServices {
       }
       return results;
     } on DioError catch (e) {
-      // The request was made and the server responded with a status code
+      // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
         print(e.response.data);
         print(e.response.headers);
-        print(e.response.request);
+        //print(e.response.request);
         return RequestError.RESPONSE_ERROR;
       } else {
         // Something happened in setting up or sending the request that triggered an Error
-        print(e.request);
+        //print(e.request);
         print(e.message);
         return RequestError.CONNECTION_ERROR;
       }
@@ -746,16 +777,16 @@ class UserServices {
       final String message = body["message"];
       return message;
     } on DioError catch (e) {
-      // The request was made and the server responded with a status code
+      // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
         print(e.response.data);
         print(e.response.headers);
-        print(e.response.request);
+        //print(e.response.request);
         return RequestError.RESPONSE_ERROR;
       } else {
         // Something happened in setting up or sending the request that triggered an Error
-        print(e.request);
+        //print(e.request);
         print(e.message);
         return RequestError.CONNECTION_ERROR;
       }
@@ -772,16 +803,16 @@ class UserServices {
       var result = body["status"];
       return result;
     } on DioError catch (e) {
-      // The request was made and the server responded with a status code
+      // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
         print(e.response.data);
         print(e.response.headers);
-        print(e.response.request);
+        //print(e.response.request);
         return RequestError.RESPONSE_ERROR;
       } else {
         // Something happened in setting up or sending the request that triggered an Error
-        print(e.request);
+        //print(e.request);
         print(e.message);
         return RequestError.CONNECTION_ERROR;
       }
@@ -797,16 +828,16 @@ class UserServices {
       var result = body["status"];
       return result;
     } on DioError catch (e) {
-      // The request was made and the server responded with a status code
+      // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
         print(e.response.data);
         print(e.response.headers);
-        print(e.response.request);
+        //print(e.response.request);
         return RequestError.RESPONSE_ERROR;
       } else {
         // Something happened in setting up or sending the request that triggered an Error
-        print(e.request);
+        //print(e.request);
         print(e.message);
         return RequestError.CONNECTION_ERROR;
       }
@@ -822,16 +853,16 @@ class UserServices {
       DriverDetails details = DriverDetails.fromJson(result);
       return details;
     } on DioError catch (e) {
-      // The request was made and the server responded with a status code
+      // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
         print(e.response.data);
         print(e.response.headers);
-        print(e.response.request);
+        //print(e.response.request);
         return RequestError.RESPONSE_ERROR;
       } else {
         // Something happened in setting up or sending the request that triggered an Error
-        print(e.request);
+        //print(e.request);
         print(e.message);
         return RequestError.CONNECTION_ERROR;
       }
@@ -854,16 +885,16 @@ class UserServices {
       globals.user.workAddress = result["work"];
       return "success";
     } on DioError catch (e) {
-      // The request was made and the server responded with a status code
+      // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
         print(e.response.data);
         print(e.response.headers);
-        print(e.response.request);
+        //print(e.response.request);
         return RequestError.RESPONSE_ERROR;
       } else {
         // Something happened in setting up or sending the request that triggered an Error
-        print(e.request);
+        //print(e.request);
         print(e.message);
         return RequestError.CONNECTION_ERROR;
       }
@@ -892,16 +923,16 @@ class UserServices {
 
       return "success";
     } on DioError catch (e) {
-      // The request was made and the server responded with a status code
+      // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
         print(e.response.data);
         print(e.response.headers);
-        print(e.response.request);
+        //print(e.response.request);
         return RequestError.RESPONSE_ERROR;
       } else {
         // Something happened in setting up or sending the request that triggered an Error
-        print(e.request);
+        //print(e.request);
         print(e.message);
         return RequestError.CONNECTION_ERROR;
       }
@@ -916,16 +947,16 @@ class UserServices {
       final String message = body["message"];
       return message;
     } on DioError catch (e) {
-      // The request was made and the server responded with a status code
+      // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
         print(e.response.data);
         print(e.response.headers);
-        print(e.response.request);
+        //print(e.response.request);
         return RequestError.RESPONSE_ERROR;
       } else {
         // Something happened in setting up or sending the request that triggered an Error
-        print(e.request);
+        //print(e.request);
         print(e.message);
         return RequestError.CONNECTION_ERROR;
       }
@@ -940,16 +971,16 @@ class UserServices {
       final String message = body["message"];
       return message;
     } on DioError catch (e) {
-      // The request was made and the server responded with a status code
+      // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
         print(e.response.data);
         print(e.response.headers);
-        print(e.response.request);
+        //print(e.response.request);
         return RequestError.RESPONSE_ERROR;
       } else {
         // Something happened in setting up or sending the request that triggered an Error
-        print(e.request);
+        //print(e.request);
         print(e.message);
         return RequestError.CONNECTION_ERROR;
       }
@@ -964,16 +995,16 @@ class UserServices {
       final String message = body["message"];
       return message;
     } on DioError catch (e) {
-      // The request was made and the server responded with a status code
+      // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
         print(e.response.data);
         print(e.response.headers);
-        print(e.response.request);
+        //print(e.response.request);
         return RequestError.RESPONSE_ERROR;
       } else {
         // Something happened in setting up or sending the request that triggered an Error
-        print(e.request);
+        //print(e.request);
         print(e.message);
         return RequestError.CONNECTION_ERROR;
       }
@@ -992,16 +1023,118 @@ class UserServices {
       responses.add(beneficiary);
       return responses;
     } on DioError catch (e) {
-      // The request was made and the server responded with a status code
+      // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
         print(e.response.data);
         print(e.response.headers);
-        print(e.response.request);
+        //print(e.response.request);
         return RequestError.RESPONSE_ERROR;
       } else {
         // Something happened in setting up or sending the request that triggered an Error
-        print(e.request);
+        //print(e.request);
+        print(e.message);
+        return RequestError.CONNECTION_ERROR;
+      }
+    }
+  }
+
+  static identifyAccount(data) async {
+    try {
+      String token = ""; // initially a user doesn't have a token
+      Response response = await Client(token).post(data, '/identifyaccount');
+      var body = response.data;
+      print(body);
+      final String message = body["message"];
+      return message;
+    } on DioError catch (e) {
+      // The request was made and the server responded with a status views.code
+      // that falls out of the range of 2xx and is also not 304.
+      if (e.response != null) {
+        print(e.response.data);
+        print(e.response.headers);
+        //print(e.response.request);
+        return RequestError.RESPONSE_ERROR;
+      } else {
+        // Something happened in setting up or sending the request that triggered an Error
+        //print(e.request);
+        print(e.message);
+        return RequestError.CONNECTION_ERROR;
+      }
+    }
+  }
+
+  static sendcode(data) async {
+    try {
+      String token = "";
+      Response response = await Client(token).post(data, '/code');
+      var body = response.data;
+      final String otp = body["otp"].toString();
+      print(body);
+      globals.otp = otp;
+      return;
+    } on DioError catch (e) {
+      // The request was made and the server responded with a status views.code
+      // that falls out of the range of 2xx and is also not 304.
+      if (e.response != null) {
+        /*print(e.response.data);
+        print(e.response.headers);
+        //print(e.response.request);*/
+        return RequestError.RESPONSE_ERROR;
+      } else {
+        // Something happened in setting up or sending the request that triggered an Error
+        /*//print(e.request);
+        print(e.message);*/
+        return RequestError.CONNECTION_ERROR;
+      }
+    }
+  }
+
+  static resendCode(data) async {
+    try {
+      String token = "";
+      Response response = await Client(token).post(data, '/resendcode');
+      var body = response.data;
+      final String otp = body["otp"].toString();
+      print(body);
+      globals.otp = otp;
+      return;
+    } on DioError catch (e) {
+      // The request was made and the server responded with a status views.code
+      // that falls out of the range of 2xx and is also not 304.
+      if (e.response != null) {
+        /*print(e.response.data);
+        print(e.response.headers);
+        //print(e.response.request);*/
+        return RequestError.RESPONSE_ERROR;
+      } else {
+        // Something happened in setting up or sending the request that triggered an Error
+        /*//print(e.request);
+        print(e.message);*/
+        return RequestError.CONNECTION_ERROR;
+      }
+    }
+  }
+
+  static resetPassword(data) async {
+    try {
+      String token = ""; // initially a user doesn't have a token
+      Response response = await Client(token).post(data, '/resetpassword');
+      var body = response.data;
+      print(body);
+      final String message = body["message"];
+      return message;
+    } on DioError catch (e) {
+      // The request was made and the server responded with a status views.code
+      // that falls out of the range of 2xx and is also not 304.
+      if (e.response != null) {
+        print(e.response.data);
+        print(e.response.headers);
+        //print(e.response.request);
+        return RequestError.RESPONSE_ERROR;
+      } else {
+        // Something happened in setting up or sending the request that triggered an Error
+        //print(e.request);
         print(e.message);
         return RequestError.CONNECTION_ERROR;
       }

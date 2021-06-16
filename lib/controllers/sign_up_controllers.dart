@@ -1,8 +1,10 @@
+import 'package:connectycube_sdk/connectycube_calls.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:stacked/stacked.dart';
 import 'package:wemoove/components/ErrorModal.dart';
 import 'package:wemoove/components/ProcessModal.dart';
+import 'package:wemoove/controllers/SignInController.dart';
 import 'package:wemoove/globals.dart' as globals;
 import 'package:wemoove/helper/BouncingTransition.dart';
 import 'package:wemoove/models/request_errors.dart';
@@ -69,6 +71,13 @@ class SignUpController extends BaseViewModel {
     dynamic response = await UserServices.registerUser(data);
 
     if (response == "success") {
+      CubeUser user = CubeUser(
+          email: globals.user.email,
+          password: '!@wemoove',
+          fullName: globals.user.fullName);
+
+      //SignInController().cubeSignup(globals.user.email, globals.user.fullName);
+      SignInController().initCube(user);
       Navigator.pop(context);
       Navigate.to(context, OtpScreen());
       UserServices.sendOTP({"phone": phoneController.text}, globals.token);

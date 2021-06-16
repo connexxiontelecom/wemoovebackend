@@ -139,7 +139,7 @@ class _MainDrawerState extends State<MainDrawer> {
                   ),
                 globals.isDriverMode
                     ? Container()
-                    : InkWell(
+                    : Container() /*InkWell(
                         child: MenuItem(
                           icon: LineAwesomeIcons.wallet,
                           title: "Discounts",
@@ -147,8 +147,9 @@ class _MainDrawerState extends State<MainDrawer> {
                         onTap: () {
                           Scaffold.of(context).openEndDrawer();
                         },
-                      ),
-                InkWell(
+                      )*/
+                ,
+                /* InkWell(
                   child: MenuItem(
                     icon: LineAwesomeIcons.headphones,
                     title: "Support",
@@ -156,7 +157,7 @@ class _MainDrawerState extends State<MainDrawer> {
                   onTap: () {
                     Scaffold.of(context).openEndDrawer();
                   },
-                ),
+                ),*/
                 InkWell(
                   child: MenuItem(
                     icon: LineAwesomeIcons.info_circle,
@@ -166,7 +167,7 @@ class _MainDrawerState extends State<MainDrawer> {
                     Scaffold.of(context).openEndDrawer();
                   },
                 ),
-                InkWell(
+                /*  InkWell(
                   child: MenuItem(
                     icon: LineAwesomeIcons.cog,
                     title: "Settings",
@@ -175,7 +176,7 @@ class _MainDrawerState extends State<MainDrawer> {
                     Scaffold.of(context).openEndDrawer();
                     //Navigator.pop(context);
                   },
-                ),
+                ),*/
                 InkWell(
                   child: MenuItem(
                     icon: LineAwesomeIcons.alternate_sign_out,

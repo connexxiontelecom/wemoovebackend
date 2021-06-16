@@ -3,6 +3,7 @@ import 'package:overlay_support/overlay_support.dart';
 import 'package:read_otp_plugin/read_otp_plugin.dart';
 import 'package:stacked/stacked.dart';
 import 'package:wemoove/controllers/OtpController.dart';
+import 'package:wemoove/globals.dart' as globals;
 
 import '../../../constants.dart';
 import '../../../size_config.dart';
@@ -17,12 +18,13 @@ class _BodyState extends State<Body> {
   String _textContent = 'Waiting for messages...';
   OtpController otpController = OtpController();
   ReadOtpPlugin _smsReceiver;
+  String channel = "wemoove";
 
   @override
   void initState() {
     super.initState();
     _smsReceiver = ReadOtpPlugin(onSmsReceived);
-    _startListening();
+    _startListening(channel);
   }
 
   void onSmsReceived(String message) {
@@ -40,8 +42,8 @@ class _BodyState extends State<Body> {
     });
   }
 
-  void _startListening() {
-    _smsReceiver.startListening(providerName: "AFRICASTKNG", otpLength: 4);
+  void _startListening(String sender) {
+    _smsReceiver.startListening(providerName: sender, otpLength: 4);
     setState(() {
       _textContent = "Waiting for messages...";
     });
@@ -79,7 +81,8 @@ class _BodyState extends State<Body> {
                         "OTP Verification",
                         style: SmallHeadingStyle,
                       ),
-                      Text("We sent your code to +234 80356 ***"),
+                      Text(
+                          "We sent your OTP code to ${globals.user.phoneNumber}"),
                       buildTimer(),
                       OtpForm(
                         controller: controller,
@@ -91,10 +94,10 @@ class _BodyState extends State<Body> {
                       SizedBox(height: SizeConfig.screenHeight * 0.1),
                       GestureDetector(
                         onTap: () {
+                          _smsReceiver.unRegisterListening();
                           controller.resendOtpValue();
-                          _startListening();
-                          toast("OTP code sent",
-                              duration: Duration(seconds: 5));
+                          _startListening("N-Alert");
+                          toast("code sent", duration: Duration(seconds: 5));
                         },
                         child: Text(
                           "Resend OTP Code",

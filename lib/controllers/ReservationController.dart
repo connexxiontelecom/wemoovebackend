@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:stacked/stacked.dart';
@@ -47,9 +49,9 @@ class ReservationController extends BaseViewModel {
   void fetchUnreadMessages() async {
     List<int> ids = [];
     ids.add(this.reservation.driver.driverId);
-    var data = {"ids": ids.toList(), "ride_id": reservation.rideId};
+    var data = {"ids": jsonEncode(ids.toList()), "ride_id": reservation.rideId};
     dynamic response = await UserServices.fetchunread(data, globals.token);
-    //print(response)8+;
+
     unreads = response;
     print(response);
     notifyListeners();

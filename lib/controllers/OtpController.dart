@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:overlay_support/overlay_support.dart';
 import 'package:stacked/stacked.dart';
 import 'package:wemoove/components/ErrorModal.dart';
 import 'package:wemoove/components/ProcessModal.dart';
@@ -20,7 +21,14 @@ class OtpController extends BaseViewModel {
     BuildContext context,
     String value,
   ) {
-    List otp_array = value.split("");
+    print(value);
+    value = value.trim();
+    List arr = value.split(".");
+    List otp_array = arr[0].split("");
+    print(otp_array);
+    print("printing global otp");
+    print(globals.otp);
+    //return;
     if (otp_array.length > 0) {
       first_value = TextEditingController(text: otp_array[0]);
       second_value = TextEditingController(text: otp_array[1]);
@@ -28,18 +36,23 @@ class OtpController extends BaseViewModel {
       fourth_value = TextEditingController(text: otp_array[3]);
     }
     notifyListeners();
-
-    //submit(context);
-    if (globals.otp == value) {
-      submit(context);
-    }
+    value = otp_array.join('');
+    print("the value is " + value);
+    submit(context, value);
   }
 
   resendOtpValue() {
-    UserServices.sendOTP({"phone": globals.user.phoneNumber}, globals.token);
+    UserServices.resendOTP({"phone": globals.user.phoneNumber}, globals.token);
   }
 
-  void submit(BuildContext context) async {
+  void submit(BuildContext context, dynamic value) async {
+    print("printing global otp");
+    print(globals.otp);
+
+    if (globals.otp != value) {
+      toast("Invalid OTP", duration: Duration(seconds: 8));
+      return;
+    }
     var data = {
       "verify": "true",
     };

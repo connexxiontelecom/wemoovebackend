@@ -4,7 +4,6 @@ import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:wemoove/components/ExpandableSection.dart';
 import 'package:wemoove/controllers/BookingController.dart';
 import 'package:wemoove/globals.dart' as globals;
-import 'package:wemoove/helper/BouncingTransition.dart';
 
 import '../../../constants.dart';
 import '../../../size_config.dart';
@@ -20,6 +19,7 @@ class Body extends StatefulWidget {
 class _BodyState extends State<Body> {
   @override
   Widget build(BuildContext context) {
+    widget.controller.setBuildContext(context);
     return Stack(
       children: [
         Positioned(
@@ -39,11 +39,29 @@ class _BodyState extends State<Body> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Image.asset(
+                  GestureDetector(
+                    child: Row(
+                      children: [
+                        Icon(
+                          LineAwesomeIcons.arrow_left,
+                          color: kPrimaryColor,
+                          size: 30,
+                        ),
+                        Text(
+                          "Back",
+                          style: TextStyle(color: kPrimaryColor, fontSize: 18),
+                        )
+                      ],
+                    ),
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                  /*Image.asset(
                     "assets/images/appbarlogo.png",
                     height: getProportionateScreenHeight(30),
                     //width: getProportionateScreenWidth(235),
-                  ),
+                  ),*/
                   CircleAvatar(
                       radius: 25,
                       //child: Image.asset("assets/images/sample.jpg")
@@ -88,7 +106,7 @@ class _BodyState extends State<Body> {
                   ),
                   Row(
                     children: [
-                      InkWell(
+                      /* InkWell(
                         child: Container(
                           height: 50,
                           width: 50,
@@ -106,6 +124,37 @@ class _BodyState extends State<Body> {
                           Navigate.pop(context);
                         },
                       ),
+                      SizedBox(
+                        width: 20,
+                      ),*/
+                      if (widget.controller.ride.capacity !=
+                          widget.controller.ride.takenSeats)
+                        Expanded(
+                          child: InkWell(
+                            child: Container(
+                                height: 50,
+                                //width: SizeConfig.screenWidth * 0.7,
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                    color: Colors.transparent,
+                                    border: Border.all()),
+                                child: Center(
+                                  child: Text(
+                                    "Negotiate",
+                                    style: TextStyle(
+                                        color: kPrimaryColor,
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 18),
+                                  ),
+                                )),
+                            onTap: () {
+                              //Navigate.to(context, SuccessScreen());
+                              //widget.controller.bookRide(context);
+                              widget.controller.ShowNegotiationModal(
+                                  context, widget.controller);
+                            },
+                          ),
+                        ),
                       SizedBox(
                         width: 20,
                       ),
@@ -126,12 +175,12 @@ class _BodyState extends State<Body> {
                                     style: TextStyle(
                                         color: kPrimaryColor,
                                         fontWeight: FontWeight.w500,
-                                        fontSize: 20),
+                                        fontSize: 18),
                                   ),
                                 )),
                             onTap: () {
                               //Navigate.to(context, SuccessScreen());
-                              widget.controller.bookRide(context);
+                              widget.controller.bookRide();
                             },
                           ),
                         ),
@@ -291,7 +340,7 @@ class _DetailsState extends State<Details> {
             expand: expandedknockOffs,
             child: Container(
               child: Wrap(
-                  children: createChildren(widget.controller.ride.knockoffs)),
+                  children: createChildren(widget.controller.ride.dropoffs)),
             ),
           ),
           SizedBox(

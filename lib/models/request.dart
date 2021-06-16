@@ -6,6 +6,8 @@ class Request {
   int requestStatus;
   int seats;
   String pickup;
+  String fare;
+  String dropoff;
   String createdAt;
   String updatedAt;
   String fullName;
@@ -17,6 +19,7 @@ class Request {
   dynamic address;
   int userType;
   int status;
+  int negotiated;
   int verified;
   dynamic rememberToken;
 
@@ -39,6 +42,9 @@ class Request {
       this.address,
       this.userType,
       this.status,
+      this.negotiated,
+      this.fare,
+      this.dropoff,
       this.verified,
       this.rememberToken});
 
@@ -61,6 +67,9 @@ class Request {
     address = json['address'];
     userType = json['user_type'];
     status = json['status'];
+    negotiated = json['negotiated'];
+    fare = json['fare'];
+    dropoff = json['dropoff'];
     verified = json['verified'];
     rememberToken = json['remember_token'];
   }

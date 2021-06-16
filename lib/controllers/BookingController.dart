@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:stacked/stacked.dart';
 import 'package:wemoove/components/ErrorModal.dart';
+import 'package:wemoove/components/NegotiationModal.dart';
 import 'package:wemoove/components/ProcessModal.dart';
 import 'package:wemoove/components/SelectPickupModal.dart';
 import 'package:wemoove/components/ValidationErrorModal.dart';
@@ -17,7 +18,11 @@ class BookingController extends BaseViewModel {
   String pickup;
   int isPickupSelected = -1;
   BookingController(this.ride);
+  BuildContext context;
   int seats = 1;
+
+  TextEditingController amountController = new TextEditingController();
+  TextEditingController dropoffController = new TextEditingController();
 
   increment() {
     if (seats < this.ride.capacity) {
@@ -31,6 +36,10 @@ class BookingController extends BaseViewModel {
       seats--;
       notifyListeners();
     }
+  }
+
+  setBuildContext(BuildContext context) {
+    this.context = context;
   }
 
   setSelectedPickup(value) {
@@ -48,7 +57,16 @@ class BookingController extends BaseViewModel {
             ));
   }
 
-  bookRide(BuildContext context) async {
+  ShowNegotiationModal(BuildContext context, BookingController controller) {
+    showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (_) => NegotiationModal(
+              controller: controller,
+            ));
+  }
+
+  bookRide() async {
     String error = "";
     if (this.pickup == null || this.pickup.isEmpty) {
       error = "Select a pickup location";
@@ -61,7 +79,9 @@ class BookingController extends BaseViewModel {
       'passenger_id': globals.user.id,
       'status': 1, //pending acceptance
       'seats': seats,
-      'pickup': this.pickup
+      'pickup': this.pickup,
+      if (amountController.text.isNotEmpty) 'amount': amountController.text,
+      if (dropoffController.text.isNotEmpty) 'dropoff': dropoffController.text
     };
     showDialog(
         barrierDismissible: false,

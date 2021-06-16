@@ -833,6 +833,8 @@ class _RideCardState extends State<RideCard> {
                 ExpandedSection(
                   expand: expanded,
                   child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
                       children: createChildren(widget.ride
                           .pickups) /*[
                       InkWell(

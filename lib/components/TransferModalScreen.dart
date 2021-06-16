@@ -127,7 +127,7 @@ class _TransferModalScreenState extends State<TransferModalScreen> {
       },
       validator: RequiredValidator(errorText: "Beneficiary required"),
       decoration: InputDecoration(
-          labelText: "Account (Phone Number)",
+          labelText: "views.Account (Phone Number)",
           hintText: "e.g 080123456789",
           floatingLabelBehavior: FloatingLabelBehavior.always,
           prefixIcon: Icon(LineAwesomeIcons.wallet)),

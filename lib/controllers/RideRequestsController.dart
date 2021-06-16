@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:stacked/stacked.dart';
@@ -99,7 +101,11 @@ class RideRequestController extends BaseViewModel {
         ids.add(request.passengerId);
         print(request.passengerId);
       }
-      var data = {"ids": ids.toList(), "ride_id": globals.postedRide};
+      var data = {
+        "ids": jsonEncode(ids.toList()),
+        "ride_id": globals.postedRide
+      };
+      print(data);
       dynamic response = await UserServices.fetchunread(data, globals.token);
       print(response);
       unreads = response;

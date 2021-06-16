@@ -1,13 +1,16 @@
+import 'package:connectycube_sdk/connectycube_calls.dart';
+import 'package:connectycube_sdk/connectycube_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:overlay_support/overlay_support.dart';
 import 'package:wemoove/components/CustomButton.dart';
 import 'package:wemoove/components/ExpandableSection.dart';
 import 'package:wemoove/controllers/ReservationController.dart';
 import 'package:wemoove/globals.dart' as globals;
 import 'package:wemoove/helper/BouncingTransition.dart';
+import 'package:wemoove/managers/call_manager.dart';
 import 'package:wemoove/views/chats/components/chatBody.dart';
 
 import '../../../constants.dart';
@@ -43,6 +46,7 @@ class _BodyState extends State<Body> {
 
   @override
   Widget build(BuildContext context) {
+    CallManager.instance.context = context;
     return Stack(
       children: [
         Positioned(
@@ -198,8 +202,27 @@ class _BodyState extends State<Body> {
                                 ],
                               ),
                               onTap: () {
-                                launch(
-                                    "tel:${widget.controller.reservation.driver.phoneNumber}");
+                                Set<int> _selectedUsers = {};
+                                getUserByEmail(widget
+                                        .controller.reservation.driver.email)
+                                    .then((cubeUser) {
+                                  _selectedUsers.add(cubeUser.id);
+                                  CallManager.instance.startNewCall(context,
+                                      CallType.AUDIO_CALL, _selectedUsers,
+                                      image: widget.controller.reservation
+                                          .driver.profileImage,
+                                      fullname: widget.controller.reservation
+                                          .driver.fullName);
+                                }).catchError((error) {
+                                  toast("Can't  connect to recipient",
+                                      duration: Duration(seconds: 8));
+                                });
+                                /* Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => LoginScreen()));*/
+                                /*     launch(
+                                    "tel:${widget.controller.reservation.driver.phoneNumber}");*/
                               },
                             ),
                             InkWell(
@@ -439,14 +462,14 @@ class _DetailsState extends State<Details> {
                 Row(
                   children: [
                     Text(
-                      "Knockoffs",
+                      "Drop-offs",
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 18,
                           color: kPrimaryAlternateColor),
                     ),
                     Text(
-                      "(Areas Driver won't be stopping)",
+                      "(Areas Driver will also be stopping)",
                       style: TextStyle(
                           fontWeight: FontWeight.w500,
                           fontSize: 15,
@@ -468,7 +491,7 @@ class _DetailsState extends State<Details> {
             child: Container(
               child: Wrap(
                   children:
-                      createChildren(widget.controller.reservation.knockoffs)),
+                      createChildren(widget.controller.reservation.dropoffs)),
             ),
           ),
           SizedBox(
@@ -708,7 +731,7 @@ class _DetailsState extends State<Details> {
                     ),
                   ),
                   Text(
-                    "N${widget.controller.reservation.amount}",
+                    "N${widget.controller.reservation.fare}",
                     style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,

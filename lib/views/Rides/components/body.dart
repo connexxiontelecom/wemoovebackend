@@ -364,7 +364,10 @@ class _RideCardState extends State<RideCard> {
                   child:*/
                 ExpandedSection(
                   expand: expanded,
-                  child: Column(children: createChildren(widget.ride.pickups)),
+                  child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: createChildren(widget.ride.pickups)),
                 ),
               ],
             ),

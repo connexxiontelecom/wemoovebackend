@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:wemoove/components/defaultButton.dart';
 import 'package:wemoove/components/form_error.dart';
 import 'package:wemoove/controllers/SignInController.dart';
+import 'package:wemoove/views/Account/AccountScreen.dart';
 
 import '../../../constants.dart';
 import '../../../size_config.dart';
@@ -36,6 +38,8 @@ class _SignFormState extends State<SignForm> {
       });
   }
 
+  void startServiceInPlatform() async {}
+
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -67,6 +71,10 @@ class _SignFormState extends State<SignForm> {
                   "Forgot Password",
                   style: TextStyle(decoration: TextDecoration.underline),
                 ),
+                onTap: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => AccountScreen()));
+                },
               )
             ],
           ),
@@ -77,6 +85,7 @@ class _SignFormState extends State<SignForm> {
             text: "Continue",
             textColor: kPrimaryColor,
             press: () {
+              //startServiceInPlatform();
               if (_formKey.currentState.validate()) {
                 _formKey.currentState.save();
                 widget.controller.signIn(context);

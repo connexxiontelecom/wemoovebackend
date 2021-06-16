@@ -99,7 +99,7 @@ class Body extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Text(
-                                'Have an Account ?',
+                                'Have an views.Account ?',
                                 textAlign: TextAlign.center,
                                 style: TextStyle(fontSize: 16),
                               ),

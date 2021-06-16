@@ -11,10 +11,12 @@ class RideHistory {
   String updatedAt;
   int driverId;
   String amount;
+  String fare;
+  String dropoff;
   String destination;
   String pickup1;
   String pickup2;
-  List<String> knockoffs;
+  List<String> dropoffs;
   List<Pickups> pickups;
   String departureTime;
   int capacity;
@@ -35,10 +37,12 @@ class RideHistory {
       this.updatedAt,
       this.driverId,
       this.amount,
+      this.fare,
+      this.dropoff,
       this.destination,
       this.pickup1,
       this.pickup2,
-      this.knockoffs,
+      this.dropoffs,
       this.pickups,
       this.departureTime,
       this.capacity,
@@ -59,10 +63,12 @@ class RideHistory {
     updatedAt = json['updated_at'];
     driverId = json['driver_id'];
     amount = json['amount'];
+    fare = json['fare'];
+    dropoff = json['dropoff'];
     destination = json['destination'];
     pickup1 = json['pickup1'];
     pickup2 = json['pickup2'];
-    knockoffs = json['knockoffs'].cast<String>();
+    dropoffs = json['dropoffs'].cast<String>();
     if (json['pickups'] != null) {
       List<Pickups> pickups = [];
       json['pickups'].forEach((v) {
@@ -94,7 +100,7 @@ class RideHistory {
     data['destination'] = this.destination;
     data['pickup1'] = this.pickup1;
     data['pickup2'] = this.pickup2;
-    data['knockoffs'] = this.knockoffs;
+    data['dropoffs'] = this.dropoffs;
     if (this.pickups != null) {
       data['pickups'] = this.pickups.map((v) => v.toJson()).toList();
     }

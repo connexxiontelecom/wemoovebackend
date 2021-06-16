@@ -14,7 +14,7 @@ class Boarded {
   String destination;
   dynamic pickup1;
   dynamic pickup2;
-  List<String> knockoffs;
+  List<String> dropoffs;
   List<Pickups> pickups;
   String departureTime;
   int capacity;
@@ -39,7 +39,7 @@ class Boarded {
       this.destination,
       this.pickup1,
       this.pickup2,
-      this.knockoffs,
+      this.dropoffs,
       this.pickups,
       this.departureTime,
       this.capacity,
@@ -64,7 +64,7 @@ class Boarded {
     destination = json['destination'];
     pickup1 = json['pickup1'];
     pickup2 = json['pickup2'];
-    knockoffs = json['knockoffs'].cast<String>();
+    dropoffs = json['dropoffs'].cast<String>();
     if (json['pickups'] != null) {
       pickups = new List<Pickups>();
       json['pickups'].forEach((v) {
@@ -97,7 +97,7 @@ class Boarded {
     data['destination'] = this.destination;
     data['pickup1'] = this.pickup1;
     data['pickup2'] = this.pickup2;
-    data['knockoffs'] = this.knockoffs;
+    data['dropoffs'] = this.dropoffs;
     if (this.pickups != null) {
       data['pickups'] = this.pickups.map((v) => v.toJson()).toList();
     }

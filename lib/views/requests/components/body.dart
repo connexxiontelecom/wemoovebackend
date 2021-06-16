@@ -1,17 +1,19 @@
 import 'dart:async';
 
+import 'package:connectycube_sdk/connectycube_calls.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
+import 'package:overlay_support/overlay_support.dart';
 import 'package:swipe_to/swipe_to.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:wemoove/components/CustomButton.dart';
 import 'package:wemoove/components/ExpandableSection.dart';
 import 'package:wemoove/constants.dart';
 import 'package:wemoove/controllers/RideRequestsController.dart';
 import 'package:wemoove/globals.dart' as globals;
 import 'package:wemoove/helper/BouncingTransition.dart';
+import 'package:wemoove/managers/call_manager.dart';
 import 'package:wemoove/models/request.dart';
 import 'package:wemoove/size_config.dart';
 import 'package:wemoove/views/chats/components/chatBody.dart';
@@ -578,6 +580,9 @@ class _PassengerRequestState extends State<PassengerRequest> {
                           ),
                         ],
                       ),
+                      SizedBox(
+                        height: 20,
+                      ),
                     ],
                   ),
                 ),
@@ -803,8 +808,25 @@ class _PassengerRequestState extends State<PassengerRequest> {
                               )),
                             ),
                             onTap: () {
+                              Set<int> _selectedUsers = {};
+                              getUserByEmail(widget.request.email)
+                                  .then((cubeUser) {
+                                _selectedUsers.add(cubeUser.id);
+                                CallManager.instance.startNewCall(context,
+                                    CallType.AUDIO_CALL, _selectedUsers,
+                                    image: widget.request.profileImage,
+                                    fullname: widget.request.fullName);
+                              }).catchError((error) {
+                                toast("Can't  connect to recipient",
+                                    duration: Duration(seconds: 8));
+                              });
+
                               //print("hello");
-                              launch("tel:${widget.request.phoneNumber}");
+                              // launch("tel:${widget.request.phoneNumber}");
+                              /* Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => LoginScreen()));*/
                             },
                           ),
                         ],
@@ -875,7 +897,64 @@ class _PassengerRequestState extends State<PassengerRequest> {
                           ),
                         ],
                       ),
-              ))
+              )),
+          if (widget.request.negotiated != 0)
+            Container(
+              height: .5,
+              color: kPrimaryAlternateColor.withOpacity(0.3),
+              width: double.infinity,
+            ),
+          SizedBox(
+            height: 20,
+          ),
+          if (widget.request.negotiated != 0)
+            Container(
+              decoration: BoxDecoration(
+                  color: kprimarywhiteshade,
+                  borderRadius: BorderRadius.circular(10)),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      width: 50,
+                    ),
+                    Text(
+                      "Offer",
+                      style: TextStyle(
+                        fontSize: 18,
+                      ),
+                    ),
+                    SizedBox(
+                      width: 15,
+                    ),
+                    Text("N${widget.request.fare}",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: kPrimaryAlternateColor,
+                            fontSize: 18)),
+                    SizedBox(
+                      width: 50,
+                    ),
+                    Text(
+                      "Drop-off:",
+                      style: TextStyle(fontSize: 18),
+                    ),
+                    SizedBox(width: 10),
+                    Expanded(
+                        child: Text(
+                      "${widget.request.dropoff}",
+                      style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: kPrimaryAlternateColor),
+                    ))
+                  ],
+                ),
+              ),
+            )
         ],
       ),
     );

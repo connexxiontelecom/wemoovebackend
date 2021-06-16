@@ -13,7 +13,7 @@ class PlacesService {
     var url =
         "https://maps.googleapis.com/maps/api/place/autocomplete/json?input=$search&components=country:ng&key=$key";
     print("hello");
-    var response = await http.get(url);
+    var response = await http.get(Uri.parse(url));
     var json = convert.jsonDecode(response.body);
     var jsonResults = json['predictions'] as List;
     print(jsonResults.length);
@@ -23,7 +23,7 @@ class PlacesService {
   Future<Place> getPlace(String placeId) async {
     var url =
         'https://maps.googleapis.com/maps/api/place/details/json?place_id=$placeId&key=$key';
-    var response = await http.get(url);
+    var response = await http.get(Uri.parse(url));
     var json = convert.jsonDecode(response.body);
     var jsonResult = json['result'] as Map<String, dynamic>;
     return Place.fromJson(jsonResult);
@@ -33,7 +33,7 @@ class PlacesService {
       double lat, double lng, String placeType) async {
     var url =
         'https://maps.googleapis.com/maps/api/place/textsearch/json?location=$lat,$lng&type=$placeType&rankby=distance&key=$key';
-    var response = await http.get(url);
+    var response = await http.get(Uri.parse(url));
     var json = convert.jsonDecode(response.body);
     var jsonResults = json['results'] as List;
     return jsonResults.map((place) => Place.fromJson(place)).toList();
@@ -42,7 +42,7 @@ class PlacesService {
   Future<String> getPlaceId(double lat, double lng) async {
     var url =
         'https://maps.googleapis.com/maps/api/geocode/json?latlng=$lat,$lng&key=$key';
-    var response = await http.get(url);
+    var response = await http.get(Uri.parse(url));
     var json = convert.jsonDecode(response.body);
     var jsonResults = json['results'] as List;
     globals.currentPlaceId = jsonResults[0]["place_id"];

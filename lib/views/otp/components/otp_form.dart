@@ -132,7 +132,11 @@ class _OtpFormState extends State<OtpForm> {
             color: kPrimaryAlternateColor,
             textColor: kPrimaryColor,
             press: () {
-              widget.controller.submit(context);
+              String value = widget.controller.first_value.text;
+              value += widget.controller.second_value.text;
+              value += widget.controller.third_value.text;
+              value += widget.controller.fourth_value.text;
+              widget.controller.submit(context, value);
               //Navigate.to(context, CompleteProfileScreen());
             },
           )
