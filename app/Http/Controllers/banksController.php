@@ -32,7 +32,7 @@ class banksController extends Controller
         $user->account = $request->account;
 
         $bank = Bank::find($user->bank);
-        $bank = $bank->bank;
+        $bank = $bank->bank_name;
         $account = $request->account;
 
         $user->save();
