@@ -21,6 +21,9 @@ class WalletController extends BaseViewModel {
 
   WalletController() {
     getWalletBalance();
+    var _data = {"id": "none"};
+    UserServices.getBanks(_data, globals.token);
+    UserServices.payoutsHistory(data, globals.token);
   }
 
   void getWalletBalance() async {
@@ -138,10 +141,6 @@ class WalletController extends BaseViewModel {
               ));
     }
   }
-
-  void fundWallet() {}
-
-  void fetchTransactionHistory() {}
 
   void transfer(BuildContext context, WalletController controller) {
     this.context = context;

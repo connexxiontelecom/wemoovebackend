@@ -312,14 +312,14 @@ class _DetailsState extends State<Details> {
                 Row(
                   children: [
                     Text(
-                      "Knockoffs",
+                      "Drop-offs",
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 18,
                           color: kPrimaryAlternateColor),
                     ),
                     Text(
-                      "(Areas Driver won't be stopping)",
+                      "(Areas Driver will also stop)",
                       style: TextStyle(
                           fontWeight: FontWeight.w500,
                           fontSize: 15,

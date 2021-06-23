@@ -6,7 +6,9 @@ import 'package:intl/intl.dart';
 import 'package:wemoove/controllers/ReservationController.dart';
 import 'package:wemoove/controllers/RideRequestsController.dart';
 import 'package:wemoove/models/Boarded.dart';
+import 'package:wemoove/models/PayOut.dart';
 
+import 'models/Bank.dart';
 import 'models/Driven.dart';
 import 'models/DriverDetail.dart';
 import 'models/WalletBalance.dart';
@@ -14,7 +16,8 @@ import 'models/user.dart';
 
 bool isDriverMode = false;
 final numFormatter = new NumberFormat("#,##0.00", "en_US");
-String baseUrl = "https://wemove.cnx247.com/api";
+String baseUrl =
+    "http://192.168.88.108:8001/api"; // "https://wemove.cnx247.com/api";
 //"http://192.168.88.108:8001/api"; //"https://wemove.cnx247.com/api";
 //"https://wemove.cnx247.com/api"; //"http://192.168.88.108:8001/api";
 User user;
@@ -34,6 +37,9 @@ List<Boarded> boarded = [];
 double Balance = 0.0;
 double percentage = 5.0;
 List<WalletHistory> walletHistories = [];
+List<Bank> banks = [];
+
+List<PayOut> payouts = [];
 
 String currentPhoneNumber = "";
 

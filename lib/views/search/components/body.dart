@@ -164,7 +164,7 @@ class _BodyState extends State<Body> {
             SizedBox(
               height: 10,
             ),
-            Row(
+            /*  Row(
               children: [
                 Icon(
                   LineAwesomeIcons.home,
@@ -190,7 +190,7 @@ class _BodyState extends State<Body> {
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
               ],
-            ),
+            ),*/
 
             SizedBox(
               height: 20,

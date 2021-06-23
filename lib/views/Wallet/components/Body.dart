@@ -1,10 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
+import 'package:overlay_support/overlay_support.dart';
 import 'package:wemoove/controllers/WalletController.dart';
 import 'package:wemoove/globals.dart' as globals;
 import 'package:wemoove/helper/BouncingTransition.dart';
+import 'package:wemoove/views/Wallet/Payout_Screen.dart';
 import 'package:wemoove/views/Wallet/TransactionDetails.dart';
+import 'package:wemoove/views/Wallet/manage_account.dart';
 
 import '../../../constants.dart';
 import '../../../size_config.dart';
@@ -186,6 +189,40 @@ class _BodyState extends State<Body> {
                         widget.controller.transfer(context, widget.controller);
                       },
                     ),
+                    if (globals.user.userType == 1 && globals.isDriverMode)
+                      WalletMenuTile(
+                        icon: Icons.account_balance_wallet,
+                        title: "Manage Account",
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => ManageAccount(
+                                      //controller: widget.controller,
+                                      )));
+                          // widget.controller.transfer(context, widget.controller);
+                        },
+                      ),
+                    if (globals.user.userType == 1 && globals.isDriverMode)
+                      WalletMenuTile(
+                        icon: Icons.payment,
+                        title: "Withdraw",
+                        onTap: () {
+                          if (globals.user.account != null &&
+                              globals.user.account.isNotEmpty) {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => PayoutScreen(
+                                        //controller: widget.controller,
+                                        )));
+                          } else {
+                            toast("Please Setup Payout Account",
+                                duration: Duration(seconds: 10));
+                          }
+                          // widget.controller.transfer(context, widget.controller);
+                        },
+                      ),
                   ],
                 ),
               ),

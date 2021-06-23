@@ -10,6 +10,7 @@ import 'package:wemoove/views/driver/CompleteProfileScreen.dart';
 import 'package:wemoove/views/profile/ProfileScreen.dart';
 import 'package:wemoove/views/ridehistory/RideHistoryScreen.dart';
 import 'package:wemoove/views/signin/SignInScreen.dart';
+import 'package:wemoove/views/support/supportScreen.dart';
 import 'package:wemoove/views/vehicles/VehiclesScreen.dart';
 
 class MainDrawer extends StatefulWidget {
@@ -149,16 +150,17 @@ class _MainDrawerState extends State<MainDrawer> {
                         },
                       )*/
                 ,
-                /* InkWell(
+                InkWell(
                   child: MenuItem(
                     icon: LineAwesomeIcons.headphones,
                     title: "Support",
                   ),
                   onTap: () {
                     Scaffold.of(context).openEndDrawer();
+                    Navigate.to(context, SupportScreen());
                   },
-                ),*/
-                InkWell(
+                ),
+                /*InkWell(
                   child: MenuItem(
                     icon: LineAwesomeIcons.info_circle,
                     title: "About",
@@ -166,7 +168,7 @@ class _MainDrawerState extends State<MainDrawer> {
                   onTap: () {
                     Scaffold.of(context).openEndDrawer();
                   },
-                ),
+                ),*/
                 /*  InkWell(
                   child: MenuItem(
                     icon: LineAwesomeIcons.cog,

@@ -12,6 +12,8 @@ class User {
   int userType;
   int status;
   int verified;
+  String bank;
+  String account;
   String deviceToken;
   dynamic rememberToken;
   String createdAt;
@@ -33,6 +35,8 @@ class User {
       this.userType,
       this.status,
       this.verified,
+      this.bank,
+      this.account,
       this.deviceToken,
       this.rememberToken,
       this.createdAt,
@@ -54,6 +58,8 @@ class User {
     userType = json['user_type'];
     status = json['status'];
     verified = json['verified'];
+    bank = json["bank"];
+    account = json["account"];
     deviceToken = json['device_token'];
     rememberToken = json['remember_token'];
     createdAt = json['created_at'];

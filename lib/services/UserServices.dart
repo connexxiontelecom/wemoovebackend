@@ -3,11 +3,13 @@ import 'dart:developer';
 
 import 'package:dio/dio.dart';
 import 'package:wemoove/globals.dart' as globals;
+import 'package:wemoove/models/Bank.dart';
 import 'package:wemoove/models/Boarded.dart';
 import 'package:wemoove/models/Credentials.dart';
 import 'package:wemoove/models/Driven.dart';
 import 'package:wemoove/models/DriverDetail.dart';
 import 'package:wemoove/models/MyRequest.dart';
+import 'package:wemoove/models/PayOut.dart';
 import 'package:wemoove/models/Ride.dart';
 import 'package:wemoove/models/Vehicle.dart';
 import 'package:wemoove/models/WalletBalance.dart';
@@ -34,7 +36,8 @@ class UserServices {
         globals.token = authtoken;
         if (globals.devicetoken != null &&
             globals.devicetoken.isNotEmpty &&
-            user is User) {
+            user is User &&
+            user != null) {
           //save the device token
           //print(data['email']);
           saveLocaLStorage(
@@ -44,7 +47,8 @@ class UserServices {
           saveDeviceToken({"device_token": globals.devicetoken}, globals.token);
           ridehistory(globals.token);
         }
-
+        getBanks({"id": "none"}, token);
+        getWalletBalance({"id": user.id}, globals.token);
         globals.user = user;
         if (user.userType == 1) {
           globals.isDriverMode = true;
@@ -53,6 +57,7 @@ class UserServices {
           if (response != null && response is DriverDetails) {
             globals.details = response;
           }
+          payoutsHistory(data, globals.token);
         }
         return "success";
       } else {
@@ -1120,6 +1125,159 @@ class UserServices {
     try {
       String token = ""; // initially a user doesn't have a token
       Response response = await Client(token).post(data, '/resetpassword');
+      var body = response.data;
+      print(body);
+      final String message = body["message"];
+      return message;
+    } on DioError catch (e) {
+      // The request was made and the server responded with a status views.code
+      // that falls out of the range of 2xx and is also not 304.
+      if (e.response != null) {
+        print(e.response.data);
+        print(e.response.headers);
+        //print(e.response.request);
+        return RequestError.RESPONSE_ERROR;
+      } else {
+        // Something happened in setting up or sending the request that triggered an Error
+        //print(e.request);
+        print(e.message);
+        return RequestError.CONNECTION_ERROR;
+      }
+    }
+  }
+
+  static getBanks(data, token) async {
+    try {
+      Response response = await Client(token).get(data, '/auth/banks');
+      var body = response.data;
+      print(body);
+      var banks = body["banks"] as List; //returned wallet histories
+      List<Bank> _banks = [];
+      for (var bank in banks) {
+        if (bank != null) {
+          _banks.add(Bank.fromJson(bank));
+        }
+      }
+      globals.banks = _banks;
+      return "success";
+    } on DioError catch (e) {
+      // The request was made and the server responded with a status views.code
+      // that falls out of the range of 2xx and is also not 304.
+      if (e.response != null) {
+        print(e.response.data);
+        print(e.response.headers);
+        //print(e.response.request);
+        return RequestError.RESPONSE_ERROR;
+      } else {
+        // Something happened in setting up or sending the request that triggered an Error
+        //print(e.request);
+        print(e.message);
+        return RequestError.CONNECTION_ERROR;
+      }
+    }
+  }
+
+  static saveBank(data, token) async {
+    try {
+      Response response = await Client(token).post(data, '/auth/savebank');
+      var body = response.data;
+      print(body);
+
+      final String message = body["message"];
+      final String bank = body['bank'];
+      final String account = body['account'];
+      globals.user.bank = bank;
+      globals.user.account = account;
+      return message;
+    } on DioError catch (e) {
+      // The request was made and the server responded with a status views.code
+      // that falls out of the range of 2xx and is also not 304.
+      if (e.response != null) {
+        print(e.response.data);
+        print(e.response.headers);
+        //print(e.response.request);
+        return RequestError.RESPONSE_ERROR;
+      } else {
+        // Something happened in setting up or sending the request that triggered an Error
+        //print(e.request);
+        print(e.message);
+        return RequestError.CONNECTION_ERROR;
+      }
+    }
+  }
+
+  static requestPayout(data, token) async {
+    try {
+      Response response = await Client(token).post(data, '/auth/requestpayout');
+      var body = response.data;
+      print(body);
+
+      final String message = body["message"];
+      final dynamic _payout = body['payout'];
+      PayOut payout = PayOut.fromJson(_payout);
+      payout.amount = double.parse(payout.amount);
+      List<dynamic> results = [];
+      results.add(message);
+      results.add(payout);
+      return results;
+    } on DioError catch (e) {
+      // The request was made and the server responded with a status views.code
+      // that falls out of the range of 2xx and is also not 304.
+      if (e.response != null) {
+        print(e.response.data);
+        print(e.response.headers);
+        //print(e.response.request);
+        return RequestError.RESPONSE_ERROR;
+      } else {
+        // Something happened in setting up or sending the request that triggered an Error
+        //print(e.request);
+        print(e.message);
+        return RequestError.CONNECTION_ERROR;
+      }
+    }
+  }
+
+  static payoutsHistory(data, token) async {
+    try {
+      Response response = await Client(token).get(data, '/auth/payoutshistory');
+      var body = response.data;
+      print(body);
+      final String message = body["message"];
+      final dynamic payoutHistory = body['payouts'] as List;
+
+      List<PayOut> payouts = [];
+      if (payoutHistory != null && payoutHistory.length > 0) {
+        for (var payout in payoutHistory) {
+          if (payout != null) {
+            PayOut _payout = PayOut.fromJson(payout);
+            payouts.add(_payout);
+          }
+        }
+      }
+      globals.payouts = payouts;
+      return message;
+    } on DioError catch (e) {
+      // The request was made and the server responded with a status views.code
+      // that falls out of the range of 2xx and is also not 304.
+      if (e.response != null) {
+        print(e.response.data);
+        print(e.response.headers);
+        //print(e.response.request);
+        return RequestError.RESPONSE_ERROR;
+      } else {
+        // Something happened in setting up or sending the request that triggered an Error
+        //print(e.request);
+        print(e.message);
+        return RequestError.CONNECTION_ERROR;
+      }
+    }
+  }
+
+  static requestSupport(data, token) async {
+    try {
+      Response response =
+          await Client(token).post(data, '/auth/requestsupport');
+      print(response);
       var body = response.data;
       print(body);
       final String message = body["message"];

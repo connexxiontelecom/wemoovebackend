@@ -39,7 +39,8 @@ class PushNotificationsManager {
     }
 
     FirebaseMessaging.onMessage.listen((remoteMessage) async {
-      processCallNotification(remoteMessage.data);
+      processCallNotification(remoteMessage.data,
+          notification: remoteMessage.notification);
     });
 
     FirebaseMessaging.onBackgroundMessage(onBackgroundMessage);
@@ -156,7 +157,8 @@ Future<dynamic> onResume(bool isLocal, Map<String, dynamic> payload) {
   return null;
 }
 
-processCallNotification(Map<String, dynamic> data) async {
+processCallNotification(Map<String, dynamic> data,
+    {RemoteNotification notification}) async {
   log('[processCallNotification] message: $data', PushNotificationsManager.TAG);
   if (data[PARAM_CALL_OPPONENTS] != null &&
       data[PARAM_SESSION_ID] != null &&
@@ -188,32 +190,34 @@ processCallNotification(Map<String, dynamic> data) async {
   /*RemoteNotification notification = message.notification;
   AndroidNotification android = message.notification?.android;
   */
-  //if (notification != null && android != null) {
-  showSimpleNotification(
-    Text("New Notification"),
-    leading: Text("0"), //NotificationBadge(totalNotifications: 0),
-    subtitle: Text("You have a New Notification"),
-    background: Colors.cyan[700],
-    duration: Duration(seconds: 5),
-    trailing: Builder(builder: (context) {
-      return TextButton(
-          // Bu: Colors.yellow,
-          style: ButtonStyle(
-              foregroundColor: MaterialStateProperty.all(kPrimaryColor)),
-          onPressed: () {
-            OverlaySupportEntry.of(context).dismiss();
-          },
-          child: Text('Dismiss'));
-    }),
-    autoDismiss: true, //false,
-    slideDismissDirection: DismissDirection.up,
-  );
-  // }
+  if (notification != null) {
+    showSimpleNotification(
+      Text(notification.title),
+      leading: Image.asset(
+        "assets/images/app_icon.png",
+        height: 30,
+      ), //Text("0"), //NotificationBadge(totalNotifications: 0),
+      subtitle: Text(notification.body),
+      background: Colors.cyan[700],
+      duration: Duration(seconds: 5),
+      trailing: Builder(builder: (context) {
+        return TextButton(
+            // Bu: Colors.yellow,
+            style: ButtonStyle(
+                foregroundColor: MaterialStateProperty.all(kPrimaryColor)),
+            onPressed: () {
+              OverlaySupportEntry.of(context).dismiss();
+            },
+            child: Text('Dismiss'));
+      }),
+      autoDismiss: true, //false,
+      slideDismissDirection: DismissDirection.up,
+    );
+  }
 }
 
 Future<void> onBackgroundMessage(RemoteMessage message) async {
   await Firebase.initializeApp();
-
   ConnectycubeFlutterCallKit.onCallAcceptedWhenTerminated = (
     sessionId,
     callType,
