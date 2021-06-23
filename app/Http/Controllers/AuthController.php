@@ -65,11 +65,11 @@ class AuthController extends Controller
 
         $hasvehicle =  $this->hasVehicle(Auth::user()->id);
 
+       if(!is_null(Auth::user()->bank)){
         $bank = Bank::find(Auth::user()->bank);
-
-        $bank  = $bank->bank;
-
+        $bank  = $bank->bank_name;
         Auth::user()->bank = $bank;
+       }
 
         if($currentRideStatus!=false){
             $user["current_ride_status"] =1;
