@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Bank;
 use App\Models\Passenger;
 use App\Models\Ride;
 use App\Models\User;
@@ -63,6 +64,12 @@ class AuthController extends Controller
         $currentRequestStatus = $this->isRequestPendingOrAccepted(Auth::user()->id);
 
         $hasvehicle =  $this->hasVehicle(Auth::user()->id);
+
+        $bank = Bank::find(Auth::user()->bank);
+
+        $bank  = $bank->bank;
+
+        Auth::user()->bank = $bank;
 
         if($currentRideStatus!=false){
             $user["current_ride_status"] =1;

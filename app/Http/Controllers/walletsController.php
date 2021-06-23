@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\payout_request;
 use App\Models\User;
 use App\Models\Wallet;
 use Illuminate\Http\Request;
@@ -102,23 +103,22 @@ class walletsController extends Controller
 
     }
 
-    public function getBeneficiaryName(Request $request){
+    public function getBeneficiaryName(Request $request)
+    {
         $this->validate($request, [
             'beneficiary' => 'required',
         ]);
         $account = $request->beneficiary;
         $user = User::where('phone_number', $account)->first();
-      if(!is_null($user)){
-        $response = $user->full_name;
-        $message = "success";
-        return response()->json(compact("response", "message"));
-      }
-
-      else {
-        $response = "unknown user";
-        $message = "error";
-        return response()->json(compact("response", "message"));
-      }
+        if (!is_null($user)) {
+            $response = $user->full_name;
+            $message = "success";
+            return response()->json(compact("response", "message"));
+        } else {
+            $response = "unknown user";
+            $message = "error";
+            return response()->json(compact("response", "message"));
+        }
 
     }
 
@@ -138,6 +138,39 @@ class walletsController extends Controller
         return $total;
     }
 
+    //payout controller
+    public function requestPayout(Request $request)
+    {
+
+        $this->validate($request, [
+            'user_id' => 'required',
+            'amount' => 'required',
+        ]);
+
+        $user = $request->user_id;
+        $amount = $request->amount;
+        $status = 0;
+        $payout_request = new payout_request();
+
+        $payout_request->user_id = $user;
+        $payout_request->amount = $amount;
+        //$payout_request->s
+        $payout_request->save();
+        $payout_request->action_type = 0;
+        $payout = $payout_request;
+        $message = "success";
+        return response()->json(compact("message","payout"));
+    }
+
+    //payouts history for a particular user
+    public function payouts(Request $request)
+    {
+
+        $payouts = payout_request::where("user_id", Auth::user()->id)->orderBy('id', 'DESC')->get();
+
+        $message = "success";
+        return response()->json(compact("message", "payouts"));
+    }
 
     public function history()
     {

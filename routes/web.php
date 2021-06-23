@@ -90,8 +90,16 @@ $router->group(['middleware' => ['jwt.auth'], 'prefix'=>'api/auth' ], function (
 
     $router->get('beneficiary', 'walletsController@getBeneficiaryName');
 
+    $router->get('banks', 'banksController@getBanks');
+
+    $router->post('savebank', 'banksController@saveBank');
 
 
+    $router->post('requestpayout', 'walletsController@requestPayout');
+
+    $router->get('payoutshistory', 'walletsController@payouts');
+
+    $router->post('requestsupport', 'SupportController@SubmitRequest');
 
 
 });
