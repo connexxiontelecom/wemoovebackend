@@ -316,9 +316,19 @@ class RideController extends Controller
         $accepted = 2;
         $id = $request->id;
 
-        $ride_request = DB::table('passengers as p')->leftJoin('rides as r', function ($join) {
+       /*  $ride_request = DB::table('passengers as p')->leftJoin('rides as r', function ($join) {
             $join->on('r.id', '=', 'p.ride_id');
         })->select('p.id as pid', 'p.*', 'r.*')->where('p.passenger_id', $id)->where('p.passenger_ride_status', 1)->where('p.request_status', $pending)->orWhere('p.request_status', $accepted)->first();
+
+ */
+
+        $ride_request= DB::table('passengers as p')
+        ->join('rides as r', 'r.id', '=', 'p.ride_id')
+        ->select('p.id as pid', 'p.*', 'r.*')->where(function ($query) use ($pending, $id) {
+        $query->where('p.passenger_id', $id)->where('p.passenger_ride_status', 1)->where('p.request_status', $pending);
+    })->oRwhere(function ($query) use ($accepted, $id) {
+        $query->where('p.passenger_id', $id)->where('p.passenger_ride_status', 1)->where('p.request_status', $accepted);
+    })->first();
 
         if(!is_null($ride_request)){
         $ride_request->dropoffs = json_decode($ride_request->dropoffs);
