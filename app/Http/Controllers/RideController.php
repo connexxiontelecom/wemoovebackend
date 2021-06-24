@@ -328,7 +328,7 @@ class RideController extends Controller
         $query->where('p.passenger_id', $id)->where('p.passenger_ride_status', 1)->where('p.request_status', $pending);
     })->oRwhere(function ($query) use ($accepted, $id) {
         $query->where('p.passenger_id', $id)->where('p.passenger_ride_status', 1)->where('p.request_status', $accepted);
-    })->first();
+    })->orderBy('p.id', 'DESC')->first();
 
         if(!is_null($ride_request)){
         $ride_request->dropoffs = json_decode($ride_request->dropoffs);
