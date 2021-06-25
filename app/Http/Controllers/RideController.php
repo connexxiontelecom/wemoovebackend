@@ -207,6 +207,7 @@ class RideController extends Controller
             'status' => 'required',
             'seats' => 'required',
             'pickup' => 'required',
+            'payment_mode'=>'required',
         ]);
 
         $passenger = new Passenger;
@@ -216,9 +217,11 @@ class RideController extends Controller
         $passenger->request_status = $request->status;
         $passenger->seats = $request->seats;
         $passenger->pickup = $request->pickup;
+        $passenger->payment_mode = $request->payment_mode;
         $ride = Ride::find($request->ride_id);
         if($request->amount !=null){
             $passenger->fare = $request->amount;
+            $passenger->negotiated = 1;
         }
         else{
 
