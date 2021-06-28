@@ -1,8 +1,8 @@
 class WalletHistory {
   int id;
   int userId;
-  int credit;
-  int debit;
+  dynamic credit;
+  dynamic debit;
   String narration;
   String createdAt;
   String updatedAt;

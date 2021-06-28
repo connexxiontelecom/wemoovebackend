@@ -11,6 +11,7 @@ class RideHistoryScreen extends StatelessWidget {
   static String routeName = "/history";
   @override
   Widget build(BuildContext context) {
+    globals.context = context;
     SizeConfig().init(context);
     return ViewModelBuilder<RideHistoryController>.reactive(
         viewModelBuilder: () => RideHistoryController(/*context: context*/),

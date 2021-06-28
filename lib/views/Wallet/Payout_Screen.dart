@@ -29,6 +29,7 @@ class _PayoutScreenState extends State<PayoutScreen> {
   }
 
   Widget build(BuildContext context) {
+    globals.context = context;
     return ViewModelBuilder<PayoutController>.reactive(
       viewModelBuilder: () => PayoutController(),
       builder: (context, controller, child) => Scaffold(

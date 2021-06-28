@@ -229,6 +229,7 @@ class RideRequestController extends BaseViewModel {
     dynamic response = await UserServices.cancelRide(data, globals.token);
 
     if (response == "success") {
+      cancelreminder();
       Navigator.pop(context);
       var data = {
         "id": globals.user.id,
@@ -262,6 +263,10 @@ class RideRequestController extends BaseViewModel {
                 error_message: msg,
               ));
     }
+  }
+
+  void cancelreminder() async {
+    await globals.flutterLocalNotificationsPlugin.cancelAll();
   }
 
   void Finish(BuildContext context) async {
@@ -329,6 +334,7 @@ class RideRequestController extends BaseViewModel {
     dynamic response = await UserServices.startRide(data, globals.token);
 
     if (response == "success") {
+      cancelreminder();
       Navigator.pop(context);
       var data = {
         "id": globals.user.id,

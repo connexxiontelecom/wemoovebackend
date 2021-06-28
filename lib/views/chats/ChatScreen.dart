@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:wemoove/globals.dart' as globals;
 
 import '../../size_config.dart';
 import 'components/body.dart';
@@ -17,6 +18,7 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     SizeConfig().init(context);
+    globals.context = context;
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       statusBarIconBrightness: Brightness.light,
       statusBarColor: Colors.transparent,
@@ -25,9 +27,9 @@ class _ChatScreenState extends State<ChatScreen> {
     return /*ViewModelBuilder<ChatController>.reactive(
         viewModelBuilder: () => ChatController(),
         builder: (context, controller, child) => */
-      Scaffold(
-          body: Body(
-            //controller: controller,
-          )); //);
+        Scaffold(
+            body: Body(
+                //controller: controller,
+                )); //);
   }
 }

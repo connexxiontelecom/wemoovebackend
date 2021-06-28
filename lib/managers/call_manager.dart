@@ -86,7 +86,7 @@ class CallManager {
           sessionId: _currentCall.sessionId,
           callType: _currentCall.callType,
           callerId: _currentCall.callerId,
-          callerName: name != null ? name : "User",
+          callerName: name != null ? name : "Incoming Call",
           opponentsIds: ids,
         );
         ConnectycubeFlutterCallKit.setCallState(

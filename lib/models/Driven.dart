@@ -107,6 +107,10 @@ class Passengers {
   int requestStatus;
   int seats;
   String pickup;
+  String dropoff;
+  String fare;
+  int negotiated;
+  int paymentMode;
   int passengerRideStatus;
   String createdAt;
   String updatedAt;
@@ -131,6 +135,9 @@ class Passengers {
       this.requestStatus,
       this.seats,
       this.pickup,
+      this.dropoff,
+      this.negotiated,
+      this.paymentMode,
       this.passengerRideStatus,
       this.createdAt,
       this.updatedAt,
@@ -155,6 +162,10 @@ class Passengers {
     requestStatus = json['request_status'];
     seats = json['seats'];
     pickup = json['pickup'];
+    dropoff = json['dropoff'];
+    fare = json['fare'];
+    negotiated = json["negotiated"];
+    paymentMode = json['payment_mode'];
     passengerRideStatus = json['passenger_ride_status'];
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];

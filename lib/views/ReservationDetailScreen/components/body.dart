@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:overlay_support/overlay_support.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:wemoove/components/CustomButton.dart';
 import 'package:wemoove/components/ExpandableSection.dart';
 import 'package:wemoove/controllers/ReservationController.dart';
@@ -176,6 +177,36 @@ class _BodyState extends State<Body> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
+                            InkWell(
+                              child: Column(
+                                children: [
+                                  Container(
+                                    height: 50,
+                                    width: 50,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(50),
+                                      color: kPrimaryAlternateColor,
+                                    ),
+                                    child: Icon(
+                                      LineAwesomeIcons.mobile_phone,
+                                      color: kPrimaryColor,
+                                      size: 30,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 8,
+                                  ),
+                                  Text(
+                                    "Contact",
+                                    style: TextStyle(fontSize: 15),
+                                  )
+                                ],
+                              ),
+                              onTap: () {
+                                launch(
+                                    "tel:${widget.controller.reservation.driver.phoneNumber}");
+                              },
+                            ),
                             InkWell(
                               child: Column(
                                 children: [
@@ -738,6 +769,27 @@ class _DetailsState extends State<Details> {
                         color: kPrimaryAlternateColor),
                   ),
                 ],
+              )
+            ],
+          ),
+          SizedBox(
+            height: 20,
+          ),
+          Row(
+            children: [
+              Text(
+                "Payment Mode:",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              SizedBox(
+                width: 20,
+              ),
+              Text(
+                widget.controller.reservation.paymentMode == 1
+                    ? "Cash"
+                    : "Wallet",
+                style: TextStyle(
+                    fontWeight: FontWeight.bold, color: kPrimaryAlternateColor),
               )
             ],
           ),

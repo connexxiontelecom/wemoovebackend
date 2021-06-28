@@ -30,6 +30,7 @@ class _BodyState extends State<Body> {
 
   @override
   Widget build(BuildContext context) {
+    globals.context = context;
     return Stack(
       children: [
         Positioned(

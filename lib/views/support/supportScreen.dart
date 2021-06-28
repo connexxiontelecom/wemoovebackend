@@ -18,6 +18,7 @@ class SupportScreen extends StatefulWidget {
 class _SupportScreenState extends State<SupportScreen> {
   @override
   Widget build(BuildContext context) {
+    globals.context = context;
     return ViewModelBuilder<SupportController>.reactive(
       viewModelBuilder: () => SupportController(),
       builder: (context, controller, child) => Scaffold(

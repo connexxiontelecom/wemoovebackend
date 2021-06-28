@@ -23,6 +23,9 @@ class ReservationController extends BaseViewModel {
 
   ScheduleAlarm alarm = ScheduleAlarm();
   updateReservation(/*MyRequest booking*/) {
+    print("Reservation Status " + reservation.status.toString());
+    print("Reservation Request Status " + reservation.requestStatus.toString());
+
     if (this.reservation != null && this.reservation is MyRequest) {
       notifyListeners();
       if (reservation.requestStatus == 2) {
@@ -31,11 +34,16 @@ class ReservationController extends BaseViewModel {
       }
       if ((reservation.status != 1 || reservation.requestStatus == 3) &&
           redirect) {
+        cancel();
         Navigator.pop(context);
         Navigator.push(
             context, MaterialPageRoute(builder: (context) => SearchScreen()));
       }
     }
+  }
+
+  void cancel() async {
+    await globals.flutterLocalNotificationsPlugin.cancelAll();
   }
 
   void init(bool isRedirect) {

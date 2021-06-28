@@ -21,6 +21,7 @@ class Request {
   int status;
   int negotiated;
   int verified;
+  int paymentMode;
   dynamic rememberToken;
 
   Request(
@@ -46,6 +47,7 @@ class Request {
       this.fare,
       this.dropoff,
       this.verified,
+      this.paymentMode,
       this.rememberToken});
 
   Request.fromJson(Map<String, dynamic> json) {
@@ -71,6 +73,7 @@ class Request {
     fare = json['fare'];
     dropoff = json['dropoff'];
     verified = json['verified'];
+    paymentMode = json['payment_mode'];
     rememberToken = json['remember_token'];
   }
 

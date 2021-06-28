@@ -50,10 +50,16 @@ class UserServices {
         getBanks({"id": "none"}, token);
         getWalletBalance({"id": user.id}, globals.token);
         globals.user = user;
+
+        print("Current Request Status " + user.currentRequestStatus.toString());
+
+        print("Current Ride Status" + user.currentRideStatus.toString());
+
         if (user.userType == 1) {
           globals.isDriverMode = true;
           var data = {'id': globals.user.id};
           var response = await fetchDriversDetail(data, globals.token);
+
           if (response != null && response is DriverDetails) {
             globals.details = response;
           }
@@ -853,6 +859,7 @@ class UserServices {
     try {
       Response response = await Client(token).get(data, '/auth/driverdetails');
       var body = response.data;
+      print("Driver Detail" + response.toString());
       print(body);
       var result = body["details"];
       DriverDetails details = DriverDetails.fromJson(result);

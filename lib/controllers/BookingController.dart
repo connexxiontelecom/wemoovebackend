@@ -21,6 +21,10 @@ class BookingController extends BaseViewModel {
   BuildContext context;
   int seats = 1;
 
+  List<String> paymentModes = ["Cash", "Wallet"];
+
+  int mode = -1;
+
   TextEditingController amountController = new TextEditingController();
   TextEditingController dropoffController = new TextEditingController();
 
@@ -36,6 +40,11 @@ class BookingController extends BaseViewModel {
       seats--;
       notifyListeners();
     }
+  }
+
+  modeSelected(int value) {
+    mode = value;
+    notifyListeners();
   }
 
   setBuildContext(BuildContext context) {
@@ -74,12 +83,19 @@ class BookingController extends BaseViewModel {
       return;
     }
 
+    if (this.mode == null || mode == -1) {
+      error = "Please indicate Mode of Payment";
+      showerror(context, error);
+      return;
+    }
+
     var data = {
       'ride_id': this.ride.id,
       'passenger_id': globals.user.id,
       'status': 1, //pending acceptance
       'seats': seats,
       'pickup': this.pickup,
+      'payment_mode': this.mode + 1,
       if (amountController.text.isNotEmpty) 'amount': amountController.text,
       if (dropoffController.text.isNotEmpty) 'dropoff': dropoffController.text
     };

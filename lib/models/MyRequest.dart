@@ -22,6 +22,7 @@ class MyRequest {
   int capacity;
   int status;
   int negotiated;
+  int paymentMode;
   int passengers;
   Driver driver;
 
@@ -49,6 +50,7 @@ class MyRequest {
       this.capacity,
       this.status,
       this.negotiated,
+      this.paymentMode,
       this.passengers,
       this.driver});
 
@@ -81,6 +83,7 @@ class MyRequest {
     capacity = json['capacity'];
     status = json['status'];
     negotiated = json['negotiated'];
+    paymentMode = json['payment_mode'];
     passengers = json['passengers'];
     driver =
         json['driver'] != null ? new Driver.fromJson(json['driver']) : null;

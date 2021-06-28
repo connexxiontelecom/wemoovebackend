@@ -670,9 +670,48 @@ class _DetailsState extends State<Details> {
                         color: kPrimaryAlternateColor),
                   )
                 ],
-              )
+              ),
             ],
-          )
+          ),
+          SizedBox(
+            height: 50,
+          ),
+          Text(
+            "Mode of Payment",
+            style: TextStyle(
+                color: kPrimaryAlternateColor, fontWeight: FontWeight.bold),
+          ),
+          Row(
+              children: List.generate(
+            widget.controller.paymentModes.length,
+            (index) => Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Transform.scale(
+                  scale: 1.2,
+                  child: Radio(
+                      toggleable: true,
+                      value: index,
+                      groupValue: widget.controller.mode,
+                      onChanged: (value) {
+                        widget.controller.modeSelected(value);
+                        setState(() {});
+                      }),
+                ),
+                GestureDetector(
+                  child: Text(
+                    "${widget.controller.paymentModes[index]}",
+                    style: TextStyle(fontSize: 18),
+                  ),
+                  onTap: () {
+                    widget.controller.modeSelected(index);
+                    setState(() {});
+                  },
+                )
+              ],
+            ),
+          ))
         ],
       ),
     );

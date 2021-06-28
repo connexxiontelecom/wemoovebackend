@@ -21,6 +21,7 @@ class _RequestsScreenState extends State<RequestsScreen> {
   Widget build(BuildContext context) {
     final controller = Provider.of<RideRequestController>(context);
     globals.rideRequestController = controller;
+    globals.context = context;
     SizeConfig().init(context);
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       statusBarIconBrightness: Brightness.light,

@@ -19,6 +19,7 @@ class RideHistoryDetailScreen extends StatelessWidget {
       : super(key: key);
   @override
   Widget build(BuildContext context) {
+    globals.context = context;
     SizeConfig().init(context);
     return Scaffold(
       body: globals.isDriverMode

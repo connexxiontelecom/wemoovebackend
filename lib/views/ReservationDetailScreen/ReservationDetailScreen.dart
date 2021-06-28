@@ -26,6 +26,7 @@ class _ReservationDetailScreenState extends State<ReservationDetailScreen> {
     final controller = Provider.of<ReservationController>(context);
     globals.reservationController = controller;
     globals.reservationController.init(widget.redirect);
+    globals.context = context;
     SizeConfig().init(context);
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       statusBarIconBrightness: Brightness.light,

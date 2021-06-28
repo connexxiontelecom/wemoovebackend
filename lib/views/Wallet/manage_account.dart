@@ -29,6 +29,7 @@ class _ManageAccountState extends State<ManageAccount> {
 
   @override
   Widget build(BuildContext context) {
+    globals.context = context;
     return ViewModelBuilder<ManageAccountController>.reactive(
       viewModelBuilder: () => ManageAccountController(),
       builder: (context, controller, child) {

@@ -381,6 +381,58 @@ class PassengerTile extends StatelessWidget {
                       style: TextStyle(
                           color: kPrimaryAlternateColor, fontSize: 16),
                     ),
+                    if (passenger.negotiated == 1)
+                      SizedBox(
+                        height: 10,
+                      ),
+                    if (passenger.negotiated == 1)
+                      Row(
+                        children: [
+                          Text("Paid:"),
+                          Text(
+                            "${globals.numFormatter.format(double.parse(passenger.fare))}",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: kPrimaryAlternateColor),
+                          )
+                        ],
+                      ),
+                    if (passenger.negotiated == 1)
+                      SizedBox(
+                        height: 10,
+                      ),
+                    if (passenger.negotiated == 1)
+                      Row(
+                        children: [
+                          Text("Dropoff:"),
+                          SizedBox(
+                            width: 20,
+                          ),
+                          Text(
+                            passenger.dropoff,
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: kPrimaryAlternateColor),
+                          )
+                        ],
+                      ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Row(
+                      children: [
+                        Text("Payment Mode:"),
+                        SizedBox(
+                          width: 20,
+                        ),
+                        Text(
+                          passenger.paymentMode == 1 ? "Cash" : "Wallet",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: kPrimaryAlternateColor),
+                        )
+                      ],
+                    ),
                   ],
                 )
               ],

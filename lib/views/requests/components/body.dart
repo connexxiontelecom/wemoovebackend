@@ -7,6 +7,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:swipe_to/swipe_to.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:wemoove/components/CustomButton.dart';
 import 'package:wemoove/components/ExpandableSection.dart';
 import 'package:wemoove/constants.dart';
@@ -829,6 +830,38 @@ class _PassengerRequestState extends State<PassengerRequest> {
                                       builder: (context) => LoginScreen()));*/
                             },
                           ),
+                          InkWell(
+                            child: Container(
+                              height: 50,
+                              width: 100,
+                              decoration: BoxDecoration(
+                                  color: Colors.transparent,
+                                  borderRadius: BorderRadius.circular(10),
+                                  border: Border.all(
+                                      color: kPrimaryAlternateColor)),
+                              child: Center(
+                                  child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    LineAwesomeIcons.mobile_phone,
+                                    color: kPrimaryColor,
+                                  ),
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                  Text(
+                                    "Call",
+                                    style: TextStyle(color: kPrimaryColor),
+                                  ),
+                                ],
+                              )),
+                            ),
+                            onTap: () {
+                              launch("tel:${widget.request.phoneNumber}");
+                            },
+                          ),
                         ],
                       )
                     : Row(
@@ -913,14 +946,14 @@ class _PassengerRequestState extends State<PassengerRequest> {
                   color: kprimarywhiteshade,
                   borderRadius: BorderRadius.circular(10)),
               child: Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.only(
+                  top: 8,
+                  bottom: 8,
+                ),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(
-                      width: 50,
-                    ),
                     Text(
                       "Offer",
                       style: TextStyle(
@@ -936,7 +969,7 @@ class _PassengerRequestState extends State<PassengerRequest> {
                             color: kPrimaryAlternateColor,
                             fontSize: 18)),
                     SizedBox(
-                      width: 50,
+                      width: 20,
                     ),
                     Text(
                       "Drop-off:",
@@ -954,7 +987,22 @@ class _PassengerRequestState extends State<PassengerRequest> {
                   ],
                 ),
               ),
-            )
+            ),
+          Row(
+            children: [
+              Text(
+                "Mode of Payment:",
+              ),
+              SizedBox(
+                width: 20,
+              ),
+              Text(
+                widget.request.paymentMode == 1 ? "Cash" : "Wallet",
+                style: TextStyle(
+                    color: kPrimaryAlternateColor, fontWeight: FontWeight.bold),
+              )
+            ],
+          )
         ],
       ),
     );

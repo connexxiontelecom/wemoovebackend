@@ -29,6 +29,7 @@ class _TransactionDetailsState extends State<TransactionDetails> {
 
   @override
   Widget build(BuildContext context) {
+    globals.context = context;
     SizeConfig().init(context);
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       statusBarIconBrightness: Brightness.light,
@@ -125,10 +126,14 @@ class _TransactionDetailsState extends State<TransactionDetails> {
                                 widget.controller.walletHistories[index]
                                             .credit >
                                         0
-                                    ? "${widget.controller.walletHistories[index].credit.toDouble()}"
-                                    : "${widget.controller.walletHistories[index].debit.toDouble()}",
+                                    ? "+${globals.numFormatter.format(widget.controller.walletHistories[index].credit.toDouble())}"
+                                    : "-${globals.numFormatter.format(widget.controller.walletHistories[index].debit.toDouble())}",
                                 style: TextStyle(
-                                    color: kPrimaryAlternateColor,
+                                    color: widget.controller
+                                                .walletHistories[index].credit >
+                                            0
+                                        ? Colors.green
+                                        : Colors.red,
                                     fontSize: 25,
                                     fontWeight: FontWeight.bold),
                               ),
