@@ -1,6 +1,6 @@
-import 'package:agora_rtc_engine/rtc_engine.dart';
+/*import 'package:agora_rtc_engine/rtc_engine.dart';
 import 'package:agora_rtc_engine/rtc_local_view.dart' as RtcLocalView;
-import 'package:agora_rtc_engine/rtc_remote_view.dart' as RtcRemoteView;
+import 'package:agora_rtc_engine/rtc_remote_view.dart' as RtcRemoteView;*/
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -16,7 +16,7 @@ class CallScreen extends StatefulWidget {
 
 class _CallScreenState extends State<CallScreen> {
   int _remoteUid;
-  RtcEngine _engine;
+  //RtcEngine _engine;
 
   @override
   void initState() {
@@ -28,13 +28,13 @@ class _CallScreenState extends State<CallScreen> {
     // retrieve permissions
     await [Permission.microphone, Permission.camera].request();
 
-    //create the engine
-    _engine = await RtcEngine.createWithConfig(RtcEngineConfig(appId));
+    /*//create the engine
+    _engine = await RtcEngine.createWithConfig(RtcEngineConfig(appId));*/
 
-    await _engine.enableVideo();
+    //await _engine.enableVideo();
 
-    _engine.setEventHandler(
-      RtcEngineEventHandler(
+    //_engine.setEventHandler(
+     /* RtcEngineEventHandler(
         joinChannelSuccess: (String channel, int uid, int elapsed) {
           print("local user $uid joined");
         },
@@ -50,10 +50,10 @@ class _CallScreenState extends State<CallScreen> {
             _remoteUid = null;
           });
         },
-      ),
-    );
+      ),*/
+    //);
 
-    await _engine.joinChannel(token, "wemoove", null, 0);
+    //await _engine.joinChannel(token, "wemoove", null, 0);
   }
 
   @override
@@ -84,13 +84,13 @@ class _CallScreenState extends State<CallScreen> {
 
   // current user video
   Widget _renderLocalPreview() {
-    return RtcLocalView.SurfaceView();
+    //return RtcLocalView.SurfaceView();
   }
 
   // remote user video
   Widget _renderRemoteVideo() {
     if (_remoteUid != null) {
-      return RtcRemoteView.SurfaceView(uid: _remoteUid);
+     // return RtcRemoteView.SurfaceView(uid: _remoteUid);
     } else {
       return Text(
         'Please wait for remote user to join',

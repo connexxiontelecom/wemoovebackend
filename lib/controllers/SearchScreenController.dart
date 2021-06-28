@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -171,9 +172,11 @@ class SearchScreenController extends BaseViewModel {
         await Geocoder.local.findAddressesFromCoordinates(coordinates);
     var first = addresses.first;
     CurrentLocationArea = first.addressLine;
+    globals.countryCode = first.countryCode;
+    print("Adresses");
     print(first);
-    print(
-        ' ${first.locality}, ${first.adminArea},${first.subLocality}, ${first.subAdminArea},${first.addressLine}, ${first.featureName},${first.thoroughfare}, ${first.subThoroughfare}');
+    log(
+          ' ${first.countryName} Name , ${first.countryCode} country code ,   ${first.locality} locality , ${first.adminArea} admin area,${first.subLocality} sublocality, ${first.subAdminArea} subadmin area,${first.addressLine}, ${first.featureName},${first.thoroughfare}, ${first.subThoroughfare}');
 
     notifyListeners();
   }

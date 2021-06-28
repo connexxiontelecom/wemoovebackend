@@ -25,6 +25,7 @@ User user;
 String token;
 String otp;
 String code;
+String countryCode = 'ng';
 int postedRide;
 String googleApiKey = "AIzaSyDAHdeQbSuLtDdpfhueU392zOUW6KAjGlA";
 double lat;
@@ -39,13 +40,9 @@ double Balance = 0.0;
 double percentage = 5.0;
 List<WalletHistory> walletHistories = [];
 List<Bank> banks = [];
-
 List<PayOut> payouts = [];
-
 String currentPhoneNumber = "";
-
 CubeUser currentUser;
-
 BuildContext context;
 /*PushNotificationsManager pushNotificationsManager =
     PushNotificationsManager.instance.init();*/
