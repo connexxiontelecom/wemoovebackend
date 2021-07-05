@@ -281,7 +281,8 @@ class PostRideController extends BaseViewModel {
   double calculatePercentage(price, seats) {
     double rate = double.parse(price);
     int totalSeats = seats;
-    double fee = (globals.percentage / 100) * (rate * totalSeats);
+    double percentage = globals.config.chargeRate;
+    double fee = (percentage / 100) * (rate * totalSeats);
     return fee;
   }
 

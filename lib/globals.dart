@@ -8,6 +8,7 @@ import 'package:wemoove/controllers/ReservationController.dart';
 import 'package:wemoove/controllers/RideRequestsController.dart';
 import 'package:wemoove/models/Boarded.dart';
 import 'package:wemoove/models/PayOut.dart';
+import 'package:wemoove/models/PolicyConfig.dart';
 
 import 'models/Bank.dart';
 import 'models/Driven.dart';
@@ -44,6 +45,7 @@ List<PayOut> payouts = [];
 String currentPhoneNumber = "";
 CubeUser currentUser;
 BuildContext context;
+PolicyConfig config;
 /*PushNotificationsManager pushNotificationsManager =
     PushNotificationsManager.instance.init();*/
 
