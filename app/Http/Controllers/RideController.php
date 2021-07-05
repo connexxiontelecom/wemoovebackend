@@ -884,6 +884,7 @@ class RideController extends Controller
         $narration = "Debit of " . $amount . " as percentage charge by weemoove" ;
         $wallet->narration = $narration;
         $wallet->user_id = $account;
+        $wallet->commission = 1;
         $wallet->credit = 0;
         $wallet->save();
     }
