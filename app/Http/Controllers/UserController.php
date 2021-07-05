@@ -21,7 +21,7 @@ class UserController extends Controller
         $id  =  $request->id;
 
         $details = array();
-        $status = 3; // status of request is done
+        $status = 4; // status of ride is done
 
 
         $numberofPassengers = Passenger::leftJoin('rides', function ($join) {
