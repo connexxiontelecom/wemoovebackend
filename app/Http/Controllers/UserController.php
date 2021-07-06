@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Passenger;
+use App\Models\policy_setting;
 use App\Models\Ride;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
@@ -67,6 +68,12 @@ class UserController extends Controller
             $user->profile_image =$filename;
         }
 
+            // delete profile picture from folder
+            if (Auth::user()->profile_image != "avatar.png" && Auth::user()->profile_image != "avatar.jpg"){
+
+                unlink('assets/uploads/profile/'.Auth::user()->profile_image);
+            }
+
             $user->address = $request->home;
 
             $user->work_address = $request->work;
@@ -83,10 +90,14 @@ class UserController extends Controller
            // $message = "success";
            // return response()->json(compact("message"));
 
-
-
     }
 
+    //get policy config from database
+    public function getPolicyConfiguration(){
+    $configuration  =  policy_setting::first();
+    return response()->json(compact("configuration"));
+
+    }
 
 
     public function public_path($path = null)

@@ -119,6 +119,8 @@ $router->group(['prefix'=>'api'], function () use ($router) {
     $router->get('fetchuser/{user_id}', 'backendController@fetchUser');
     $router->get('fetchcars/{driver_id}', 'backendController@fetchCars');
 
+    $router->get('config', 'UserController@getPolicyConfiguration');
+
 });
 
 
