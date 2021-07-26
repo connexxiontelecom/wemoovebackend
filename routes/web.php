@@ -117,7 +117,7 @@ $router->group(['prefix'=>'api'], function () use ($router) {
     $router->post('resendcode', 'OtpController@resendOtp');
 
     $router->get('fetchuser/{user_id}', 'backendController@fetchUser');
-    $router->get('fetchcars/{driver_id}', 'backendController@fetchCars');
+    $router->get('fetchcars/{driver_id}', 'backendController@fetchCars');git
 
     $router->get('config', 'UserController@getPolicyConfiguration');
 

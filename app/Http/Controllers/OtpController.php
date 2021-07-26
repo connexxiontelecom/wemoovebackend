@@ -175,6 +175,11 @@ class OtpController extends Controller
 
     } */
 
+
+
+
+
+
     public function updateVerified(Request $request)
     {
 
