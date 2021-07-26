@@ -4,19 +4,19 @@ import 'package:flutter/material.dart';
 import '../../constants.dart';
 import '../../size_config.dart';
 
-class ReservationDetailScreen extends StatefulWidget {
+class AboutScreen extends StatefulWidget {
   static String routeName = "/reservation_detail";
   final redirect;
 
-  const ReservationDetailScreen({Key key, this.redirect = true})
+  const AboutScreen({Key key, this.redirect = true})
       : super(key: key);
 
   @override
-  _ReservationDetailScreenState createState() =>
-      _ReservationDetailScreenState();
+  _AboutScreenState createState() =>
+      _AboutScreenState();
 }
 
-class _ReservationDetailScreenState extends State<ReservationDetailScreen> {
+class _AboutScreenState extends State<AboutScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,6 +39,9 @@ class _ReservationDetailScreenState extends State<ReservationDetailScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
+
+                  backButton(context),
+
                   Image.asset(
                     "assets/images/appbarlogo.png",
                     height: getProportionateScreenHeight(30),
@@ -62,11 +65,17 @@ class _ReservationDetailScreenState extends State<ReservationDetailScreen> {
                 ),
                 Text(
                   "Wemoove",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20, color: Colors.black),
                 ),
                 Text(
-                  "This innovative app was Designed & Developed \n by Connexxion Telecom, a subsidiary \n of Connexxion Group",
+                  "Designed & Developed \n by Connexxion Telecom, a subsidiary \n of Connexxion Group",
+                  textAlign: TextAlign.center,
                 ),
+
+                SizedBox(height: 30,),
+
+                Text('2021 \u00a9 Connexxion Telecom', style: TextStyle(fontSize: 16, color:Colors.black),),
+
               ],
             ),
           ),

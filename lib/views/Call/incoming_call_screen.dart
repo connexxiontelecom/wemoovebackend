@@ -1,9 +1,14 @@
-import 'package:connectycube_sdk/connectycube_sdk.dart';
+//import 'package:connectycube_sdk/connectycube_sdk.dart';
 import 'package:flutter/material.dart';
 import 'package:wemoove/managers/call_manager.dart';
 
 class IncomingCallScreen extends StatelessWidget {
-  static const String TAG = "IncomingCallScreen";
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    throw UnimplementedError();
+  }
+  /*static const String TAG = "IncomingCallScreen";
   final P2PSession _callSession;
 
   IncomingCallScreen(this._callSession);
@@ -94,5 +99,5 @@ class IncomingCallScreen extends StatelessWidget {
 
   Future<bool> _onBackPressed(BuildContext context) {
     return Future.value(false);
-  }
+  }*/
 }

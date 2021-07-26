@@ -1,4 +1,4 @@
-import 'package:connectycube_sdk/connectycube_sdk.dart';
+//import 'package:connectycube_sdk/connectycube_sdk.dart';
 
 /*const String APP_ID = "476";
 const String AUTH_KEY = "PDZjPBzAO8WPfCp";
@@ -12,8 +12,8 @@ const String AUTH_SECRET = "t3FdaYVdWEy7pnu";
 const String ACCOUNT_ID = "6346";
 const String DEFAULT_PASS = "xxasBUM3gQs36bhj";
 
-List<CubeUser> users = [
-  /*CubeUser(
+/*List<CubeUser> users = [
+  *//*CubeUser(
     id: 1253158,
     login: "call_user_1",
     fullName: "User 1",
@@ -36,5 +36,5 @@ List<CubeUser> users = [
     login: "call_user_4",
     fullName: "User 4",
     password: DEFAULT_PASS,
-  )*/
-];
+  )
+];*/

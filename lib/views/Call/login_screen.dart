@@ -1,4 +1,4 @@
-import 'package:connectycube_sdk/connectycube_sdk.dart';
+//import 'package:connectycube_sdk/connectycube_sdk.dart';
 import 'package:flutter/material.dart';
 import 'package:wemoove/utils/configs.dart' as utils;
 import 'package:wemoove/utils/pref_util.dart';
@@ -6,7 +6,12 @@ import 'package:wemoove/utils/pref_util.dart';
 import 'select_opponents_screen.dart';
 
 class LoginScreen extends StatelessWidget {
-  static const String TAG = "LoginScreen";
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    throw UnimplementedError();
+  }
+  /*static const String TAG = "LoginScreen";
 
   @override
   Widget build(BuildContext context) {
@@ -56,13 +61,13 @@ class BodyState extends State<BodyLayout> {
   void initState() {
     super.initState();
 
-    /*SharedPrefs.instance.init().then((preferences) {
+    *//*SharedPrefs.instance.init().then((preferences) {
       CubeUser loggedUser = preferences.getUser();
 
       if (loggedUser != null) {
         _loginToCC(context, loggedUser);
       }
-    });*/
+    });*//*
   }
 
   Widget _getUsersList(BuildContext context) {
@@ -113,7 +118,7 @@ class BodyState extends State<BodyLayout> {
   _loginToCC(BuildContext context, CubeUser user) {
     _goSelectOpponentsScreen(context, user);
 
-    /*if (_isLoginContinues) return;
+    *//*if (_isLoginContinues) return;
     setState(() {
 
       _isLoginContinues = true;
@@ -135,7 +140,7 @@ class BodyState extends State<BodyLayout> {
       createSession(user).then((cubeSession) {
         _loginToCubeChat(context, user);
       });
-    }*/
+    }*//*
   }
 
   void _loginToCubeChat(BuildContext context, CubeUser user) {
@@ -182,5 +187,5 @@ class BodyState extends State<BodyLayout> {
         builder: (context) => SelectOpponentsScreen(cubeUser),
       ),
     );
-  }
+  }*/
 }

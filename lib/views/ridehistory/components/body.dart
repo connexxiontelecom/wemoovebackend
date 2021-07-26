@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -45,7 +47,7 @@ class _BodyState extends State<Body> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  InkWell(
+                  /*InkWell(
                     child: Row(
                       children: [
                         Icon(
@@ -65,7 +67,8 @@ class _BodyState extends State<Body> {
                     onTap: () {
                       Navigator.pop(context);
                     },
-                  ),
+                  ),*/
+                  backButton(context),
                   Text(
                     "Trip History",
                     style: TextStyle(fontSize: 20, color: kPrimaryColor),

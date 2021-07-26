@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:connectycube_sdk/connectycube_core.dart';
+//import 'package:connectycube_sdk/connectycube_core.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
@@ -47,7 +47,9 @@ Future onDidReceiveLocalNotification(
   // display a dialog with the notification details, tap ok to go to another page
 }
 
-initConnectycube() {
+/*Disabling Implementation*/
+
+/*initConnectycube() {
   init(
     config.APP_ID,
     config.AUTH_KEY,
@@ -59,7 +61,7 @@ initConnectycube() {
     },
   );
   // PushNotificationsManager.instance.init();
-}
+}*/
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -68,7 +70,8 @@ void main() async {
   //globals.rideRequestController = RideRequestController();
   //globals.reservationController = ReservationController();
   Hive.init(document.path);
-  initConnectycube();
+  /*Disabling Implementation*/
+  /*initConnectycube();*/
   // Set the background messaging handler early on, as a named top-level function
   FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
   await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
@@ -107,12 +110,14 @@ class _WeMooveState extends State<WeMoove> {
     globals.box = await Hive.openBox("data");
     await getCredentials();
     if (globals.user != null) {
-      CubeUser user = CubeUser(
+      /*Disabling Implementation*/
+    /*  CubeUser user = CubeUser(
           email: globals.user.email,
           password: '!@wemoove',
-          fullName: globals.user.fullName);
+          fullName: globals.user.fullName);*/
 
-      SignInController().initCube(user);
+      /*Disabling Implementation*/
+      //SignInController().initCube(user);
 
       if (globals.user.verified != 1) {
         //Navigate.to(context, OtpScreen());
@@ -294,7 +299,7 @@ class _WeMooveState extends State<WeMoove> {
           theme: theme(),
           home: Builder(
             builder: (context) {
-              CallManager.instance.init(context);
+              //CallManager.instance.init(context);
               return screen;
             },
           ), //screen, //SignInScreen(),

@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:connectycube_sdk/connectycube_chat.dart';
+//import 'package:connectycube_sdk/connectycube_chat.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 const String prefUserLogin = "pref_user_login";
@@ -33,7 +33,7 @@ class SharedPrefs {
     return completer.future;
   }
 
-  saveNewUser(CubeUser cubeUser) {
+ /* saveNewUser(CubeUser cubeUser) {
     print(cubeUser);
 
     prefs.clear();
@@ -43,9 +43,9 @@ class SharedPrefs {
     prefs.setInt(prefUserId, cubeUser.id);
     if (cubeUser.avatar != null)
       prefs.setString(prefUserAvatar, cubeUser.avatar);
-  }
+  }*/
 
-  updateUser(CubeUser cubeUser) {
+  /*updateUser(CubeUser cubeUser) {
     if (cubeUser.password != null)
       prefs.setString(prefUserPsw, cubeUser.password);
     if (cubeUser.login != null) prefs.setString(prefUserLogin, cubeUser.login);
@@ -53,9 +53,9 @@ class SharedPrefs {
       prefs.setString(prefUserName, cubeUser.fullName);
     if (cubeUser.avatar != null)
       prefs.setString(prefUserAvatar, cubeUser.avatar);
-  }
+  }*/
 
-  CubeUser getUser() {
+  /*CubeUser getUser() {
     if (prefs.get(prefUserLogin) == null) return null;
     var user = CubeUser();
     user.login = prefs.get(prefUserLogin);
@@ -64,7 +64,7 @@ class SharedPrefs {
     user.id = prefs.get(prefUserId);
     user.avatar = prefs.get(prefUserAvatar);
     return user;
-  }
+  }*/
 
   deleteUserData() {
     prefs.clear();

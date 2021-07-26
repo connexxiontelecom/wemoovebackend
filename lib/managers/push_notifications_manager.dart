@@ -1,12 +1,12 @@
 import 'dart:io';
 
-import 'package:connectycube_flutter_call_kit/connectycube_flutter_call_kit.dart';
-import 'package:connectycube_sdk/connectycube_sdk.dart';
+/*import 'package:connectycube_flutter_call_kit/connectycube_flutter_call_kit.dart';
+import 'package:connectycube_sdk/connectycube_sdk.dart';*/
 import 'package:device_id/device_id.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_voip_push_notification/flutter_voip_push_notification.dart';
+//import 'package:flutter_voip_push_notification/flutter_voip_push_notification.dart';
 import 'package:overlay_support/overlay_support.dart';
 
 import '../constants.dart';
@@ -29,7 +29,7 @@ class PushNotificationsManager {
 
   static PushNotificationsManager get instance => _instance;
 
-  FlutterVoipPushNotification _voipPush = FlutterVoipPushNotification();
+  /*FlutterVoipPushNotification _voipPush = FlutterVoipPushNotification();
 
   init() async {
     if (Platform.isAndroid) {
@@ -187,9 +187,9 @@ processCallNotification(Map<String, dynamic> data,
     }
   }
 
-  /*RemoteNotification notification = message.notification;
+  *//*RemoteNotification notification = message.notification;
   AndroidNotification android = message.notification?.android;
-  */
+  *//*
   if (notification != null) {
     showSimpleNotification(
       Text(notification.title),
@@ -268,5 +268,5 @@ Future<void> sendPushAboutRejectFromKilledState(
   //     isProduction ? CubeEnvironment.PRODUCTION : CubeEnvironment.DEVELOPMENT;
   params.usersIds = [callerId];
 
-  return createEvent(params.getEventForRequest());
+  return createEvent(params.getEventForRequest());*/
 }

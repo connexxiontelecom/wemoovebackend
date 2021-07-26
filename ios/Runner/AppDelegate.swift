@@ -3,10 +3,10 @@ import Flutter
 import GoogleMaps
 import PushKit
 import CallKit
-import flutter_voip_push_notification
+//import flutter_voip_push_notification
 
 @UIApplicationMain
-@objc class AppDelegate: FlutterAppDelegate, PKPushRegistryDelegate{
+@objc class AppDelegate: FlutterAppDelegate{
   override func application(
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
@@ -34,7 +34,7 @@ import flutter_voip_push_notification
   }
     
     
-    /* Add PushKit delegate method */
+    /* Add PushKit delegate method
 
         // Handle updated push credentials
         func pushRegistry(_ registry: PKPushRegistry,
@@ -49,5 +49,5 @@ import flutter_voip_push_notification
         func pushRegistry(_ registry: PKPushRegistry, didUpdate pushCredentials: PKPushCredentials, for type: PKPushType) {
             // Process the received push
             FlutterVoipPushNotificationPlugin.didUpdate(pushCredentials, forType: type.rawValue);
-        }
+        }*/
 }

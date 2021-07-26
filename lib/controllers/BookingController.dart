@@ -59,7 +59,7 @@ class BookingController extends BaseViewModel {
 
   showPickupsModal(BuildContext context, BookingController controller) {
     showDialog(
-        barrierDismissible: false,
+        barrierDismissible: true,
         context: context,
         builder: (_) => SelectPickupModal(
               controller: controller,
@@ -68,7 +68,7 @@ class BookingController extends BaseViewModel {
 
   ShowNegotiationModal(BuildContext context, BookingController controller) {
     showDialog(
-        barrierDismissible: false,
+        barrierDismissible: true,
         context: context,
         builder: (_) => NegotiationModal(
               controller: controller,

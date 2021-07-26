@@ -50,7 +50,7 @@ class _BodyState extends State<Body> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  GestureDetector(
+                 /* GestureDetector(
                     child: Row(
                       children: [
                         Icon(
@@ -69,7 +69,8 @@ class _BodyState extends State<Body> {
                     onTap: () {
                       Navigator.pop(context);
                     },
-                  ),
+                  ),*/
+                  backButton(context),
                   Text(
                     "Wallet",
                     style: TextStyle(

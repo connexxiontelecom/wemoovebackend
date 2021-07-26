@@ -39,7 +39,8 @@ class _BodyState extends State<Body> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  GestureDetector(
+                  backButton(context),
+                 /* GestureDetector(
                     child: Row(
                       children: [
                         Icon(
@@ -56,7 +57,7 @@ class _BodyState extends State<Body> {
                     onTap: () {
                       Navigator.pop(context);
                     },
-                  ),
+                  ),*/
                   /*Image.asset(
                     "assets/images/appbarlogo.png",
                     height: getProportionateScreenHeight(30),

@@ -26,10 +26,10 @@ class UserServices {
       // var data = {"email": email, 'password': password};
       String token = ""; // initially a user doesn't have a token
       Response response = await Client(token).post(data, '/login');
-      print(response);
-      log(response.toString());
+      //print(response);
+      //log(response.toString());
       var body = response.data;
-      print(body);
+      //print(body);
       if (body["token"] != null && body["user"] != null) {
         final String authtoken = body["token"];
         User user = User.fromJson(body["user"]);
@@ -44,11 +44,11 @@ class UserServices {
               "credentials",
               Credentials(
                   username: data['username'], password: data['password']));
-          saveDeviceToken({"device_token": globals.devicetoken}, globals.token);
-          ridehistory(globals.token);
+         await  saveDeviceToken({"device_token": globals.devicetoken}, globals.token);
+          await ridehistory(globals.token);
         }
         getBanks({"id": "none"}, token);
-        getWalletBalance({"id": user.id}, globals.token);
+        await getWalletBalance({"id": user.id}, globals.token);
         globals.user = user;
 
         print("Current Request Status " + user.currentRequestStatus.toString());
@@ -58,8 +58,8 @@ class UserServices {
         if (user.userType == 1) {
           globals.isDriverMode = true;
           var data = {'id': globals.user.id};
+          print("fetching driver's details");
           var response = await fetchDriversDetail(data, globals.token);
-
           if (response != null && response is DriverDetails) {
             globals.details = response;
           }
@@ -74,15 +74,26 @@ class UserServices {
       // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
+        log(e.response.data.toString());
+        log(e.response.headers.toString());
         print(e.response.data);
         print(e.response.headers);
-        //print(e.response.request);
+        print(e.response.extra);
+        print(e.response.realUri);
+        print(e.message);
+        print(e.response.requestOptions);
         print(e.response.statusCode);
         return RequestError.RESPONSE_ERROR;
       } else {
         // Something happened in setting up or sending the request that triggered an Error
         //print(e.request);
         print(e.message);
+        print(e.response.data);
+        print(e.response.headers);
+        print(e.response.extra);
+        print(e.response.realUri);
+        print(e.message);
+        print(e.response.requestOptions);
         return RequestError.CONNECTION_ERROR;
       }
     }
@@ -594,14 +605,17 @@ class UserServices {
       // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
-        /*print(e.response.data);
+        print(e.response.data);
         print(e.response.headers);
-        //print(e.response.request);*/
+        print(e.response.extra);
+        print(e.response.realUri);
+        print(e.message);
+        print(e.response.requestOptions);
         return RequestError.RESPONSE_ERROR;
       } else {
         // Something happened in setting up or sending the request that triggered an Error
-        /*//print(e.request);
-        print(e.message);*/
+        /*//print(e.request);*/
+        print(e.message);
         return RequestError.CONNECTION_ERROR;
       }
     }
@@ -641,7 +655,10 @@ class UserServices {
       if (e.response != null) {
         print(e.response.data);
         print(e.response.headers);
-        //print(e.response.request);
+        print(e.response.extra);
+        print(e.response.realUri);
+        print(e.message);
+        print(e.response.requestOptions);
         return RequestError.RESPONSE_ERROR;
       } else {
         // Something happened in setting up or sending the request that triggered an Error
@@ -868,8 +885,8 @@ class UserServices {
       // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
-        print(e.response.data);
-        print(e.response.headers);
+        log(e.response.data.toString());
+        log(e.response.headers.toString());
         //print(e.response.request);
         return RequestError.RESPONSE_ERROR;
       } else {
@@ -940,7 +957,12 @@ class UserServices {
       if (e.response != null) {
         print(e.response.data);
         print(e.response.headers);
-        //print(e.response.request);
+        print(e.response.data);
+        print(e.response.headers);
+        print(e.response.extra);
+        print(e.response.realUri);
+        print(e.message);
+        print(e.response.requestOptions);
         return RequestError.RESPONSE_ERROR;
       } else {
         // Something happened in setting up or sending the request that triggered an Error

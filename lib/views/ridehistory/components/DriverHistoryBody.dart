@@ -44,7 +44,7 @@ class _BodyState extends State<DriverHistoryBody> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  InkWell(
+                 /* InkWell(
                     child: Row(
                       children: [
                         Icon(
@@ -64,7 +64,8 @@ class _BodyState extends State<DriverHistoryBody> {
                     onTap: () {
                       Navigator.pop(context);
                     },
-                  ),
+                  ),*/
+                  backButton(context),
                   Text(
                     "Rides History",
                     style: TextStyle(fontSize: 20, color: kPrimaryColor),

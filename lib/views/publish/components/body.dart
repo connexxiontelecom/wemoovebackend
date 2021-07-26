@@ -43,6 +43,7 @@ class _BodyState extends State<Body> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
+                  backButton(context),
                   Image.asset(
                     "assets/images/appbarlogo.png",
                     height: getProportionateScreenHeight(30),

@@ -96,7 +96,7 @@ class ScheduleAlarm {
     tz.TZDateTime scheduledDate = tz.TZDateTime(
         tz.local, now.year, now.month, now.day, time.hour, time.minute);
     if (scheduledDate.isBefore(now)) {
-      scheduledDate = now; //= scheduledDate.add(const Duration(days: 1));
+      scheduledDate = now.add(const Duration(minutes: 30));
     }
     return scheduledDate;
   }

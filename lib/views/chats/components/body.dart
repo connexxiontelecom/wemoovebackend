@@ -58,7 +58,7 @@ class _BodyState extends State<Body> {
                 children: [
                   Row(
                     children: [
-                      InkWell(
+                     /* InkWell(
                         child: Row(
                           children: [
                             SizedBox(
@@ -81,7 +81,8 @@ class _BodyState extends State<Body> {
                         onTap: () {
                           Navigator.pop(context);
                         },
-                      ),
+                      ),*/
+                      backButton(context),
                       SizedBox(
                         width: 80,
                       ),

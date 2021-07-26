@@ -187,7 +187,7 @@ class PostRideController extends BaseViewModel {
 
   chooseCar(BuildContext context) {
     showDialog(
-        barrierDismissible: false,
+        barrierDismissible: true,
         context: context,
         builder: (_) => SelectCarModal(
               controller: this,
@@ -196,7 +196,7 @@ class PostRideController extends BaseViewModel {
 
   showAddPickupModal(BuildContext context) {
     showDialog(
-        barrierDismissible: false,
+        barrierDismissible: true,
         context: context,
         builder: (_) => AddPickupModal(
               controller: this,
@@ -205,7 +205,7 @@ class PostRideController extends BaseViewModel {
 
   showAddAmountModal(BuildContext context) {
     showDialog(
-        barrierDismissible: false,
+        barrierDismissible: true,
         context: context,
         builder: (_) => AddAmountModal(
               controller: this,
@@ -214,7 +214,7 @@ class PostRideController extends BaseViewModel {
 
   showAddDestinationModal(BuildContext context) {
     showDialog(
-        barrierDismissible: false,
+        barrierDismissible: true,
         context: context,
         builder: (_) => DestinationModal(
               controller: this,

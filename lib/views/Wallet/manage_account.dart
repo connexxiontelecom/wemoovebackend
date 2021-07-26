@@ -54,7 +54,7 @@ class _ManageAccountState extends State<ManageAccount> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-                        GestureDetector(
+                       /* GestureDetector(
                           child: Row(
                             children: [
                               Icon(
@@ -73,7 +73,8 @@ class _ManageAccountState extends State<ManageAccount> {
                           onTap: () {
                             Navigator.pop(context);
                           },
-                        ),
+                        ),*/
+                        backButton(context),
                         Text(
                           "Account Details",
                           style: TextStyle(

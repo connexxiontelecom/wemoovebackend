@@ -1,3 +1,4 @@
+/*
 import 'dart:io';
 
 import 'package:connectycube_flutter_call_kit/connectycube_flutter_call_kit.dart';
@@ -9,9 +10,10 @@ import 'package:wemoove/views/Call/incoming_call_screen.dart';
 import '../utils/configs.dart';
 import '../utils/consts.dart';
 import 'call_kit_manager.dart';
+*/
 
 class CallManager {
-  static String TAG = "CallManager";
+  /*static String TAG = "CallManager";
 
   // collect pending calls in case when it was accepted/ended before establish chat connection
   Map<String, String> _callsMap = {};
@@ -266,5 +268,6 @@ class CallManager {
     }
 
     return Future.value(CallState.UNKNOWN);
-  }
+  }*/
 }
+

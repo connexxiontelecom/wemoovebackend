@@ -130,13 +130,26 @@ class SearchScreenController extends BaseViewModel {
       updateRides(response);
       if (response.isEmpty || response.length <= 0) {
         showNotFound(true);
+        showDialog(
+            barrierDismissible: false,
+            context: context,
+            builder: (_) => successProcessingModal(
+              sucessmsg: "No Ride Found!",
+              heading: "Sorry!",
+              icon: Image.asset(
+                "assets/images/sad.png",
+                height: 50,
+              ),
+            ));
       }
-      showDialog(
-          barrierDismissible: false,
-          context: context,
-          builder: (_) => successProcessingModal(
-                sucessmsg: "${response.length} Ride(s) Found!",
-              ));
+      else{
+        showDialog(
+            barrierDismissible: false,
+            context: context,
+            builder: (_) => successProcessingModal(
+              sucessmsg: "${response.length} Ride(s) Found!",
+            ));
+      }
     } else if (response == RequestError.CONNECTION_ERROR) {
       Navigator.pop(context);
       showDialog(
@@ -173,7 +186,7 @@ class SearchScreenController extends BaseViewModel {
     var first = addresses.first;
     CurrentLocationArea = first.addressLine;
     globals.countryCode = first.countryCode;
-    print("Adresses");
+    print("Adresses   " +first.countryCode.toString());
     print(first);
     log(
           ' ${first.countryName} Name , ${first.countryCode} country code ,   ${first.locality} locality , ${first.adminArea} admin area,${first.subLocality} sublocality, ${first.subAdminArea} subadmin area,${first.addressLine}, ${first.featureName},${first.thoroughfare}, ${first.subThoroughfare}');

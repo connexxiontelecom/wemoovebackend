@@ -1,9 +1,14 @@
-import 'package:connectycube_sdk/connectycube_sdk.dart';
+//import 'package:connectycube_sdk/connectycube_sdk.dart';
 import 'package:flutter/material.dart';
 import 'package:wemoove/managers/call_manager.dart';
 
 class ConversationCallScreen extends StatefulWidget {
-  final P2PSession _callSession;
+  @override
+  State<StatefulWidget> createState() {
+    // TODO: implement createState
+    throw UnimplementedError();
+  }
+  /*//final P2PSession _callSession;
   final bool _isIncoming;
   final dynamic image;
   final String fullname;
@@ -14,11 +19,16 @@ class ConversationCallScreen extends StatefulWidget {
   }
 
   ConversationCallScreen(this._callSession, this._isIncoming,
-      {this.image, this.fullname});
+      {this.image, this.fullname});*/
 }
 
-class _ConversationCallScreenState extends State<ConversationCallScreen>
-    implements RTCSessionStateCallback<P2PSession> {
+class _ConversationCallScreenState extends State<ConversationCallScreen>{
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    throw UnimplementedError();
+  }
+ /*   implements RTCSessionStateCallback<P2PSession> {
   static const String TAG = "_ConversationCallScreenState";
   P2PSession _callSession;
   bool _isIncoming;
@@ -92,12 +102,12 @@ class _ConversationCallScreenState extends State<ConversationCallScreen>
       Navigator.pop(context);
     }
     //Navigator.pop(context);
-    /* Navigator.pushReplacement(
+    *//* Navigator.pushReplacement(
       context,
       MaterialPageRoute(
         builder: (context) => LoginScreen(),
       ),
-    );*/
+    );*//*
   }
 
   void _onStreamAdd(int opponentId, MediaStream stream) async {
@@ -150,9 +160,9 @@ class _ConversationCallScreenState extends State<ConversationCallScreen>
 
   @override
   Widget build(BuildContext context) {
-    return /*WillPopScope(
+    return *//*WillPopScope(
       onWillPop: () => _onBackPressed(context),
-      child:*/
+      child:*//*
         Stack(
       children: [
         Scaffold(
@@ -196,7 +206,7 @@ class _ConversationCallScreenState extends State<ConversationCallScreen>
                           child: Text(
                             "Contact:",
                             style: TextStyle(
-                              fontSize: 20, /*fontStyle: FontStyle.italic*/
+                              fontSize: 20, *//*fontStyle: FontStyle.italic*//*
                             ),
                           ),
                         ),
@@ -368,5 +378,5 @@ class _ConversationCallScreenState extends State<ConversationCallScreen>
   @override
   void onDisconnectedFromUser(P2PSession session, int userId) {
     log("onDisconnectedFromUser userId= $userId");
-  }
+  }*/
 }

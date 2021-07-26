@@ -1,5 +1,5 @@
-import 'package:connectycube_sdk/connectycube_calls.dart';
-import 'package:connectycube_sdk/connectycube_core.dart';
+//import 'package:connectycube_sdk/connectycube_calls.dart';
+//import 'package:connectycube_sdk/connectycube_core.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -47,7 +47,7 @@ class _BodyState extends State<Body> {
 
   @override
   Widget build(BuildContext context) {
-    CallManager.instance.context = context;
+    //CallManager.instance.context = context;
     return Stack(
       children: [
         Positioned(
@@ -233,7 +233,7 @@ class _BodyState extends State<Body> {
                                 ],
                               ),
                               onTap: () {
-                                Set<int> _selectedUsers = {};
+                               /* Set<int> _selectedUsers = {};
                                 getUserByEmail(widget
                                         .controller.reservation.driver.email)
                                     .then((cubeUser) {
@@ -247,7 +247,7 @@ class _BodyState extends State<Body> {
                                 }).catchError((error) {
                                   toast("Can't  connect to recipient",
                                       duration: Duration(seconds: 8));
-                                });
+                                });*/
                                 /* Navigator.push(
                                     context,
                                     MaterialPageRoute(

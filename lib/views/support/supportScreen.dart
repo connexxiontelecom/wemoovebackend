@@ -41,7 +41,7 @@ class _SupportScreenState extends State<SupportScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      GestureDetector(
+                      /*GestureDetector(
                         child: Row(
                           children: [
                             Icon(
@@ -60,7 +60,8 @@ class _SupportScreenState extends State<SupportScreen> {
                         onTap: () {
                           Navigator.pop(context);
                         },
-                      ),
+                      ),*/
+                      backButton(context),
                       Text(
                         "Support",
                         style: TextStyle(

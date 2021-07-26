@@ -90,7 +90,7 @@ class _AddAmountModalState extends State<AddAmountModal> {
           }
         });
       },
-      validator: RequiredValidator(errorText: "amount location required"),
+      validator: RequiredValidator(errorText: "location required"),
       decoration: InputDecoration(
           labelText: "Fee",
           hintText: "e.g 0",

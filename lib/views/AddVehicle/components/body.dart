@@ -43,7 +43,7 @@ class _BodyState extends State<Body> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  InkWell(
+                  /*InkWell(
                     child: Row(
                       children: [
                         Icon(
@@ -63,7 +63,8 @@ class _BodyState extends State<Body> {
                     onTap: () {
                       Navigator.pop(context);
                     },
-                  ),
+                  ),*/
+                  backButton(context),
                   Text(
                     "Add New Car",
                     style: TextStyle(fontSize: 20, color: kPrimaryColor),

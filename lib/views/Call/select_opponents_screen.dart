@@ -1,4 +1,4 @@
-import 'package:connectycube_sdk/connectycube_sdk.dart';
+//import 'package:connectycube_sdk/connectycube_sdk.dart';
 import 'package:flutter/material.dart';
 import 'package:wemoove/globals.dart' as globals;
 import 'package:wemoove/managers/call_manager.dart';
@@ -7,13 +7,18 @@ import 'package:wemoove/utils/configs.dart' as utils;
 import 'package:wemoove/utils/pref_util.dart';
 
 class SelectOpponentsScreen extends StatelessWidget {
-  final CubeUser currentUser;
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    throw UnimplementedError();
+  }
+  /*final CubeUser currentUser;
 
   @override
   Widget build(BuildContext context) {
-    return /*WillPopScope(
+    return *//*WillPopScope(
       onWillPop: () => _onBackPressed(),
-      child:*/
+      child:*//*
         Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -182,5 +187,5 @@ class _BodyLayoutState extends State<BodyLayout> {
     super.initState();
     _selectedUsers = {};
     // PushNotificationsManager.instance.init();
-  }
+  }*/
 }

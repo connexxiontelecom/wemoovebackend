@@ -5,6 +5,7 @@ import 'package:wemoove/constants.dart';
 import 'package:wemoove/controllers/SearchScreenController.dart';
 import 'package:wemoove/globals.dart' as globals;
 import 'package:wemoove/helper/BouncingTransition.dart';
+import 'package:wemoove/views/About/AboutScreen.dart';
 import 'package:wemoove/views/Wallet/WalletScreen.dart';
 import 'package:wemoove/views/driver/CompleteProfileScreen.dart';
 import 'package:wemoove/views/profile/ProfileScreen.dart';
@@ -169,16 +170,16 @@ class _MainDrawerState extends State<MainDrawer> {
                     Scaffold.of(context).openEndDrawer();
                   },
                 ),*/
-                /*  InkWell(
+                InkWell(
                   child: MenuItem(
-                    icon: LineAwesomeIcons.cog,
-                    title: "Settings",
+                    icon: LineAwesomeIcons.info_circle,
+                    title: "About",
                   ),
                   onTap: () {
                     Scaffold.of(context).openEndDrawer();
-                    //Navigator.pop(context);
+                    Navigate.to(context, AboutScreen());
                   },
-                ),*/
+                ),
                 InkWell(
                   child: MenuItem(
                     icon: LineAwesomeIcons.alternate_sign_out,

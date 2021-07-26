@@ -1,5 +1,5 @@
-import 'package:connectycube_sdk/connectycube_calls.dart';
-import 'package:connectycube_sdk/connectycube_chat.dart';
+//import 'package:connectycube_sdk/connectycube_calls.dart';
+//import 'package:connectycube_sdk/connectycube_chat.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:stacked/stacked.dart';
@@ -23,11 +23,11 @@ class SignInController extends BaseViewModel {
   TextEditingController usernameController = new TextEditingController();
   TextEditingController passwordController = new TextEditingController();
   DriverDetails details;
-  final users = utils.users;
+ // final users = utils.users;
   bool _isLoginContinues = false;
   int _selectedUserId;
 
-  void initCube(CubeUser user) {
+  /*void initCube(CubeUser user) {
     print(user.email);
     print(user.fullName);
 
@@ -42,9 +42,9 @@ class SignInController extends BaseViewModel {
       print("Hello User Cannot be found");
       cubeSignup(user.email, user.fullName);
     });
-  }
+  }*/
 
-  void cubeSignup(String email, String fullname) {
+  /*void cubeSignup(String email, String fullname) {
     CubeUser user = CubeUser(
       login: email,
       password: '!@wemoove',
@@ -60,7 +60,7 @@ class SignInController extends BaseViewModel {
           fullName: user.fullName);
       _loginToCC(_user);
     }).catchError((error) {});
-  }
+  }*/
 
   void signIn(BuildContext context) async {
     var data = {
@@ -75,12 +75,13 @@ class SignInController extends BaseViewModel {
     dynamic response = await UserServices.loginUser(data);
     if (response == "success") {
       print("user email:  " + globals.user.email);
-      CubeUser user = CubeUser(
+
+      /*CubeUser user = CubeUser(
           email: globals.user.email,
           password: '!@wemoove',
-          fullName: globals.user.fullName);
+          fullName: globals.user.fullName);*/
 
-      initCube(user);
+     // initCube(user);
 
       Navigator.pop(context);
       // Navigate.to(context, SearchScreen());
@@ -135,7 +136,7 @@ class SignInController extends BaseViewModel {
     }
   }
 
-  _loginToCC(CubeUser user) {
+  /*_loginToCC(CubeUser user) {
     if (_isLoginContinues) {
       return;
     }
@@ -167,11 +168,11 @@ class SignInController extends BaseViewModel {
       _isLoginContinues = false;
       _selectedUserId = 0;
     }).catchError(_processLoginError);
-  }
+  }*/
 
-  void _processLoginError(exception) {
+ /* void _processLoginError(exception) {
     log("Login error $exception");
     _isLoginContinues = false;
     _selectedUserId = 0;
-  }
+  }*/
 }

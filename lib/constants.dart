@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:wemoove/controllers/SearchScreenController.dart';
@@ -115,4 +117,15 @@ InputDecoration getInputDecoration(
       enabledBorder: noOutlineInputBorder(),
       //prefixIcon: Icon(LineAwesomeIcons.search),
       counterText: "");
+}
+
+Widget  backButton(BuildContext context){
+  if(Platform.isAndroid)
+   return  GestureDetector(child: Icon(LineAwesomeIcons.arrow_left, color: kPrimaryColor, size: 30), onTap: (){
+    Navigator.pop(context);
+  },);
+  else
+  return GestureDetector(child: Icon(LineAwesomeIcons.angle_left, color: kPrimaryColor, size: 30,), onTap: (){
+    Navigator.pop(context);
+  },);
 }

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -38,7 +40,8 @@ class _BodyState extends State<DriverRideHistoryDetail> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  InkWell(
+                  backButton(context),
+                  /*InkWell(
                     child: Row(
                       children: [
                         Icon(
@@ -58,7 +61,7 @@ class _BodyState extends State<DriverRideHistoryDetail> {
                     onTap: () {
                       Navigator.pop(context);
                     },
-                  ),
+                  ),*/
                   Text(
                     "Ride's History",
                     style: TextStyle(fontSize: 20, color: kPrimaryColor),

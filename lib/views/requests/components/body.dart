@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:connectycube_sdk/connectycube_calls.dart';
+//import 'package:connectycube_sdk/connectycube_calls.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -809,7 +809,8 @@ class _PassengerRequestState extends State<PassengerRequest> {
                               )),
                             ),
                             onTap: () {
-                              Set<int> _selectedUsers = {};
+
+                            /*  Set<int> _selectedUsers = {};
                               getUserByEmail(widget.request.email)
                                   .then((cubeUser) {
                                 _selectedUsers.add(cubeUser.id);
@@ -820,7 +821,7 @@ class _PassengerRequestState extends State<PassengerRequest> {
                               }).catchError((error) {
                                 toast("Can't  connect to recipient",
                                     duration: Duration(seconds: 8));
-                              });
+                              });*/
 
                               //print("hello");
                               // launch("tel:${widget.request.phoneNumber}");

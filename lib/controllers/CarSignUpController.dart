@@ -97,7 +97,7 @@ class CarSignUpController extends BaseViewModel {
 
   showCapacityModal(BuildContext context) {
     showDialog(
-        barrierDismissible: false,
+        barrierDismissible: true,
         context: context,
         builder: (_) => CapacityModal(
               controller: this,

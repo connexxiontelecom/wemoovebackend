@@ -1,4 +1,4 @@
-import 'package:connectycube_sdk/connectycube_calls.dart';
+//import 'package:connectycube_sdk/connectycube_calls.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -42,7 +42,7 @@ List<WalletHistory> walletHistories = [];
 List<Bank> banks = [];
 List<PayOut> payouts = [];
 String currentPhoneNumber = "";
-CubeUser currentUser;
+//CubeUser currentUser;
 BuildContext context;
 /*PushNotificationsManager pushNotificationsManager =
     PushNotificationsManager.instance.init();*/

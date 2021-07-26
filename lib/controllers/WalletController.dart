@@ -145,7 +145,7 @@ class WalletController extends BaseViewModel {
   void transfer(BuildContext context, WalletController controller) {
     this.context = context;
     showDialog(
-        barrierDismissible: false,
+        barrierDismissible: true,
         context: context,
         builder: (_) => TransferModalScreen(
               controller: controller,

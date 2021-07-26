@@ -56,7 +56,7 @@ class _TransactionDetailsState extends State<TransactionDetails> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  GestureDetector(
+                 /* GestureDetector(
                     child: Row(
                       children: [
                         Icon(
@@ -75,7 +75,8 @@ class _TransactionDetailsState extends State<TransactionDetails> {
                     onTap: () {
                       Navigator.pop(context);
                     },
-                  ),
+                  ),*/
+                  backButton(context),
                   Text(
                     "Transaction History",
                     style: TextStyle(
