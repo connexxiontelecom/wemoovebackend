@@ -10,6 +10,7 @@ import 'package:wemoove/models/Driven.dart';
 import 'package:wemoove/models/DriverDetail.dart';
 import 'package:wemoove/models/MyRequest.dart';
 import 'package:wemoove/models/PayOut.dart';
+import 'package:wemoove/models/PolicyConfig.dart';
 import 'package:wemoove/models/Ride.dart';
 import 'package:wemoove/models/Vehicle.dart';
 import 'package:wemoove/models/WalletBalance.dart';
@@ -1311,6 +1312,34 @@ class UserServices {
       print(body);
       final String message = body["message"];
       return message;
+    } on DioError catch (e) {
+      // The request was made and the server responded with a status views.code
+      // that falls out of the range of 2xx and is also not 304.
+      if (e.response != null) {
+        print(e.response.data);
+        print(e.response.headers);
+        //print(e.response.request);
+        return RequestError.RESPONSE_ERROR;
+      } else {
+        // Something happened in setting up or sending the request that triggered an Error
+        //print(e.request);
+        print(e.message);
+        return RequestError.CONNECTION_ERROR;
+      }
+    }
+  }
+
+  static fetchConfigurations() async {
+    try {
+      var data = {'id': "null"};
+      var token = "";
+      Response response = await Client(token).get(data, '/api/config');
+      var body = response.data;
+      print(body);
+      var result = body["configuration"];
+      PolicyConfig config = PolicyConfig.fromJson(result);
+      globals.config = config;
+      return;
     } on DioError catch (e) {
       // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.

@@ -18,7 +18,7 @@ class PayoutController extends BaseViewModel {
   List<WalletHistory> walletHistories;
   BuildContext context;
   double charge = 1000;
-  double minimum = 5000;
+  dynamic minimum = globals.config.minimumThreshold;
   bool ischargeable = false;
 
   PayoutController() {
