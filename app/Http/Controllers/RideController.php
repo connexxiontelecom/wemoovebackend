@@ -323,7 +323,7 @@ class RideController extends Controller
             $join->on('r.id', '=', 'p.ride_id');
         })->select('p.id as pid', 'p.*', 'r.*')->where('p.passenger_id', $id)->where('p.passenger_ride_status', 1)->where('p.request_status', $pending)->orWhere('p.request_status', $accepted)->first();
 
- */
+      */
 
         $ride_request= DB::table('passengers as p')
         ->join('rides as r', 'r.id', '=', 'p.ride_id')
@@ -338,6 +338,7 @@ class RideController extends Controller
         $ride_request->pickups = json_decode($ride_request->pickups);
         $ride_request->passengers = $this->fetchPassengers($ride_request->driver_id);
         $ride_request->driver = $this->driverInfo($ride_request->driver_id);
+        $ride_request->Car = Vehicle::find($ride_request->car);
         }
 
         return response()->json(compact("ride_request"));
