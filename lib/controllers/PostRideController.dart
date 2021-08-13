@@ -68,7 +68,7 @@ class PostRideController extends BaseViewModel {
   int SelectedCarId;
 
   PostRideController() {
-    print(globals.user.vehicles.length.toString());
+    // print(globals.user.vehicles.length.toString());
     if (globals.user.vehicles.length == 1) {
       SelectedCar = car.brand + " " + car.model;
       SelectedCarId = globals.user.vehicles[0].id;
@@ -321,6 +321,7 @@ class PostRideController extends BaseViewModel {
       "pickups": locations,
       "dropoffs": dropoffs.length > 0 ? dropoffs.join(",") : "NIL",
       "destination": destinationController.text,
+      "destination_place_id": selectedPlaceId,
       "capacity": seats,
       "airconditioner": airConditioner ? "1" : "0",
       "amount": fare,

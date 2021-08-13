@@ -1,8 +1,8 @@
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:dio/dio.dart';
 import 'package:wemoove/globals.dart' as globals;
+import 'package:wemoove/models/Account.dart';
 import 'package:wemoove/models/Bank.dart';
 import 'package:wemoove/models/Boarded.dart';
 import 'package:wemoove/models/Credentials.dart';
@@ -14,6 +14,7 @@ import 'package:wemoove/models/PolicyConfig.dart';
 import 'package:wemoove/models/Ride.dart';
 import 'package:wemoove/models/Vehicle.dart';
 import 'package:wemoove/models/WalletBalance.dart';
+import 'package:wemoove/models/callToken.dart';
 import 'package:wemoove/models/chat.dart';
 import 'package:wemoove/models/request.dart';
 import 'package:wemoove/models/request_errors.dart';
@@ -45,10 +46,15 @@ class UserServices {
               "credentials",
               Credentials(
                   username: data['username'], password: data['password']));
-         await  saveDeviceToken({"device_token": globals.devicetoken}, globals.token);
+          await saveDeviceToken(
+              {"device_token": globals.devicetoken}, globals.token);
           await ridehistory(globals.token);
         }
-        getBanks({"id": "none"}, token);
+        getBanks({"id": "none"}, globals.token);
+        fetchConfigurations();
+        fetchCallToken();
+        fetchReservedAccount();
+        createVirtualAccount();
         await getWalletBalance({"id": user.id}, globals.token);
         globals.user = user;
 
@@ -75,26 +81,10 @@ class UserServices {
       // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
-        log(e.response.data.toString());
-        log(e.response.headers.toString());
-        print(e.response.data);
-        print(e.response.headers);
-        print(e.response.extra);
-        print(e.response.realUri);
-        print(e.message);
-        print(e.response.requestOptions);
-        print(e.response.statusCode);
+        showDebugerrors(e);
         return RequestError.RESPONSE_ERROR;
       } else {
-        // Something happened in setting up or sending the request that triggered an Error
-        //print(e.request);
-        print(e.message);
-        print(e.response.data);
-        print(e.response.headers);
-        print(e.response.extra);
-        print(e.response.realUri);
-        print(e.message);
-        print(e.response.requestOptions);
+        showDebugerrors(e);
         return RequestError.CONNECTION_ERROR;
       }
     }
@@ -186,14 +176,10 @@ class UserServices {
       // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
-        print(e.response.data);
-        print(e.response.headers);
-        //print(e.response.request);
+        showDebugerrors(e);
         return RequestError.RESPONSE_ERROR;
       } else {
-        // Something happened in setting up or sending the request that triggered an Error
-        //print(e.request);
-        print(e.message);
+        showDebugerrors(e);
         return RequestError.CONNECTION_ERROR;
       }
     }
@@ -225,14 +211,10 @@ class UserServices {
       // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
-        print(e.response.data);
-        print(e.response.headers);
-        //print(e.response.request);
+        showDebugerrors(e);
         return RequestError.RESPONSE_ERROR;
       } else {
-        // Something happened in setting up or sending the request that triggered an Error
-        //print(e.request);
-        print(e.message);
+        showDebugerrors(e);
         return RequestError.CONNECTION_ERROR;
       }
     }
@@ -250,14 +232,10 @@ class UserServices {
       // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
-        /*print(e.response.data);
-        print(e.response.headers);
-        //print(e.response.request);*/
+        showDebugerrors(e);
         return RequestError.RESPONSE_ERROR;
       } else {
-        // Something happened in setting up or sending the request that triggered an Error
-        /*//print(e.request);
-        print(e.message);*/
+        showDebugerrors(e);
         return RequestError.CONNECTION_ERROR;
       }
     }
@@ -275,14 +253,10 @@ class UserServices {
       // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
-        /*print(e.response.data);
-        print(e.response.headers);
-        //print(e.response.request);*/
+        showDebugerrors(e);
         return RequestError.RESPONSE_ERROR;
       } else {
-        // Something happened in setting up or sending the request that triggered an Error
-        /*//print(e.request);
-        print(e.message);*/
+        showDebugerrors(e);
         return RequestError.CONNECTION_ERROR;
       }
     }
@@ -299,14 +273,10 @@ class UserServices {
       // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
-        print(e.response.data);
-        print(e.response.headers);
-        //print(e.response.request);
+        showDebugerrors(e);
         return RequestError.RESPONSE_ERROR;
       } else {
-        // Something happened in setting up or sending the request that triggered an Error
-        //print(e.request);
-        print(e.message);
+        showDebugerrors(e);
         return RequestError.CONNECTION_ERROR;
       }
     }
@@ -325,14 +295,10 @@ class UserServices {
       // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
-        print(e.response.data);
-        print(e.response.headers);
-        //print(e.response.request);
+        showDebugerrors(e);
         return RequestError.RESPONSE_ERROR;
       } else {
-        // Something happened in setting up or sending the request that triggered an Error
-        //print(e.request);
-        print(e.message);
+        showDebugerrors(e);
         return RequestError.CONNECTION_ERROR;
       }
     }
@@ -359,14 +325,10 @@ class UserServices {
       // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
-        print(e.response.data);
-        print(e.response.headers);
-        //print(e.response.request);
+        showDebugerrors(e);
         return RequestError.RESPONSE_ERROR;
       } else {
-        // Something happened in setting up or sending the request that triggered an Error
-        //print(e.request);
-        print(e.message);
+        showDebugerrors(e);
         return RequestError.CONNECTION_ERROR;
       }
     }
@@ -394,14 +356,10 @@ class UserServices {
       // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
-        print(e.response.data);
-        print(e.response.headers);
-        //print(e.response.request);
+        showDebugerrors(e);
         return RequestError.RESPONSE_ERROR;
       } else {
-        // Something happened in setting up or sending the request that triggered an Error
-        //print(e.request);
-        print(e.message);
+        showDebugerrors(e);
         return RequestError.CONNECTION_ERROR;
       }
     }
@@ -418,14 +376,10 @@ class UserServices {
       // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
-        print(e.response.data);
-        print(e.response.headers);
-        //print(e.response.request);
+        showDebugerrors(e);
         return RequestError.RESPONSE_ERROR;
       } else {
-        // Something happened in setting up or sending the request that triggered an Error
-        //print(e.request);
-        print(e.message);
+        showDebugerrors(e);
         return RequestError.CONNECTION_ERROR;
       }
     }
@@ -454,14 +408,10 @@ class UserServices {
       // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
-        print(e.response.data);
-        print(e.response.headers);
-        //print(e.response.request);
+        showDebugerrors(e);
         return RequestError.RESPONSE_ERROR;
       } else {
-        // Something happened in setting up or sending the request that triggered an Error
-        //print(e.request);
-        print(e.message);
+        showDebugerrors(e);
         return RequestError.CONNECTION_ERROR;
       }
     }
@@ -478,14 +428,10 @@ class UserServices {
       // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
-        print(e.response.data);
-        print(e.response.headers);
-        //print(e.response.request);
+        showDebugerrors(e);
         return RequestError.RESPONSE_ERROR;
       } else {
-        // Something happened in setting up or sending the request that triggered an Error
-        //print(e.request);
-        print(e.message);
+        showDebugerrors(e);
         return RequestError.CONNECTION_ERROR;
       }
     }
@@ -502,14 +448,10 @@ class UserServices {
       // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
-        print(e.response.data);
-        print(e.response.headers);
-        //print(e.response.request);
+        showDebugerrors(e);
         return RequestError.RESPONSE_ERROR;
       } else {
-        // Something happened in setting up or sending the request that triggered an Error
-        //print(e.request);
-        print(e.message);
+        showDebugerrors(e);
         return RequestError.CONNECTION_ERROR;
       }
     }
@@ -526,14 +468,10 @@ class UserServices {
       // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
-        print(e.response.data);
-        print(e.response.headers);
-        //print(e.response.request);
+        showDebugerrors(e);
         return RequestError.RESPONSE_ERROR;
       } else {
-        // Something happened in setting up or sending the request that triggered an Error
-        //print(e.request);
-        print(e.message);
+        showDebugerrors(e);
         return RequestError.CONNECTION_ERROR;
       }
     }
@@ -550,14 +488,10 @@ class UserServices {
       // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
-        print(e.response.data);
-        print(e.response.headers);
-        //print(e.response.request);
+        showDebugerrors(e);
         return RequestError.RESPONSE_ERROR;
       } else {
-        // Something happened in setting up or sending the request that triggered an Error
-        //print(e.request);
-        print(e.message);
+        showDebugerrors(e);
         return RequestError.CONNECTION_ERROR;
       }
     }
@@ -580,14 +514,10 @@ class UserServices {
       // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
-        print(e.response.data);
-        print(e.response.headers);
-        //print(e.response.request);
+        showDebugerrors(e);
         return RequestError.RESPONSE_ERROR;
       } else {
-        // Something happened in setting up or sending the request that triggered an Error
-        //print(e.request);
-        print(e.message);
+        showDebugerrors(e);
         return RequestError.CONNECTION_ERROR;
       }
     }
@@ -606,17 +536,10 @@ class UserServices {
       // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
-        print(e.response.data);
-        print(e.response.headers);
-        print(e.response.extra);
-        print(e.response.realUri);
-        print(e.message);
-        print(e.response.requestOptions);
+        showDebugerrors(e);
         return RequestError.RESPONSE_ERROR;
       } else {
-        // Something happened in setting up or sending the request that triggered an Error
-        /*//print(e.request);*/
-        print(e.message);
+        showDebugerrors(e);
         return RequestError.CONNECTION_ERROR;
       }
     }
@@ -654,17 +577,10 @@ class UserServices {
       // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
-        print(e.response.data);
-        print(e.response.headers);
-        print(e.response.extra);
-        print(e.response.realUri);
-        print(e.message);
-        print(e.response.requestOptions);
+        showDebugerrors(e);
         return RequestError.RESPONSE_ERROR;
       } else {
-        // Something happened in setting up or sending the request that triggered an Error
-        //print(e.request);
-        print(e.message);
+        showDebugerrors(e);
         return RequestError.CONNECTION_ERROR;
       }
     }
@@ -681,14 +597,10 @@ class UserServices {
       // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
-        print(e.response.data);
-        print(e.response.headers);
-        //print(e.response.request);
+        showDebugerrors(e);
         return RequestError.RESPONSE_ERROR;
       } else {
-        // Something happened in setting up or sending the request that triggered an Error
-        //print(e.request);
-        print(e.message);
+        showDebugerrors(e);
         return RequestError.CONNECTION_ERROR;
       }
     }
@@ -705,14 +617,10 @@ class UserServices {
       // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
-        print(e.response.data);
-        print(e.response.headers);
-        //print(e.response.request);
+        showDebugerrors(e);
         return RequestError.RESPONSE_ERROR;
       } else {
-        // Something happened in setting up or sending the request that triggered an Error
-        //print(e.request);
-        print(e.message);
+        showDebugerrors(e);
         return RequestError.CONNECTION_ERROR;
       }
     }
@@ -729,14 +637,10 @@ class UserServices {
       // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
-        print(e.response.data);
-        print(e.response.headers);
-        //print(e.response.request);
+        showDebugerrors(e);
         return RequestError.RESPONSE_ERROR;
       } else {
-        // Something happened in setting up or sending the request that triggered an Error
-        //print(e.request);
-        print(e.message);
+        showDebugerrors(e);
         return RequestError.CONNECTION_ERROR;
       }
     }
@@ -753,14 +657,10 @@ class UserServices {
       // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
-        print(e.response.data);
-        print(e.response.headers);
-        //print(e.response.request);
+        showDebugerrors(e);
         return RequestError.RESPONSE_ERROR;
       } else {
-        // Something happened in setting up or sending the request that triggered an Error
-        //print(e.request);
-        print(e.message);
+        showDebugerrors(e);
         return RequestError.CONNECTION_ERROR;
       }
     }
@@ -785,14 +685,10 @@ class UserServices {
       // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
-        print(e.response.data);
-        print(e.response.headers);
-        //print(e.response.request);
+        showDebugerrors(e);
         return RequestError.RESPONSE_ERROR;
       } else {
-        // Something happened in setting up or sending the request that triggered an Error
-        //print(e.request);
-        print(e.message);
+        showDebugerrors(e);
         return RequestError.CONNECTION_ERROR;
       }
     }
@@ -809,14 +705,10 @@ class UserServices {
       // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
-        print(e.response.data);
-        print(e.response.headers);
-        //print(e.response.request);
+        showDebugerrors(e);
         return RequestError.RESPONSE_ERROR;
       } else {
-        // Something happened in setting up or sending the request that triggered an Error
-        //print(e.request);
-        print(e.message);
+        showDebugerrors(e);
         return RequestError.CONNECTION_ERROR;
       }
     }
@@ -835,14 +727,10 @@ class UserServices {
       // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
-        print(e.response.data);
-        print(e.response.headers);
-        //print(e.response.request);
+        showDebugerrors(e);
         return RequestError.RESPONSE_ERROR;
       } else {
-        // Something happened in setting up or sending the request that triggered an Error
-        //print(e.request);
-        print(e.message);
+        showDebugerrors(e);
         return RequestError.CONNECTION_ERROR;
       }
     }
@@ -860,14 +748,10 @@ class UserServices {
       // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
-        print(e.response.data);
-        print(e.response.headers);
-        //print(e.response.request);
+        showDebugerrors(e);
         return RequestError.RESPONSE_ERROR;
       } else {
-        // Something happened in setting up or sending the request that triggered an Error
-        //print(e.request);
-        print(e.message);
+        showDebugerrors(e);
         return RequestError.CONNECTION_ERROR;
       }
     }
@@ -886,14 +770,10 @@ class UserServices {
       // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
-        log(e.response.data.toString());
-        log(e.response.headers.toString());
-        //print(e.response.request);
+        showDebugerrors(e);
         return RequestError.RESPONSE_ERROR;
       } else {
-        // Something happened in setting up or sending the request that triggered an Error
-        //print(e.request);
-        print(e.message);
+        showDebugerrors(e);
         return RequestError.CONNECTION_ERROR;
       }
     }
@@ -918,14 +798,10 @@ class UserServices {
       // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
-        print(e.response.data);
-        print(e.response.headers);
-        //print(e.response.request);
+        showDebugerrors(e);
         return RequestError.RESPONSE_ERROR;
       } else {
-        // Something happened in setting up or sending the request that triggered an Error
-        //print(e.request);
-        print(e.message);
+        showDebugerrors(e);
         return RequestError.CONNECTION_ERROR;
       }
     }
@@ -956,19 +832,10 @@ class UserServices {
       // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
-        print(e.response.data);
-        print(e.response.headers);
-        print(e.response.data);
-        print(e.response.headers);
-        print(e.response.extra);
-        print(e.response.realUri);
-        print(e.message);
-        print(e.response.requestOptions);
+        showDebugerrors(e);
         return RequestError.RESPONSE_ERROR;
       } else {
-        // Something happened in setting up or sending the request that triggered an Error
-        //print(e.request);
-        print(e.message);
+        showDebugerrors(e);
         return RequestError.CONNECTION_ERROR;
       }
     }
@@ -985,14 +852,10 @@ class UserServices {
       // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
-        print(e.response.data);
-        print(e.response.headers);
-        //print(e.response.request);
+        showDebugerrors(e);
         return RequestError.RESPONSE_ERROR;
       } else {
-        // Something happened in setting up or sending the request that triggered an Error
-        //print(e.request);
-        print(e.message);
+        showDebugerrors(e);
         return RequestError.CONNECTION_ERROR;
       }
     }
@@ -1009,14 +872,10 @@ class UserServices {
       // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
-        print(e.response.data);
-        print(e.response.headers);
-        //print(e.response.request);
+        showDebugerrors(e);
         return RequestError.RESPONSE_ERROR;
       } else {
-        // Something happened in setting up or sending the request that triggered an Error
-        //print(e.request);
-        print(e.message);
+        showDebugerrors(e);
         return RequestError.CONNECTION_ERROR;
       }
     }
@@ -1033,14 +892,10 @@ class UserServices {
       // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
-        print(e.response.data);
-        print(e.response.headers);
-        //print(e.response.request);
+        showDebugerrors(e);
         return RequestError.RESPONSE_ERROR;
       } else {
-        // Something happened in setting up or sending the request that triggered an Error
-        //print(e.request);
-        print(e.message);
+        showDebugerrors(e);
         return RequestError.CONNECTION_ERROR;
       }
     }
@@ -1061,14 +916,10 @@ class UserServices {
       // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
-        print(e.response.data);
-        print(e.response.headers);
-        //print(e.response.request);
+        showDebugerrors(e);
         return RequestError.RESPONSE_ERROR;
       } else {
-        // Something happened in setting up or sending the request that triggered an Error
-        //print(e.request);
-        print(e.message);
+        showDebugerrors(e);
         return RequestError.CONNECTION_ERROR;
       }
     }
@@ -1086,14 +937,10 @@ class UserServices {
       // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
-        print(e.response.data);
-        print(e.response.headers);
-        //print(e.response.request);
+        showDebugerrors(e);
         return RequestError.RESPONSE_ERROR;
       } else {
-        // Something happened in setting up or sending the request that triggered an Error
-        //print(e.request);
-        print(e.message);
+        showDebugerrors(e);
         return RequestError.CONNECTION_ERROR;
       }
     }
@@ -1112,14 +959,10 @@ class UserServices {
       // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
-        /*print(e.response.data);
-        print(e.response.headers);
-        //print(e.response.request);*/
+        showDebugerrors(e);
         return RequestError.RESPONSE_ERROR;
       } else {
-        // Something happened in setting up or sending the request that triggered an Error
-        /*//print(e.request);
-        print(e.message);*/
+        showDebugerrors(e);
         return RequestError.CONNECTION_ERROR;
       }
     }
@@ -1138,14 +981,10 @@ class UserServices {
       // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
-        /*print(e.response.data);
-        print(e.response.headers);
-        //print(e.response.request);*/
+        showDebugerrors(e);
         return RequestError.RESPONSE_ERROR;
       } else {
-        // Something happened in setting up or sending the request that triggered an Error
-        /*//print(e.request);
-        print(e.message);*/
+        showDebugerrors(e);
         return RequestError.CONNECTION_ERROR;
       }
     }
@@ -1163,14 +1002,10 @@ class UserServices {
       // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
-        print(e.response.data);
-        print(e.response.headers);
-        //print(e.response.request);
+        showDebugerrors(e);
         return RequestError.RESPONSE_ERROR;
       } else {
-        // Something happened in setting up or sending the request that triggered an Error
-        //print(e.request);
-        print(e.message);
+        showDebugerrors(e);
         return RequestError.CONNECTION_ERROR;
       }
     }
@@ -1194,14 +1029,10 @@ class UserServices {
       // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
-        print(e.response.data);
-        print(e.response.headers);
-        //print(e.response.request);
+        showDebugerrors(e);
         return RequestError.RESPONSE_ERROR;
       } else {
-        // Something happened in setting up or sending the request that triggered an Error
-        //print(e.request);
-        print(e.message);
+        showDebugerrors(e);
         return RequestError.CONNECTION_ERROR;
       }
     }
@@ -1223,14 +1054,10 @@ class UserServices {
       // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
-        print(e.response.data);
-        print(e.response.headers);
-        //print(e.response.request);
+        showDebugerrors(e);
         return RequestError.RESPONSE_ERROR;
       } else {
-        // Something happened in setting up or sending the request that triggered an Error
-        //print(e.request);
-        print(e.message);
+        showDebugerrors(e);
         return RequestError.CONNECTION_ERROR;
       }
     }
@@ -1254,14 +1081,10 @@ class UserServices {
       // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
-        print(e.response.data);
-        print(e.response.headers);
-        //print(e.response.request);
+        showDebugerrors(e);
         return RequestError.RESPONSE_ERROR;
       } else {
-        // Something happened in setting up or sending the request that triggered an Error
-        //print(e.request);
-        print(e.message);
+        showDebugerrors(e);
         return RequestError.CONNECTION_ERROR;
       }
     }
@@ -1290,14 +1113,10 @@ class UserServices {
       // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
-        print(e.response.data);
-        print(e.response.headers);
-        //print(e.response.request);
+        showDebugerrors(e);
         return RequestError.RESPONSE_ERROR;
       } else {
-        // Something happened in setting up or sending the request that triggered an Error
-        //print(e.request);
-        print(e.message);
+        showDebugerrors(e);
         return RequestError.CONNECTION_ERROR;
       }
     }
@@ -1316,14 +1135,10 @@ class UserServices {
       // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
-        print(e.response.data);
-        print(e.response.headers);
-        //print(e.response.request);
+        showDebugerrors(e);
         return RequestError.RESPONSE_ERROR;
       } else {
-        // Something happened in setting up or sending the request that triggered an Error
-        //print(e.request);
-        print(e.message);
+        showDebugerrors(e);
         return RequestError.CONNECTION_ERROR;
       }
     }
@@ -1333,8 +1148,9 @@ class UserServices {
     try {
       var data = {'id': "null"};
       var token = "";
-      Response response = await Client(token).get(data, '/api/config');
+      Response response = await Client(token).get(data, '/config');
       var body = response.data;
+      print("Fetched Configurations");
       print(body);
       var result = body["configuration"];
       PolicyConfig config = PolicyConfig.fromJson(result);
@@ -1344,14 +1160,106 @@ class UserServices {
       // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.
       if (e.response != null) {
-        print(e.response.data);
-        print(e.response.headers);
-        //print(e.response.request);
+        showDebugerrors(e);
         return RequestError.RESPONSE_ERROR;
       } else {
-        // Something happened in setting up or sending the request that triggered an Error
-        //print(e.request);
-        print(e.message);
+        showDebugerrors(e);
+        return RequestError.CONNECTION_ERROR;
+      }
+    }
+  }
+
+  static void showDebugerrors(DioError e) {
+    print(e.toString());
+    //print(e.request);
+    print(e.message);
+    //print(e.response);
+    print(e.error.toString());
+    print(e.error);
+    print(e.requestOptions.path);
+    if (e.response != null) {
+      print(e.response.data);
+      print(e.response.statusMessage);
+      print(e.response.realUri.toString());
+      print(e.response.headers);
+      print(e.response.realUri);
+      print(e.response.requestOptions.path);
+      print(e.response.requestOptions.data);
+      print(e.response.requestOptions.uri.path);
+    }
+  }
+
+  static fetchCallToken() async {
+    try {
+      var data = {'id': "null"};
+      var token = "";
+      Response response = await Client(token).get(data, '/calltoken');
+      var body = response.data;
+      print("Fetched Call Token");
+      print(body);
+      //var result = body["configuration"];
+      callToken calltoken = callToken.fromJson(body);
+      globals.calltoken = calltoken;
+      print(globals.calltoken.token);
+      return;
+    } on DioError catch (e) {
+      // The request was made and the server responded with a status views.code
+      // that falls out of the range of 2xx and is also not 304.
+      if (e.response != null) {
+        showDebugerrors(e);
+        return RequestError.RESPONSE_ERROR;
+      } else {
+        showDebugerrors(e);
+        return RequestError.CONNECTION_ERROR;
+      }
+    }
+  }
+
+  static createVirtualAccount() async {
+    try {
+      var data = {'id': "null"};
+      var token = "";
+      Response response = await Client(token).post(data, 'auth/reserveaccount');
+      var body = response.data;
+      print("Created Account");
+      print(body);
+      //var result = body["configuration"];
+      Account account = Account.fromJson(body["acct"]);
+      globals.account = account;
+      return;
+    } on DioError catch (e) {
+      // The request was made and the server responded with a status views.code
+      // that falls out of the range of 2xx and is also not 304.
+      if (e.response != null) {
+        showDebugerrors(e);
+        return RequestError.RESPONSE_ERROR;
+      } else {
+        showDebugerrors(e);
+        return RequestError.CONNECTION_ERROR;
+      }
+    }
+  }
+
+  static fetchReservedAccount() async {
+    try {
+      var data = {'id': "null"};
+      var token = "";
+      Response response = await Client(token).get(data, 'auth/getaccount');
+      var body = response.data;
+      print("Account Retreived");
+      print(body);
+      //var result = body["configuration"];
+      Account account = Account.fromJson(body["account"]);
+      globals.account = account;
+      return;
+    } on DioError catch (e) {
+      // The request was made and the server responded with a status views.code
+      // that falls out of the range of 2xx and is also not 304.
+      if (e.response != null) {
+        showDebugerrors(e);
+        return RequestError.RESPONSE_ERROR;
+      } else {
+        showDebugerrors(e);
         return RequestError.CONNECTION_ERROR;
       }
     }

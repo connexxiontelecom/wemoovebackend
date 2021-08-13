@@ -18,13 +18,11 @@ import 'package:wemoove/controllers/PostRideController.dart';
 import 'package:wemoove/controllers/RegisterCarController.dart';
 import 'package:wemoove/controllers/ReservationController.dart';
 import 'package:wemoove/controllers/RideRequestsController.dart';
-import 'package:wemoove/controllers/SignInController.dart';
 import 'package:wemoove/globals.dart' as globals;
 import 'package:wemoove/models/NotificationBadge.dart';
 import 'package:wemoove/services/UserServices.dart';
 import 'package:wemoove/theme.dart';
-import 'package:wemoove/utils/configs.dart' as config;
-import 'package:wemoove/utils/pref_util.dart';
+import 'package:wemoove/views/Moderation/Suspended.dart';
 import 'package:wemoove/views/ReservationDetailScreen/ReservationDetailScreen.dart';
 import 'package:wemoove/views/driver/CompleteProfileScreen.dart';
 import 'package:wemoove/views/otp/otp_screen.dart';
@@ -34,7 +32,6 @@ import 'package:wemoove/views/signin/SignInScreen.dart';
 import 'package:wemoove/views/splash/ReturningSplash.dart';
 import 'package:wemoove/views/splash/SplashScreen.dart';
 
-import 'managers/call_manager.dart';
 import 'models/Credentials.dart';
 
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -111,7 +108,7 @@ class _WeMooveState extends State<WeMoove> {
     await getCredentials();
     if (globals.user != null) {
       /*Disabling Implementation*/
-    /*  CubeUser user = CubeUser(
+      /*  CubeUser user = CubeUser(
           email: globals.user.email,
           password: '!@wemoove',
           fullName: globals.user.fullName);*/
@@ -119,7 +116,25 @@ class _WeMooveState extends State<WeMoove> {
       /*Disabling Implementation*/
       //SignInController().initCube(user);
 
-      if (globals.user.verified != 1) {
+      if (globals.user.status == 1) {
+        setState(() {
+          screen = Suspended(
+            status: globals.user.status,
+          );
+        });
+      } else if (globals.user.status == 2) {
+        setState(() {
+          screen = Suspended(
+            status: globals.user.status,
+          );
+        });
+      } else if (globals.user.status == 3) {
+        setState(() {
+          screen = Suspended(
+            status: globals.user.status,
+          );
+        });
+      } else if (globals.user.verified != 1) {
         //Navigate.to(context, OtpScreen());
         setState(() {
           screen = OtpScreen();
@@ -277,6 +292,7 @@ class _WeMooveState extends State<WeMoove> {
         ChangeNotifierProvider(create: (_) => RegistarCarController()),
         ChangeNotifierProvider(create: (_) => ReservationController()),
         ChangeNotifierProvider(create: (_) => RideRequestController()),
+        //ChangeNotifierProvider(create: (_) => CallController()),
       ],
       child: OverlaySupport.global(
         child: MaterialApp(

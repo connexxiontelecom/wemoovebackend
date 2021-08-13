@@ -36,10 +36,17 @@ class _ReservationDetailScreenState extends State<ReservationDetailScreen> {
     return /*ViewModelBuilder<ReservationController>.reactive(
         viewModelBuilder: () => globals.reservationController,
         builder: (context, controller, child) =>*/
-        Scaffold(
-            body: Body(
-      controller: controller,
-    ));
+        WillPopScope(
+      onWillPop: () => _onBackPressed(),
+      child: Scaffold(
+          body: Body(
+        controller: controller,
+      )),
+    );
     //);
+  }
+
+  Future<bool> _onBackPressed() {
+    return Future.value(false);
   }
 }

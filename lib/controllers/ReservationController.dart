@@ -6,6 +6,7 @@ import 'package:stacked/stacked.dart';
 import 'package:wemoove/components/ErrorModal.dart';
 import 'package:wemoove/components/ProcessModal.dart';
 import 'package:wemoove/components/successModal.dart';
+import 'package:wemoove/controllers/CallController.dart';
 import 'package:wemoove/controllers/ScheduleAlarm.dart';
 import 'package:wemoove/globals.dart' as globals;
 import 'package:wemoove/helper/BouncingTransition.dart';
@@ -18,16 +19,46 @@ class ReservationController extends BaseViewModel {
   MyRequest reservation;
   BuildContext context;
   List<int> unreads = [];
-
+  CallController callController = globals.callController;
   bool redirect = true;
 
   ScheduleAlarm alarm = ScheduleAlarm();
+
+  String getTravelTime(List<Pickups> pickups) {
+    String traveltime = "N/A";
+    for (var pickup in pickups) {
+      if (pickup.name.toLowerCase() == reservation.pickup.toLowerCase()) {
+        traveltime = pickup.traveltime;
+      }
+    }
+    return traveltime;
+  }
+
+  String shareDetails() {
+    if (reservation != null) {
+      String share =
+          " ${globals.user.fullName}\'s, Wemoove ride details:\n \n Destination: ${reservation.destination} \n Pickup: ${reservation.pickup} \n Driver: ${reservation.driver.fullName} \n Contact: ${reservation.driver.phoneNumber.substring(0, 7)}*** \n Car : ${reservation.car.model} ${reservation.car.brand} \n ${reservation.car.plateNumber} \n Estimated Time of Arrival: ${getTravelTime(reservation.pickups)}";
+      return share;
+    } else {
+      return "";
+    }
+  }
+
   updateReservation(/*MyRequest booking*/) {
     print("Reservation Status " + reservation.status.toString());
     print("Reservation Request Status " + reservation.requestStatus.toString());
 
     if (this.reservation != null && this.reservation is MyRequest) {
       notifyListeners();
+
+      if (reservation.requestStatus == 2 && reservation.status == 4) {
+        callController.destroy();
+      } else {
+        if (callController.realtimeInstance == null) {
+          callController.init();
+        }
+      }
+
       if (reservation.requestStatus == 2) {
         alarm.zonedScheduleNotification(
             reservation.rideId, reservation.departureTime.toUpperCase());
@@ -44,6 +75,11 @@ class ReservationController extends BaseViewModel {
 
   void cancel() async {
     await globals.flutterLocalNotificationsPlugin.cancelAll();
+  }
+
+  void makeCall() {
+    callController.makeCall(reservation.driver.driverId,
+        reservation.driver.profileImage, reservation.driver.fullName);
   }
 
   void init(bool isRedirect) {

@@ -4,14 +4,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
-import 'package:overlay_support/overlay_support.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:wemoove/components/CustomButton.dart';
 import 'package:wemoove/components/ExpandableSection.dart';
 import 'package:wemoove/controllers/ReservationController.dart';
 import 'package:wemoove/globals.dart' as globals;
 import 'package:wemoove/helper/BouncingTransition.dart';
-import 'package:wemoove/managers/call_manager.dart';
 import 'package:wemoove/views/chats/components/chatBody.dart';
 
 import '../../../constants.dart';
@@ -233,7 +232,8 @@ class _BodyState extends State<Body> {
                                 ],
                               ),
                               onTap: () {
-                               /* Set<int> _selectedUsers = {};
+                                widget.controller.makeCall();
+                                /* Set<int> _selectedUsers = {};
                                 getUserByEmail(widget
                                         .controller.reservation.driver.email)
                                     .then((cubeUser) {
@@ -319,29 +319,34 @@ class _BodyState extends State<Body> {
                                             .driver.driverId));
                               },
                             ),
-                            Column(
-                              children: [
-                                Container(
-                                  height: 50,
-                                  width: 50,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(50),
-                                    color: kPrimaryAlternateColor,
+                            GestureDetector(
+                              child: Column(
+                                children: [
+                                  Container(
+                                    height: 50,
+                                    width: 50,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(50),
+                                      color: kPrimaryAlternateColor,
+                                    ),
+                                    child: Icon(
+                                      LineAwesomeIcons.share,
+                                      color: kPrimaryColor,
+                                      size: 30,
+                                    ),
                                   ),
-                                  child: Icon(
-                                    LineAwesomeIcons.share,
-                                    color: kPrimaryColor,
-                                    size: 30,
+                                  SizedBox(
+                                    height: 8,
                                   ),
-                                ),
-                                SizedBox(
-                                  height: 8,
-                                ),
-                                Text(
-                                  "Share",
-                                  style: TextStyle(fontSize: 15),
-                                )
-                              ],
+                                  Text(
+                                    "Share",
+                                    style: TextStyle(fontSize: 15),
+                                  )
+                                ],
+                              ),
+                              onTap: () {
+                                Share.share(widget.controller.shareDetails());
+                              },
                             ),
                             InkWell(
                               child: Column(
@@ -540,7 +545,7 @@ class _DetailsState extends State<Details> {
               ),
               Container(
                 height: 50,
-                width: 110,
+                width: 120,
                 decoration: BoxDecoration(
                   color: kPrimaryAlternateColor,
                   borderRadius: BorderRadius.circular(15),

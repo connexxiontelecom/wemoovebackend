@@ -90,14 +90,16 @@ class Pickups {
   String place;
   String time;
   int seconds;
+  String traveltime;
 
-  Pickups({this.name, this.place, this.time, this.seconds});
+  Pickups({this.name, this.place, this.time, this.seconds, this.traveltime});
 
   Pickups.fromJson(Map<String, dynamic> json) {
     name = json['name'];
     place = json['place'];
     time = json['time'];
     seconds = json['seconds'];
+    traveltime = json["traveltime"];
   }
 
   Map<String, dynamic> toJson() {

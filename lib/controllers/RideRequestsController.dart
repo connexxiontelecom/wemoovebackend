@@ -13,12 +13,14 @@ import 'package:wemoove/models/request_errors.dart';
 import 'package:wemoove/services/UserServices.dart';
 import 'package:wemoove/views/search/SearchScreen.dart';
 
+import 'CallController.dart';
+
 class RideRequestController extends BaseViewModel {
   List<Request> requests = [];
   List<int> unreads = [];
 
   int ride_current_status;
-
+  CallController callController = globals.callController;
   updateRides(List<Request> requests) {
     this.requests = requests;
     notifyListeners();
@@ -29,6 +31,11 @@ class RideRequestController extends BaseViewModel {
     dynamic response = await UserServices.fetchridestatus(globals.token);
     print(response);
     ride_current_status = response;
+    if (ride_current_status == 1 || ride_current_status == 2) {
+      if (callController.realtimeInstance == null) {
+        callController.init();
+      }
+    }
     notifyListeners();
   }
 
@@ -229,6 +236,9 @@ class RideRequestController extends BaseViewModel {
     dynamic response = await UserServices.cancelRide(data, globals.token);
 
     if (response == "success") {
+      if (callController.realtimeInstance != null) {
+        callController.destroy();
+      }
       cancelreminder();
       Navigator.pop(context);
       var data = {
@@ -284,6 +294,9 @@ class RideRequestController extends BaseViewModel {
     dynamic response = await UserServices.FinishRide(data, globals.token);
 
     if (response == "success") {
+      if (callController.realtimeInstance != null) {
+        callController.destroy();
+      }
       Navigator.pop(context);
       var data = {
         "id": globals.user.id,

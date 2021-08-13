@@ -5,7 +5,7 @@ import 'package:connectycube_flutter_call_kit/connectycube_flutter_call_kit.dart
 import 'package:connectycube_sdk/connectycube_sdk.dart';
 import 'package:flutter/material.dart';
 import 'package:wemoove/views/Call/conversation_screen.dart';
-import 'package:wemoove/views/Call/incoming_call_screen.dart';
+import 'package:wemoove/views/Call/incoming.dart';
 
 import '../utils/configs.dart';
 import '../utils/consts.dart';
@@ -270,4 +270,3 @@ class CallManager {
     return Future.value(CallState.UNKNOWN);
   }*/
 }
-

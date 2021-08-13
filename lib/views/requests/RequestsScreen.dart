@@ -31,10 +31,17 @@ class _RequestsScreenState extends State<RequestsScreen> {
     return /*ViewModelBuilder<RideRequestController>.reactive(
         viewModelBuilder: () => globals.rideRequestController,
         builder: (context, controller, child) =>*/
-        Scaffold(
-            body: Body(
-      controller: controller,
-    ));
+        WillPopScope(
+      onWillPop: () => _onBackPressed(),
+      child: Scaffold(
+          body: Body(
+        controller: controller,
+      )),
+    );
     //);
+  }
+
+  Future<bool> _onBackPressed() {
+    return Future.value(false);
   }
 }

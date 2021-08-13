@@ -9,7 +9,10 @@ import 'package:wemoove/controllers/RideRequestsController.dart';
 import 'package:wemoove/models/Boarded.dart';
 import 'package:wemoove/models/PayOut.dart';
 import 'package:wemoove/models/PolicyConfig.dart';
+import 'package:wemoove/models/callToken.dart';
 
+import 'controllers/CallController.dart';
+import 'models/Account.dart';
 import 'models/Bank.dart';
 import 'models/Driven.dart';
 import 'models/DriverDetail.dart';
@@ -18,10 +21,12 @@ import 'models/user.dart';
 
 bool isDriverMode = false;
 final numFormatter = new NumberFormat("#,##0.00", "en_US");
-String baseUrl = "https://wemove.cnx247.com/api";
-//"http://192.168.88.108:8001/api"; // "https://wemove.cnx247.com/api";
+String baseUrl =
+    "http://192.168.88.108:8001/api"; //"https://wemove.cnx247.com/api";
+//"http://192.168.43.46:8001/api"; // "https://wemove.cnx247.com/api";
 //"http://192.168.88.108:8001/api"; //"https://wemove.cnx247.com/api";
 //"https://wemove.cnx247.com/api"; //"http://192.168.88.108:8001/api";
+
 User user;
 String token;
 String otp;
@@ -46,6 +51,8 @@ String currentPhoneNumber = "";
 //CubeUser currentUser;
 BuildContext context;
 PolicyConfig config;
+callToken calltoken;
+Account account;
 /*PushNotificationsManager pushNotificationsManager =
     PushNotificationsManager.instance.init();*/
 
@@ -54,3 +61,5 @@ FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
 RideRequestController rideRequestController; // = RideRequestController();
 ReservationController reservationController; // = ReservationController();
+String wemooveCallApiKeyAbly = "i0INng.ktHaSg:lTxCW727CpiaTtbL";
+CallController callController = new CallController();

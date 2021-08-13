@@ -1,3 +1,5 @@
+import 'Car.dart';
+
 class MyRequest {
   int pid;
   int id;
@@ -25,6 +27,7 @@ class MyRequest {
   int paymentMode;
   int passengers;
   Driver driver;
+  Car car;
 
   MyRequest(
       {this.pid,
@@ -52,7 +55,8 @@ class MyRequest {
       this.negotiated,
       this.paymentMode,
       this.passengers,
-      this.driver});
+      this.driver,
+      this.car});
 
   MyRequest.fromJson(Map<String, dynamic> json) {
     pid = json['pid'];
@@ -87,6 +91,7 @@ class MyRequest {
     passengers = json['passengers'];
     driver =
         json['driver'] != null ? new Driver.fromJson(json['driver']) : null;
+    car = json['Car'] != null ? new Car.fromJson(json['Car']) : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -124,18 +129,21 @@ class MyRequest {
 class Pickups {
   String name;
   String place;
+  String traveltime;
 
-  Pickups({this.name, this.place});
+  Pickups({this.name, this.place, this.traveltime});
 
   Pickups.fromJson(Map<String, dynamic> json) {
     name = json['name'];
     place = json['place'];
+    traveltime = json["traveltime"];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['name'] = this.name;
     data['place'] = this.place;
+    data["traveltime"] = this.traveltime;
     return data;
   }
 }
