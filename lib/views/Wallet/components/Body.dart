@@ -169,11 +169,39 @@ class _BodyState extends State<Body> {
                         ),
                       ),
                     ),
-                    WalletMenuTile(
+
+                   SizedBox(height: 20,),
+                   Column(
+                     children: [
+                       Text("Fund Your Wallet", style: TextStyle(fontSize: 16, fontWeight:FontWeight.w500),),
+                       Text("Bank: "+ "WEMA BANK", style: TextStyle(fontSize: 16, fontWeight:FontWeight.bold, color: Colors.black),),
+                       SizedBox(height: 5,),
+                       Container(
+                         width: 200,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              color: kPrimaryColor.withOpacity(0.2),
+                            ),
+                            padding: EdgeInsets.all(10),
+                           child: Row(
+                             mainAxisAlignment: MainAxisAlignment.center,
+                             crossAxisAlignment: CrossAxisAlignment.center,
+                             children: [
+                               Icon(LineAwesomeIcons.copy_1),
+                               Text("0917590236", style: TextStyle(fontSize: 20, fontWeight:FontWeight.bold, color: Colors.black),),
+                             ],
+                           )),
+                       SizedBox(height: 5,),
+                       Text("This works like a regular bank account number. "
+                           "Transfer from  any source to  0917590236. Select WEMA BANK as the destination bank. "
+                           "Funds will be credited to your Walllet instantly", textAlign: TextAlign.center, style: TextStyle(fontSize: 13),)
+                     ],
+                   ),
+                   /* WalletMenuTile(
                       icon: LineAwesomeIcons.wallet,
                       title: "Fund Wallet",
                       onTap: () {},
-                    ),
+                    ),*/
                     WalletMenuTile(
                       icon: LineAwesomeIcons.receipt,
                       title: "Voucher",
