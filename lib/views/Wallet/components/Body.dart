@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:wemoove/controllers/WalletController.dart';
@@ -189,27 +190,34 @@ class _BodyState extends State<Body> {
                         SizedBox(
                           height: 5,
                         ),
-                        Container(
-                            width: 200,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              color: kPrimaryColor.withOpacity(0.2),
-                            ),
-                            padding: EdgeInsets.all(10),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Icon(LineAwesomeIcons.copy_1),
-                                Text(
-                                  "${globals.account.number}",
-                                  style: TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black),
-                                ),
-                              ],
-                            )),
+                        GestureDetector(
+                          child: Container(
+                              width: 200,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                color: kPrimaryColor.withOpacity(0.2),
+                              ),
+                              padding: EdgeInsets.all(10),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Icon(LineAwesomeIcons.copy_1),
+                                  Text(
+                                    "${globals.account.number}",
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black),
+                                  ),
+                                ],
+                              )),
+                          onTap: (){
+                            Clipboard.setData(ClipboardData(text:globals.account.number));
+                            toast("copied",
+                                duration: Duration(seconds: 3));
+                          },
+                        ),
                         SizedBox(
                           height: 5,
                         ),

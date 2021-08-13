@@ -8,6 +8,10 @@ PODS:
     - Ably (= 1.2.4)
     - Flutter
   - AblyDeltaCodec (1.2.0)
+  - agora_rtc_engine (4.0.6):
+    - AgoraRtcEngine_iOS (= 3.4.6)
+    - Flutter
+  - AgoraRtcEngine_iOS (3.4.6)
   - AppAuth (1.4.0):
     - AppAuth/Core (= 1.4.0)
     - AppAuth/ExternalUserAgent (= 1.4.0)
@@ -59,7 +63,7 @@ PODS:
   - firebase_core (1.4.0):
     - Firebase/CoreOnly (= 8.3.0)
     - Flutter
-  - firebase_messaging (9.1.4):
+  - firebase_messaging (10.0.4):
     - Firebase/Messaging (= 8.3.0)
     - firebase_core
     - Flutter
@@ -151,6 +155,8 @@ PODS:
   - SDWebImage (5.11.1):
     - SDWebImage/Core (= 5.11.1)
   - SDWebImage/Core (5.11.1)
+  - share_plus (0.0.1):
+    - Flutter
   - shared_preferences (0.0.1):
     - Flutter
   - SocketRocketAblyFork (0.5.2-ably-8)
@@ -161,6 +167,7 @@ PODS:
 
 DEPENDENCIES:
   - ably_flutter (from `.symlinks/plugins/ably_flutter/ios`)
+  - agora_rtc_engine (from `.symlinks/plugins/agora_rtc_engine/ios`)
   - camera (from `.symlinks/plugins/camera/ios`)
   - device_id (from `.symlinks/plugins/device_id/ios`)
   - file_picker (from `.symlinks/plugins/file_picker/ios`)
@@ -178,6 +185,7 @@ DEPENDENCIES:
   - path_provider (from `.symlinks/plugins/path_provider/ios`)
   - permission_handler (from `.symlinks/plugins/permission_handler/ios`)
   - read_otp_plugin (from `.symlinks/plugins/read_otp_plugin/ios`)
+  - share_plus (from `.symlinks/plugins/share_plus/ios`)
   - shared_preferences (from `.symlinks/plugins/shared_preferences/ios`)
   - url_launcher (from `.symlinks/plugins/url_launcher/ios`)
 
@@ -185,6 +193,7 @@ SPEC REPOS:
   trunk:
     - Ably
     - AblyDeltaCodec
+    - AgoraRtcEngine_iOS
     - AppAuth
     - DKImagePickerController
     - DKPhotoGallery
@@ -210,6 +219,8 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   ably_flutter:
     :path: ".symlinks/plugins/ably_flutter/ios"
+  agora_rtc_engine:
+    :path: ".symlinks/plugins/agora_rtc_engine/ios"
   camera:
     :path: ".symlinks/plugins/camera/ios"
   device_id:
@@ -242,6 +253,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/permission_handler/ios"
   read_otp_plugin:
     :path: ".symlinks/plugins/read_otp_plugin/ios"
+  share_plus:
+    :path: ".symlinks/plugins/share_plus/ios"
   shared_preferences:
     :path: ".symlinks/plugins/shared_preferences/ios"
   url_launcher:
@@ -251,6 +264,8 @@ SPEC CHECKSUMS:
   Ably: 863d35bb6a6aa5fc537304ef19f85cfa51d1bbde
   ably_flutter: 31894faaa659febdd3a57cdc03c1fc2c218d2c95
   AblyDeltaCodec: 6123f31df5b04a0f5452968505a46ba16a9eb689
+  agora_rtc_engine: d3178bd63d453a2d0111bd45475f17ce1fcc754d
+  AgoraRtcEngine_iOS: 8aa4a8e46bd81963607857b1d46703b93e4de156
   AppAuth: 31bcec809a638d7bd2f86ea8a52bd45f6e81e7c7
   camera: 3164201dc344383e62282964016528c4f5a9ad50
   device_id: 4a0bf078741a3eec6ba0e6cc72e786395d5991b0
@@ -259,7 +274,7 @@ SPEC CHECKSUMS:
   file_picker: 3e6c3790de664ccf9b882732d9db5eaf6b8d4eb1
   Firebase: 817b9171d0d51dccc458b94a5e8edff6b1dd323d
   firebase_core: 72374607c8c6f5a0adc0559e5c5bf57deda975e3
-  firebase_messaging: 347eceab5ada763f628cdf869c5564437d2eb177
+  firebase_messaging: 55c5b8184efd330b9d1f1765b55c4ae57e015c5e
   FirebaseCore: a6dba751680d7033b9d3831e1cfc95ead0605118
   FirebaseCoreDiagnostics: cad03be1904b975f845e632f2720c3337da27faf
   FirebaseInstallations: 1585729afc787877763208c2088ed84221161f77
@@ -285,6 +300,7 @@ SPEC CHECKSUMS:
   PromisesObjC: 68159ce6952d93e17b2dfe273b8c40907db5ba58
   read_otp_plugin: 9177f9caf6e4c9cac784ec65bf0c3121e0bca6af
   SDWebImage: a7f831e1a65eb5e285e3fb046a23fcfbf08e696d
+  share_plus: 056a1e8ac890df3e33cb503afffaf1e9b4fbae68
   shared_preferences: af6bfa751691cdc24be3045c43ec037377ada40d
   SocketRocketAblyFork: e6e3d820bf8ff9e6265d2af81b9f11f270351ea6
   SwiftyGif: 5d4af95df24caf1c570dbbcb32a3b8a0763bc6d7

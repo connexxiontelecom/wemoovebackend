@@ -1218,8 +1218,8 @@ class UserServices {
   static createVirtualAccount() async {
     try {
       var data = {'id': "null"};
-      var token = "";
-      Response response = await Client(token).post(data, 'auth/reserveaccount');
+      var token = globals.token;
+      Response response = await Client(token).post(data, '/auth/reserveaccount');
       var body = response.data;
       print("Created Account");
       print(body);
@@ -1243,8 +1243,8 @@ class UserServices {
   static fetchReservedAccount() async {
     try {
       var data = {'id': "null"};
-      var token = "";
-      Response response = await Client(token).get(data, 'auth/getaccount');
+      var token = globals.token;
+      Response response = await Client(token).get(data, '/auth/getaccount');
       var body = response.data;
       print("Account Retreived");
       print(body);
