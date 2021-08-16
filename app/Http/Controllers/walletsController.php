@@ -57,7 +57,7 @@ class walletsController extends Controller
     {
         $wallet = new Wallet();
         $wallet->credit = $amount;
-        $user = Auth::user()->full_name;
+        $user = Auth::user()!= null ?  Auth::user()->full_name : "";
         $narration = "";
         if(empty($depositor))
         {
@@ -319,8 +319,9 @@ class walletsController extends Controller
         $paymentMethod = $request->paymentMethod;
         $isequal = ($transactionhash == $transactionHash) ?  true : false;
         //find the user with account reference
-        $account = Account::where('accountreference', $accountRef)->get();
+        $account = Account::where('accountreference', $accountRef)->first();
         $this->credit($amountPaid,$account->user_id, "Monnify");
+        //return response()->json(compact("account"));
         //return response()->json(compact("clientSecret",'amountPaid',"transactionReference", 'paymentReference', 'transactionhash', 'isequal', 'accountRef', 'paymentMethod', 'paymentStatus' ));
     }
 
