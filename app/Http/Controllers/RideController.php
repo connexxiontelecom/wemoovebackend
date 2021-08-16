@@ -45,7 +45,7 @@ class RideController extends Controller
         $dropoffs = array();
         $dropoffs = explode(",", $request->dropoffs);
         $dropoffs = json_encode($dropoffs);
-
+        $destination_place_id = $request->destination_place_id;
         $ride->dropoffs = $dropoffs;
         $ride->driver_id = Auth::user()->id;
         $ride->amount = $request->amount;
@@ -54,7 +54,23 @@ class RideController extends Controller
         $ride->amount = $request->amount;
         $ride->capacity = $request->capacity;
         $ride->car = $request->car;
-        $ride->pickups = json_encode($request->pickups);
+        $pickups = Array();
+        foreach ($request->pickups as $pickup){
+            $pickup["traveltime"] = "N/A";
+            $pickup_place_id = $pickup['place'];
+            
+            if(!is_null($request->destination_place_id)){
+                $matrix = $this->distanceMatrix($pickup_place_id, $destination_place_id);
+                if ($matrix != null) {
+                    $pickup["traveltime"] = $matrix["rows"][0]["elements"][0]["duration"]["text"];
+                    //$pickup->seconds = $matrix["rows"][0]["elements"][0]["duration"]["value"];
+                }
+            }
+
+            $pickups[] = $pickup;
+        }
+        $ride->pickups = json_encode($pickups);
+        //$ride->pickups = json_encode($request->pickups);
 
         /*  //we may later use array to integrate drop-offs and pickups
         //in the mean time lets go this way
@@ -887,6 +903,29 @@ class RideController extends Controller
                 $this->pushtoToken($token, $title, $body, $userId);
             }
         }
+    }
+
+    public function getEstimatedArrivalTime($start, $destination, $jsonFormat = true)
+    {
+
+        $key = "AIzaSyDAHdeQbSuLtDdpfhueU392zOUW6KAjGlA";
+
+        $url = "https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=place_id:$start&destinations=place_id:$destination&key=$key";
+
+        // Create a curl call
+        $ch = curl_init();
+        $timeout = 0;
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
+
+        $data = curl_exec($ch);
+        $response = json_decode($data, true);
+        curl_close($ch);
+        return $response;
+
     }
 
 

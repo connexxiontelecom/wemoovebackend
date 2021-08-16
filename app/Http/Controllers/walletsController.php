@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Account;
 use App\Models\payout_request;
 use App\Models\User;
 use App\Models\Wallet;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Lcobucci\JWT\Signer\Rsa\Sha256;
+use Lcobucci\JWT\Signer\Rsa\Sha512;
 
 class walletsController extends Controller
 {
@@ -129,6 +132,18 @@ class walletsController extends Controller
         return response()->json(compact("result", 'history'));
     }
 
+    public function getAccount($id){
+        $account =  Account::where('user_id', $id)->first();
+        return $account;
+    }
+
+    public function FetchAccountNumber(Request $request){
+        //$id = $request->user_id;
+        $id = Auth::user()->id;
+        $account =  $this->getAccount($id);
+        return response()->json(compact('account'));
+    }
+
     public function balance()
     {
         $id = Auth::user()->id;
@@ -178,5 +193,127 @@ class walletsController extends Controller
         $history = Wallet::where('user_id', $id)->get();
         return $history;
     }
+
+
+
+    public function createVirtualAccount(Request $request){
+        $account  = $this->getAccount(Auth::user()->id);
+        if(empty($account)) {
+            $accountReference = substr(sha1(time()), 20, 40);
+            $accountName = Auth::user()->full_name;
+            $currencyCode = "NGN";
+            $contractCode = "5321458792";
+            $customerEmail = Auth::user()->email;
+            $customerName = Auth::user()->full_name;
+            $getAllAvailableBanks = false;
+            $preferredBanks = "035";
+            $fields = [
+                "accountReference" => $accountReference,
+                "accountName" => $accountName,
+                "currencyCode" => $currencyCode,
+                "contractCode" => $contractCode,
+                "customerEmail" => $customerEmail,
+                "customerName" => $customerName,
+                "getAllAvailableBanks" => $getAllAvailableBanks,
+                "preferredBanks" => [$preferredBanks]
+            ];
+            $response = $this->createAccount($fields);
+            $response = json_decode($response);
+            $account_numb =  $response->responseBody->accounts[0]->accountNumber;
+            $bankname = $response->responseBody->accounts[0]->bankName;
+            $bankCode = $response->responseBody->accounts[0]->bankCode;
+            $account_reference = $response->responseBody->accountReference;
+            $reservationReference = $response->responseBody->reservationReference;
+            $acct = new Account();
+            $acct->user_id = Auth::user()->id;
+            $acct->number = $account_numb;
+            $acct->bankcode = $bankCode;
+            $acct->bank = $bankname;
+            $acct->reservationreference = $reservationReference;
+            $acct->accountreference = $account_reference;
+            $acct->save();
+            return response()->json(compact("acct"));
+        }
+    }
+
+    public function createAuthToken(){
+        $keys =  "MK_TEST_2UM78S43SG:HJGKH9F7A2VKX5XG7HANTKFNPGGUMVSS"; //apiKey:clientSecret;
+        $key =  base64_encode($keys);
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => 'https://sandbox.monnify.com/api/v1/auth/login',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_SSL_VERIFYPEER => 0,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_HTTPHEADER => array(
+                'Content-Type:application/json',
+                'Authorization: Basic '.$key,
+            ),
+        ));
+        $response = curl_exec($curl);
+        curl_close($curl);
+        $response = json_decode($response);
+        $token = $response->responseBody->accessToken;
+        return $token;
+    }
+
+
+
+    private function createAccount($fieldsArray)
+    {
+        $fields = json_encode($fieldsArray);
+        $authToken = $this->createAuthToken();
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => 'https://sandbox.monnify.com/api/v2/bank-transfer/reserved-accounts',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_SSL_VERIFYPEER => 0,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS => $fields,
+            CURLOPT_HTTPHEADER => array(
+                'Content-Type:application/json',
+                'Authorization:Bearer '.$authToken,
+            ),
+        ));
+
+        $response = curl_exec($curl);
+
+        curl_close($curl);
+        //return response()->json(compact("response"));
+        // return response()->json(compact("response"));
+        return $response;
+    }
+
+
+    public function recieveMonnifyPayment(Request $request){
+        $clientSecret ="HJGKH9F7A2VKX5XG7HANTKFNPGGUMVSS";
+        $transactionReference = $request->transactionReference;
+        $paymentReference = $request->paymentReference;
+        $amountPaid  = $request->amountPaid;
+        $paidOn = $request->paidOn;
+        $transactionHash = $request->transactionHash;
+        $hashParameters = $clientSecret."|".$paymentReference."|".$amountPaid."|".$paidOn."|".$transactionReference;
+        $transactionhash = hash("SHA512",$hashParameters);
+        $paymentStatus = $request->paymentStatus;
+        $accountRef = $request->product["reference"];
+        $paymentMethod = $request->paymentMethod;
+        $isequal = ($transactionhash == $transactionHash) ?  true : false;
+        return response()->json(compact("clientSecret",'amountPaid',"transactionReference", 'paymentReference', 'transactionhash', 'isequal', 'accountRef', 'paymentMethod', 'paymentStatus' ));
+
+    }
+
+
 
 }

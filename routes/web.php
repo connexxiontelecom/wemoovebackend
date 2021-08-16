@@ -94,13 +94,15 @@ $router->group(['middleware' => ['jwt.auth'], 'prefix'=>'api/auth' ], function (
 
     $router->post('savebank', 'banksController@saveBank');
 
-
     $router->post('requestpayout', 'walletsController@requestPayout');
 
     $router->get('payoutshistory', 'walletsController@payouts');
 
     $router->post('requestsupport', 'SupportController@SubmitRequest');
 
+    $router->post('reserveaccount', 'walletsController@createVirtualAccount');
+
+    $router->get('getaccount', 'walletsController@FetchAccountNumber');
 
 });
 
@@ -120,6 +122,13 @@ $router->group(['prefix'=>'api'], function () use ($router) {
     $router->get('fetchcars/{driver_id}', 'backendController@fetchCars');
 
     $router->get('config', 'UserController@getPolicyConfiguration');
+
+
+    $router->post('adduser', 'VoximplantController@adduser');
+    $router->get('calltoken', 'CallController@generateToken');
+
+    $router->post('monnify-receipt', 'walletsController@recieveMonnifyPayment');
+
 
 });
 

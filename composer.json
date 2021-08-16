@@ -4,12 +4,19 @@
     "keywords": ["framework", "laravel", "lumen"],
     "license": "MIT",
     "type": "project",
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/voximplant/apiclient-php"
+        }
+    ],
     "require": {
         "php": "^7.3|^8.0",
         "africastalking/africastalking": "^3.0",
         "flipbox/lumen-generator": "^8.2",
         "laravel/lumen-framework": "^8.0",
-        "tymon/jwt-auth": "^1.0"
+        "tymon/jwt-auth": "^1.0",
+        "voximplant/apiclient-php": "v1.0.1"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",
