@@ -53,12 +53,20 @@ class walletsController extends Controller
 
     }
 
-    private function credit($amount, $beneficiary)
+    private function credit($amount, $beneficiary, $depositor="")
     {
         $wallet = new Wallet();
         $wallet->credit = $amount;
         $user = Auth::user()->full_name;
-        $narration = "Received " . $amount . " credit from " . $user;
+        $narration = "";
+        if(empty($depositor))
+        {
+          $narration =  "Received " . $amount . " credit from " . $user;
+        }
+        else{
+            $narration = "Received " . $amount . " credit from ". "$depositor";
+        }
+        //$narration = empty($depositor) == true ? ("Received " . $amount . " credit from " . $user) : "Received " . $amount . " credit from " . $user;
         $wallet->narration = $narration;
         $wallet->user_id = $beneficiary;
         $wallet->debit = 0;
@@ -310,8 +318,10 @@ class walletsController extends Controller
         $accountRef = $request->product["reference"];
         $paymentMethod = $request->paymentMethod;
         $isequal = ($transactionhash == $transactionHash) ?  true : false;
-        return response()->json(compact("clientSecret",'amountPaid',"transactionReference", 'paymentReference', 'transactionhash', 'isequal', 'accountRef', 'paymentMethod', 'paymentStatus' ));
-
+        //find the user with account reference
+        $account = Account::where('accountreference', $accountRef)->get();
+        $this->credit($amountPaid,$account->user_id, "Monnify");
+        //return response()->json(compact("clientSecret",'amountPaid',"transactionReference", 'paymentReference', 'transactionhash', 'isequal', 'accountRef', 'paymentMethod', 'paymentStatus' ));
     }
 
 
