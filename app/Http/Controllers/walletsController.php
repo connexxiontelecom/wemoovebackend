@@ -323,7 +323,7 @@ class walletsController extends Controller
         $this->credit($amountPaid,$account->user_id, "Monnify");
         //return response()->json(compact("account"));
         //return response()->json(compact("clientSecret",'amountPaid',"transactionReference", 'paymentReference', 'transactionhash', 'isequal', 'accountRef', 'paymentMethod', 'paymentStatus' ));
-        $this->ToSpecificUser("Credit Alert", "Your wallet has been Credited with $amountPaid", $account->user_id);
+        $this->ToSpecificUser("Credit Alert $isequal", "Your wallet has been Credited with $amountPaid", $account->user_id);
     }
 
 
