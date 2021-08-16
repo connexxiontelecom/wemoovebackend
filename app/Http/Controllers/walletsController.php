@@ -320,10 +320,13 @@ class walletsController extends Controller
         $isequal = ($transactionhash == $transactionHash) ?  true : false;
         //find the user with account reference
         $account = Account::where('accountreference', $accountRef)->first();
-        $this->credit($amountPaid,$account->user_id, "Monnify");
-        //return response()->json(compact("account"));
-        //return response()->json(compact("clientSecret",'amountPaid',"transactionReference", 'paymentReference', 'transactionhash', 'isequal', 'accountRef', 'paymentMethod', 'paymentStatus' ));
-        $this->ToSpecificUser("Credit Alert $isequal", "Your wallet has been Credited with $amountPaid", $account->user_id);
+        if ($isequal){
+            $this->credit($amountPaid,$account->user_id, "Monnify");
+            //return response()->json(compact("account"));
+            //return response()->json(compact("clientSecret",'amountPaid',"transactionReference", 'paymentReference', 'transactionhash', 'isequal', 'accountRef', 'paymentMethod', 'paymentStatus' ));
+            $this->ToSpecificUser("Credit Alert", "Your wallet has been Credited with $amountPaid", $account->user_id);
+        }
+
     }
 
 
