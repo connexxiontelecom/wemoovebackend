@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "644165575133",
+    "project_id": "wemoove-c4e49",
+    "storage_bucket": "wemoove-c4e49.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:644165575133:android:49b10807d8b5cd3ead9634",
+        "android_client_info": {
+          "package_name": "com.connexxion.wemoove"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "644165575133-uamau4ef0sboug9l6f0ar9f4rcuspo08.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.connexxion.wemoove",
+            "certificate_hash": "63b8eee95ef825fcf381fda4d7da09d4a5c37a45"
+          }
+        },
+        {
+          "client_id": "644165575133-rlstqrpurja05f7nb7ddo13oggbq62o7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDPxq_-WOK_q49eBccWNiE-qlU_RAWmipg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "644165575133-rlstqrpurja05f7nb7ddo13oggbq62o7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

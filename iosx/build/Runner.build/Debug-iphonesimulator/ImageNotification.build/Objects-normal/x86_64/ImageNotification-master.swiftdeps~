@@ -1,0 +1,5 @@
+version: "Apple Swift version 5.4.2 (swiftlang-1205.0.28.2 clang-1205.0.19.57)"
+options: "9451b225dfdbd3e1231e941d3ef1fb13"
+build_time: [1626697043, 279895000]
+inputs:
+  "/Users/cswitch/StudioProjects/wemoovemobile/ios/ImageNotification/NotificationService.swift": [1624961896, 450620990]
