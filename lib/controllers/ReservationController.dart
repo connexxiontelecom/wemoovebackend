@@ -52,7 +52,9 @@ class ReservationController extends BaseViewModel {
       notifyListeners();
 
       if (reservation.requestStatus == 2 && reservation.status == 4) {
-        callController.destroy();
+        if (callController.realtimeInstance != null) {
+          callController.destroy();
+        }
       } else {
         if (callController.realtimeInstance == null) {
           callController.init();

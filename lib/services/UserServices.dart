@@ -1219,13 +1219,16 @@ class UserServices {
     try {
       var data = {'id': "null"};
       var token = globals.token;
-      Response response = await Client(token).post(data, '/auth/reserveaccount');
+      Response response =
+          await Client(token).post(data, '/auth/reserveaccount');
       var body = response.data;
       print("Created Account");
       print(body);
       //var result = body["configuration"];
-      Account account = Account.fromJson(body["acct"]);
-      globals.account = account;
+      if (body != null && body['acct'] != null) {
+        Account account = Account.fromJson(body["acct"]);
+        globals.account = account;
+      }
       return;
     } on DioError catch (e) {
       // The request was made and the server responded with a status views.code
