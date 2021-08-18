@@ -21,8 +21,8 @@ import 'models/user.dart';
 
 bool isDriverMode = false;
 final numFormatter = new NumberFormat("#,##0.00", "en_US");
-String baseUrl ="https://wemove.cnx247.com/api";
-    //"http://192.168.88.108:8001/api"; //"https://wemove.cnx247.com/api";
+String baseUrl =
+    "http://192.168.88.108:8001/api"; //"https://wemove.cnx247.com/api";
 //"http://192.168.43.46:8001/api"; // "https://wemove.cnx247.com/api";
 //"http://192.168.88.108:8001/api"; //"https://wemove.cnx247.com/api";
 //"https://wemove.cnx247.com/api"; //"http://192.168.88.108:8001/api";
