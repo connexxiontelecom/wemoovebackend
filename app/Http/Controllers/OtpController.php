@@ -63,8 +63,6 @@ class OtpController extends Controller
     }
 
 
-
-
     public function resendOtp(Request $request)
     {
         $this->validate($request, [

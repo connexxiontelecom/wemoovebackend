@@ -123,11 +123,12 @@ $router->group(['prefix'=>'api'], function () use ($router) {
 
     $router->get('config', 'UserController@getPolicyConfiguration');
 
-
     $router->post('adduser', 'VoximplantController@adduser');
     $router->get('calltoken', 'CallController@generateToken');
 
     $router->post('monnify-receipt', 'walletsController@recieveMonnifyPayment');
+
+    $router->post('airtime', 'VASController@databundle');
 
 
 });
