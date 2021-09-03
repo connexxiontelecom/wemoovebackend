@@ -128,7 +128,7 @@ $router->group(['prefix'=>'api'], function () use ($router) {
 
     $router->post('monnify-receipt', 'walletsController@recieveMonnifyPayment');
 
-    $router->post('airtime', 'VASController@databundle');
+    $router->post('airtime', 'VASController@purchaseElectricity');
 
 
 });
