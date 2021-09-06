@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:wemoove/globals.dart' as globals;
 import 'package:wemoove/models/Account.dart';
 import 'package:wemoove/models/Bank.dart';
@@ -1223,9 +1224,10 @@ class UserServices {
           await Client(token).post(data, '/auth/reserveaccount');
       var body = response.data;
       print("Created Account");
-      print(body);
+      debugPrint(body);
       //var result = body["configuration"];
-      if (body != null && body['acct'] != null) {
+      //if body is not empty
+      if (!["",null].contains(body)) {
         Account account = Account.fromJson(body["acct"]);
         globals.account = account;
       }

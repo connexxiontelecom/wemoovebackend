@@ -7,6 +7,7 @@ import 'package:wemoove/components/ProcessModal.dart';
 import 'package:wemoove/components/TransferModalScreen.dart';
 import 'package:wemoove/components/successModal.dart';
 import 'package:wemoove/globals.dart' as globals;
+import 'package:wemoove/models/Account.dart';
 import 'package:wemoove/models/WalletBalance.dart';
 import 'package:wemoove/models/request_errors.dart';
 import 'package:wemoove/services/UserServices.dart';
@@ -19,6 +20,8 @@ class WalletController extends BaseViewModel {
   List<WalletHistory> walletHistories;
   BuildContext context;
 
+  Account account = globals.account;
+
   WalletController() {
     getWalletBalance();
     var _data = {"id": "none"};
@@ -30,6 +33,12 @@ class WalletController extends BaseViewModel {
     balance = globals.Balance;
     walletHistories = globals.walletHistories;
     await UserServices.getWalletBalance(data, globals.token);
+
+    if (globals.account == null || this.account == null ){
+      await UserServices.fetchReservedAccount();
+      account = globals.account;
+    }
+
     balance = globals.Balance;
     walletHistories = globals.walletHistories;
     notifyListeners();

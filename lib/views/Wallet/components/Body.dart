@@ -6,6 +6,7 @@ import 'package:overlay_support/overlay_support.dart';
 import 'package:wemoove/controllers/WalletController.dart';
 import 'package:wemoove/globals.dart' as globals;
 import 'package:wemoove/helper/BouncingTransition.dart';
+import 'package:wemoove/views/VASServices/ValueAddedServices.dart';
 import 'package:wemoove/views/Wallet/Payout_Screen.dart';
 import 'package:wemoove/views/Wallet/TransactionDetails.dart';
 import 'package:wemoove/views/Wallet/manage_account.dart';
@@ -173,7 +174,8 @@ class _BodyState extends State<Body> {
                     SizedBox(
                       height: 20,
                     ),
-                    Column(
+
+                    globals.account!=null ?  Column(
                       children: [
                         Text(
                           "Fund Your Wallet",
@@ -181,7 +183,7 @@ class _BodyState extends State<Body> {
                               fontSize: 16, fontWeight: FontWeight.w500),
                         ),
                         Text(
-                          "Bank: ${globals.account.bank.toUpperCase()}",
+                          "Bank: ${widget.controller.account.bank.toUpperCase()}",
                           style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
@@ -233,6 +235,13 @@ class _BodyState extends State<Body> {
                           style: TextStyle(fontSize: 13),
                         )
                       ],
+                    ) : Center(
+                      child: Column(
+                        children: [
+                          Text("Fund Wallet", style: TextStyle(fontWeight: FontWeight.bold,),),
+                          Text("Account Not Available"),
+                        ],
+                      ),
                     ),
                     /* WalletMenuTile(
                       icon: LineAwesomeIcons.wallet,
@@ -240,9 +249,16 @@ class _BodyState extends State<Body> {
                       onTap: () {},
                     ),*/
                     WalletMenuTile(
-                      icon: LineAwesomeIcons.receipt,
-                      title: "Voucher",
-                      onTap: () {},
+                      icon: LineAwesomeIcons.servicestack,
+                      title: "Services",
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ValueAddedServices(
+                                  //controller: widget.controller,
+                                )));
+                      },
                     ),
                     /* WalletMenuTile(
                       icon: LineAwesomeIcons.address_book,

@@ -18,7 +18,7 @@ class PayoutController extends BaseViewModel {
   List<WalletHistory> walletHistories;
   BuildContext context;
   double charge = 1000;
-  dynamic minimum = globals.config.minimumThreshold;
+  dynamic minimum = globals.config != null ? globals.config.minimumThreshold : 5000;
   bool ischargeable = false;
 
   PayoutController() {
@@ -27,6 +27,13 @@ class PayoutController extends BaseViewModel {
     var _data = {"id": "none"};
     UserServices.payoutsHistory(data, globals.token);
     PayOutHistories = globals.payouts;
+    fetchConfiguration();
+  }
+
+  void fetchConfiguration()async{
+    UserServices.fetchConfigurations();
+    this.minimum = globals.config != null ? globals.config.minimumThreshold : 5000;
+    notifyListeners();
   }
 
   void getWalletBalance() async {

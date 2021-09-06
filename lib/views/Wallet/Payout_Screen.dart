@@ -258,7 +258,7 @@ TextFormField AmountForm(
     controller: controller,
     decoration: InputDecoration(
         labelText: "Amount",
-        hintText: "Minimum withdrawal: 5000",
+        hintText: "Minimum withdrawal: ${c.minimum}",
         floatingLabelBehavior: FloatingLabelBehavior.always,
         //suffixIcon: Icon(LineAwesomeIcons.angle_down),
         prefixIcon: Icon(LineAwesomeIcons.coins)),
