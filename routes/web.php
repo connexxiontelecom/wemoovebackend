@@ -104,10 +104,17 @@ $router->group(['middleware' => ['jwt.auth'], 'prefix'=>'api/auth' ], function (
 
     $router->get('getaccount', 'walletsController@FetchAccountNumber');
 
+    $router->post('buyairtime', 'VASController@purchaseAirtime');
+    $router->post('buydatabundle', 'VASController@purchaseDatabundle');
+    $router->post('subscribetv', 'VASController@cabletvPurchaseSubscription');
+    $router->post('verifyelectricuser', 'VASController@verifyUserAccount');
+    $router->post('buyelectricityunits', 'VASController@purchaseElectricity');
+
 });
 
 //un-authenticated route
 $router->group(['prefix'=>'api'], function () use ($router) {
+
     $router->post('register', 'AuthController@register');
     $router->post('login', 'AuthController@login');
 
@@ -128,7 +135,19 @@ $router->group(['prefix'=>'api'], function () use ($router) {
 
     $router->post('monnify-receipt', 'walletsController@recieveMonnifyPayment');
 
-    $router->post('airtime', 'VASController@purchaseElectricity');
+    $router->get('airtimeproviders', 'VASController@airtimeProviders');
+
+    $router->get('databundleproviders', 'VASController@databundleproviders');
+
+    $router->post('datapackages', 'VASController@databundles');
+
+    $router->get('cabletvproviders', 'VASController@cabletv');
+    $router->post('cabletvproductbundles', 'VASController@cabletvProductBundles');
+    $router->post('productaddon', 'VASController@cabletvProductBundleAddon');
+
+    $router->get('electricitybillers', 'VASController@electricityBillers');
+
+
 
 
 });
