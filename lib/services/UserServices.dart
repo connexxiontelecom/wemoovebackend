@@ -4,17 +4,25 @@ import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:wemoove/globals.dart' as globals;
 import 'package:wemoove/models/Account.dart';
+import 'package:wemoove/models/Addon.dart';
 import 'package:wemoove/models/Bank.dart';
 import 'package:wemoove/models/Boarded.dart';
+import 'package:wemoove/models/CableTVBundle.dart';
+import 'package:wemoove/models/CableTvProvider.dart';
 import 'package:wemoove/models/Credentials.dart';
+import 'package:wemoove/models/DataBundleProvider.dart';
+import 'package:wemoove/models/DataPackage.dart';
 import 'package:wemoove/models/Driven.dart';
 import 'package:wemoove/models/DriverDetail.dart';
+import 'package:wemoove/models/ElectricityBiller.dart';
+import 'package:wemoove/models/ElectricityUser.dart';
 import 'package:wemoove/models/MyRequest.dart';
 import 'package:wemoove/models/PayOut.dart';
 import 'package:wemoove/models/PolicyConfig.dart';
 import 'package:wemoove/models/Ride.dart';
 import 'package:wemoove/models/Vehicle.dart';
 import 'package:wemoove/models/WalletBalance.dart';
+import 'package:wemoove/models/airtimeProvider.dart';
 import 'package:wemoove/models/callToken.dart';
 import 'package:wemoove/models/chat.dart';
 import 'package:wemoove/models/request.dart';
@@ -1227,7 +1235,7 @@ class UserServices {
       debugPrint(body);
       //var result = body["configuration"];
       //if body is not empty
-      if (!["",null].contains(body)) {
+      if (!["", null].contains(body)) {
         Account account = Account.fromJson(body["acct"]);
         globals.account = account;
       }
@@ -1257,6 +1265,376 @@ class UserServices {
       Account account = Account.fromJson(body["account"]);
       globals.account = account;
       return;
+    } on DioError catch (e) {
+      // The request was made and the server responded with a status views.code
+      // that falls out of the range of 2xx and is also not 304.
+      if (e.response != null) {
+        showDebugerrors(e);
+        return RequestError.RESPONSE_ERROR;
+      } else {
+        showDebugerrors(e);
+        return RequestError.CONNECTION_ERROR;
+      }
+    }
+  }
+
+  static fetchairtimeproviders() async {
+    try {
+      var data = {'id': "null"};
+      var token = "";
+      Response response = await Client(token).get(data, '/airtimeproviders');
+      print(response);
+      print("Fetched airtime providers");
+      var body = response.data;
+      print("Fetched airtime providers");
+      print(body);
+      var providers = body["result"]["data"]["providers"]
+          as List; //returned wallet histories
+      List<airtimeProvider> _providers = [];
+      for (var provider in providers) {
+        if (provider != null) {
+          _providers.add(airtimeProvider.fromJson(provider));
+        }
+      }
+      globals.airtimeproviders = _providers;
+      return globals.airtimeproviders;
+    } on DioError catch (e) {
+      // The request was made and the server responded with a status views.code
+      // that falls out of the range of 2xx and is also not 304.
+      if (e.response != null) {
+        showDebugerrors(e);
+        return RequestError.RESPONSE_ERROR;
+      } else {
+        showDebugerrors(e);
+        return RequestError.CONNECTION_ERROR;
+      }
+    }
+  }
+
+  static purchaseAirtime(data, token) async {
+    try {
+      Response response = await Client(token).post(data, '/auth/buyairtime');
+      print(response);
+      print("Airtime Purchase");
+      var body = response.data;
+      var status = body['result']['status'];
+      var code = body['result']['code'];
+      var transactionStatus = body['result']['data']['transactionStatus'];
+      if (status == transactionStatus &&
+          transactionStatus == 'success' &&
+          code == 200) {
+        return "success";
+      } else {
+        return;
+      }
+    } on DioError catch (e) {
+      // The request was made and the server responded with a status views.code
+      // that falls out of the range of 2xx and is also not 304.
+      if (e.response != null) {
+        showDebugerrors(e);
+        return RequestError.RESPONSE_ERROR;
+      } else {
+        showDebugerrors(e);
+        return RequestError.CONNECTION_ERROR;
+      }
+    }
+  }
+
+  static fetchDataBundleProviders() async {
+    try {
+      var data = {'id': "null"};
+      var token = "";
+      Response response = await Client(token).get(data, '/databundleproviders');
+      print(response);
+      print("Fetched data providers");
+      var body = response.data;
+      print("Fetched data providers");
+      print(body);
+      var providers = body["result"]["data"]["providers"]
+          as List; //returned wallet histories
+      List<databundleprovider> _providers = [];
+      for (var provider in providers) {
+        if (provider != null) {
+          _providers.add(databundleprovider.fromJson(provider));
+        }
+      }
+      globals.databundleproviders = _providers;
+      return globals.databundleproviders;
+    } on DioError catch (e) {
+      // The request was made and the server responded with a status views.code
+      // that falls out of the range of 2xx and is also not 304.
+      if (e.response != null) {
+        showDebugerrors(e);
+        return RequestError.RESPONSE_ERROR;
+      } else {
+        showDebugerrors(e);
+        return RequestError.CONNECTION_ERROR;
+      }
+    }
+  }
+
+  static fetchDataPackages(String operator) async {
+    try {
+      var data = {'operator': operator};
+      Response response =
+          await Client(globals.token).post(data, '/datapackages');
+      var body = response.data;
+      print(body);
+      var packages = body["result"]["data"] as List; //returned wallet histories
+      List<DataPackage> _packages = [];
+      for (var package in packages) {
+        if (package != null) {
+          _packages.add(DataPackage.fromJson(package));
+        }
+      }
+      globals.packages = _packages;
+      return globals.packages;
+    } on DioError catch (e) {
+      // The request was made and the server responded with a status views.code
+      // that falls out of the range of 2xx and is also not 304.
+      if (e.response != null) {
+        showDebugerrors(e);
+        return RequestError.RESPONSE_ERROR;
+      } else {
+        showDebugerrors(e);
+        return RequestError.CONNECTION_ERROR;
+      }
+    }
+  }
+
+  static purchaseDataBundle(data, token) async {
+    try {
+      Response response = await Client(token).post(data, '/auth/buydatabundle');
+      print(response);
+      print("Data Purchase");
+      var body = response.data;
+      var status = body['result']['status'];
+      var code = body['result']['code'];
+      var transactionStatus = body['result']['data']['transactionStatus'];
+      if (status == transactionStatus &&
+          transactionStatus == 'success' &&
+          code == 200) {
+        return "success";
+      } else {
+        return;
+      }
+    } on DioError catch (e) {
+      // The request was made and the server responded with a status views.code
+      // that falls out of the range of 2xx and is also not 304.
+      if (e.response != null) {
+        showDebugerrors(e);
+        return RequestError.RESPONSE_ERROR;
+      } else {
+        showDebugerrors(e);
+        return RequestError.CONNECTION_ERROR;
+      }
+    }
+  }
+
+  static fetchCableTVProviders() async {
+    try {
+      var data = {'id': "null"};
+      var token = "";
+      Response response = await Client(token).get(data, '/cabletvproviders');
+      print(response);
+      print("Fetched data providers");
+      var body = response.data;
+      print("Fetched data providers");
+      print(body);
+      var providers = body["result"]["data"]["providers"]
+          as List; //returned wallet histories
+      List<CableTvProvider> _providers = [];
+      for (var provider in providers) {
+        if (provider != null) {
+          _providers.add(CableTvProvider.fromJson(provider));
+        }
+      }
+      globals.tvProviders = _providers;
+      return globals.tvProviders;
+    } on DioError catch (e) {
+      // The request was made and the server responded with a status views.code
+      // that falls out of the range of 2xx and is also not 304.
+      if (e.response != null) {
+        showDebugerrors(e);
+        return RequestError.RESPONSE_ERROR;
+      } else {
+        showDebugerrors(e);
+        return RequestError.CONNECTION_ERROR;
+      }
+    }
+  }
+
+  //productaddon
+  static fetchCableTVBundles(String operator) async {
+    try {
+      var data = {'operator': operator};
+      var token = "";
+      Response response =
+          await Client(token).post(data, '/cabletvproductbundles');
+      print(response);
+      //print("Fetched data providers");
+      var body = response.data;
+      //print("Fetched data providers");
+      print(body);
+      var bundles = body["result"]["data"] as List; //returned wallet histories
+      List<CableTvBundle> _bundles = [];
+      for (var bundle in bundles) {
+        if (bundle != null) {
+          _bundles.add(CableTvBundle.fromJson(bundle));
+        }
+      }
+      globals.tvbundles = _bundles;
+      return globals.tvbundles;
+    } on DioError catch (e) {
+      // The request was made and the server responded with a status views.code
+      // that falls out of the range of 2xx and is also not 304.
+      if (e.response != null) {
+        showDebugerrors(e);
+        return RequestError.RESPONSE_ERROR;
+      } else {
+        showDebugerrors(e);
+        return RequestError.CONNECTION_ERROR;
+      }
+    }
+  }
+
+  //productaddon
+  static fetchCableTVBundlesAddon(String operator, String code) async {
+    try {
+      var data = {'operator': operator, 'productcode': code};
+      var token = "";
+      Response response = await Client(token).post(data, '/productaddon');
+      print(response);
+      //print("Fetched data providers");
+      var body = response.data;
+      //print("Fetched data providers");
+      print(body);
+      var addons = body["result"]["data"] as List; //returned wallet histories
+      List<Addon> _addons = [];
+      for (var addon in addons) {
+        if (addon != null) {
+          _addons.add(Addon.fromJson(addon));
+        }
+      }
+      globals.addons = _addons;
+      return globals.addons;
+    } on DioError catch (e) {
+      // The request was made and the server responded with a status views.code
+      // that falls out of the range of 2xx and is also not 304.
+      if (e.response != null) {
+        showDebugerrors(e);
+        return RequestError.RESPONSE_ERROR;
+      } else {
+        showDebugerrors(e);
+        return RequestError.CONNECTION_ERROR;
+      }
+    }
+  }
+
+  static purchaseCableTV(data, token) async {
+    try {
+      Response response = await Client(token).post(data, '/auth/subscribetv');
+      print(response);
+      print("TV Subscription Purchase");
+      var body = response.data;
+      var status = body['result']['status'];
+      var code = body['result']['code'];
+      var transactionStatus = body['result']['data']['transactionStatus'];
+      if (status == transactionStatus &&
+          transactionStatus == 'success' &&
+          code == 200) {
+        return "success";
+      } else {
+        return;
+      }
+    } on DioError catch (e) {
+      // The request was made and the server responded with a status views.code
+      // that falls out of the range of 2xx and is also not 304.
+      if (e.response != null) {
+        showDebugerrors(e);
+        return RequestError.RESPONSE_ERROR;
+      } else {
+        showDebugerrors(e);
+        return RequestError.CONNECTION_ERROR;
+      }
+    }
+  }
+
+  static fetchelectricitybillers() async {
+    try {
+      var data = {'id': "null"};
+      var token = "";
+      Response response = await Client(token).get(data, '/electricitybillers');
+      print(response);
+      print("Fetched data electricity");
+      var body = response.data;
+      print("Fetched data electricity");
+      print(body);
+      var providers = body["result"]["data"]["providers"]
+          as List; //returned wallet histories
+      List<ElectricityBiller> _providers = [];
+      for (var provider in providers) {
+        if (provider != null) {
+          _providers.add(ElectricityBiller.fromJson(provider));
+        }
+      }
+      globals.ElectricityBillers = _providers;
+      return globals.ElectricityBillers;
+    } on DioError catch (e) {
+      // The request was made and the server responded with a status views.code
+      // that falls out of the range of 2xx and is also not 304.
+      if (e.response != null) {
+        showDebugerrors(e);
+        return RequestError.RESPONSE_ERROR;
+      } else {
+        showDebugerrors(e);
+        return RequestError.CONNECTION_ERROR;
+      }
+    }
+  }
+
+  static verifyEletricuserAccount(data) async {
+    try {
+      Response response =
+          await Client(globals.token).post(data, '/auth/verifyelectricuser');
+      print(response);
+
+      var body = response.data;
+
+      print(body);
+      var user = body["result"]["data"]; //returned wallet histories
+      ElectricityUser _user = ElectricityUser.fromJson(user);
+      return _user;
+    } on DioError catch (e) {
+      // The request was made and the server responded with a status views.code
+      // that falls out of the range of 2xx and is also not 304.
+      if (e.response != null) {
+        showDebugerrors(e);
+        return RequestError.RESPONSE_ERROR;
+      } else {
+        showDebugerrors(e);
+        return RequestError.CONNECTION_ERROR;
+      }
+    }
+  }
+
+  static purchaseElectricityUnits(data, token) async {
+    try {
+      Response response =
+          await Client(token).post(data, '/auth/buyelectricityunits');
+      print(response);
+      print("Electricity Purchase");
+      var body = response.data;
+      var status = body['result']['status'];
+      var code = body['result']['code'];
+      var transactionStatus = body['result']['data']['transactionStatus'];
+      if (status == transactionStatus &&
+          transactionStatus == 'success' &&
+          code == 200) {
+        return "success";
+      } else {
+        return;
+      }
     } on DioError catch (e) {
       // The request was made and the server responded with a status views.code
       // that falls out of the range of 2xx and is also not 304.

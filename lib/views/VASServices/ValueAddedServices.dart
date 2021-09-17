@@ -1,18 +1,16 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:line_awesome_flutter/line_awesome_flutter.dart';
-import 'package:overlay_support/overlay_support.dart';
 import 'package:stacked/stacked.dart';
-import 'package:wemoove/components/CustomInputField.dart';
-import 'package:wemoove/components/defaultButton.dart';
-import 'package:wemoove/controllers/ManageAccountController.dart';
 import 'package:wemoove/controllers/VASController.dart';
 import 'package:wemoove/globals.dart' as globals;
-import 'package:wemoove/models/Bank.dart';
+import 'package:wemoove/views/VASServices/VASForm.dart';
 
 import '../../constants.dart';
 import '../../size_config.dart';
-
+import 'VASCableTVForm.dart';
+import 'VASDataBundleForm.dart';
+import 'VASElectricityForm.dart';
 
 class ValueAddedServices extends StatefulWidget {
   const ValueAddedServices({Key key}) : super(key: key);
@@ -56,7 +54,6 @@ class _ValueAddedServicesState extends State<ValueAddedServices> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
-
                         backButton(context),
                         Text(
                           "Value Added Services",
@@ -93,34 +90,61 @@ class _ValueAddedServicesState extends State<ValueAddedServices> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
 //list vas here
-                        WalletMenuTile(
-                          title: "Airtime",
-                        ),
                           WalletMenuTile(
+                            title: "Airtime",
+                            icon: LineAwesomeIcons.signal,
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => VASFormScreen(
+                                          //controller: widget.controller,
+                                          )));
+                            },
+                          ),
+                          WalletMenuTile(
+                            icon: LineAwesomeIcons.lightning_bolt,
                             title: "Electricity",
+                            onTap: (){
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          VASElectricityFormScreen(
+                                            //controller: widget.controller,
+                                          )));
+                            },
                           ),
                           WalletMenuTile(
-                            title: "Dstv",
+                            title: "Mobile Data",
+                            icon: LineAwesomeIcons.broadcast_tower,
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          VASDataBundleFormScreen(
+                                              //controller: widget.controller,
+                                              )));
+                            },
                           ),
                           WalletMenuTile(
-                            title: "Gotv",
+                            icon: LineAwesomeIcons.television,
+                            title: "Cable TV ",
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          VASCableTVFormScreen(
+                                              //controller: widget.controller,
+                                              )));
+                            },
                           ),
                           WalletMenuTile(
-                            title: "NECO",
+                            icon: LineAwesomeIcons.qrcode,
+                            title: "E-Pin",
                           ),
-                          WalletMenuTile(
-                            title: "WAEC",
-                          ),
-                          WalletMenuTile(
-                            title: "Startimes",
-                          ),
-                          WalletMenuTile(
-                            title: "Spectranet Pin/Bundle",
-                          ),
-                          WalletMenuTile(
-                            title: "Bulk Sms",
-                          )
-
                         ],
                       ),
                     ),
@@ -134,7 +158,6 @@ class _ValueAddedServicesState extends State<ValueAddedServices> {
     );
   }
 }
-
 
 class WalletMenuTile extends StatelessWidget {
   final IconData icon;
@@ -150,7 +173,7 @@ class WalletMenuTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(top: 5, bottom: 5),
+      padding: const EdgeInsets.only(top: 10, bottom: 10),
       child: InkWell(
         child: Container(
           child: Row(
@@ -160,13 +183,16 @@ class WalletMenuTile extends StatelessWidget {
                 padding: const EdgeInsets.all(8.0),
                 child: Row(
                   children: [
-                    Icon(icon),
+                    Icon(
+                      icon,
+                      color: kPrimaryColor,
+                    ),
                     SizedBox(
                       width: 10,
                     ),
                     Text(
                       title,
-                      style: TextStyle(fontSize: 20),
+                      style: TextStyle(fontSize: 18, color: Colors.black),
                     )
                   ],
                 ),
@@ -196,6 +222,3 @@ class WalletMenuTile extends StatelessWidget {
     );
   }
 }
-
-
-
