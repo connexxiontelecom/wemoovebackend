@@ -163,7 +163,18 @@ class VASController extends Controller
             'agentId'=> 207,
             'agentReference'=>$this->generateRandomString()
         );
+
         $result = $this->connect($parameters, $endpoint);
+
+        //debit
+        $status = $result['status'];
+        $code= $result["code"];
+        $transactionStatus = $result["data"]["transactionStatus"];
+        if($status == $transactionStatus && $code == 200)
+        {
+            $this->debit($request->amount, Auth::user()->id, "Purchase of N $request->amount  worth Data Plan ");
+        }
+
         return response()->json(compact("result"));
     }
 
@@ -236,6 +247,16 @@ class VASController extends Controller
 
         }
         $result = $this->connect($parameters, $endpoint);
+
+        $status = $result['status'];
+        $code= $result["code"];
+        $transactionStatus = $result["data"]["transactionStatus"];
+        if($status == $transactionStatus && $code == 200)
+        {
+            $this->debit($request->amount, Auth::user()->id, "Purchase of $request->amount Cable TV Subscription");
+        }
+
+
         return response()->json(compact("result"));
     }
 
@@ -260,6 +281,7 @@ class VASController extends Controller
 
     //Purchase available pin bundle types (9Mobile, Glo, Waec, Bulksms, Spectranet)
     public  function epinPurchase(){
+        $amount = 0;
         $endpoint = "/services/epin/request";
         $parameters = array(
             'service_type'=> 'glo',
@@ -270,6 +292,13 @@ class VASController extends Controller
             'agentReference'=> 'AX14s68P2ZQwsazx',
         );
         $result = $this->connect($parameters, $endpoint);
+        $status = $result['status'];
+        $code= $result["code"];
+        $transactionStatus = $result["data"]["transactionStatus"];
+        if($status == $transactionStatus && $code == 200)
+        {
+            $this->debit($amount, Auth::user()->id, "Purchase of $amount ");
+        }
         return response()->json(compact("result"));
     }
 
@@ -362,6 +391,16 @@ class VASController extends Controller
         "agentId"=>$agentId,
         "agentReference"=>$agentReference);
         $result = $this->purchaseunits($parameters, $endpoint);
+
+        $status = $result['status'];
+        $code= $result["code"];
+        $transactionStatus = $result["data"]["transactionStatus"];
+        if($status == $transactionStatus && $code == 200)
+        {
+            $this->debit($request->amount, Auth::user()->id, "Purchase of $request->amount electricity units");
+        }
+
+
         return response()->json(compact("result"));
     }
 
