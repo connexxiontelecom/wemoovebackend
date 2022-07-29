@@ -10,6 +10,8 @@ use App\Models\Vehicle;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
+use Eloquent;
 use App\Models\Wallet;
 
 class RideController extends Controller
@@ -58,7 +60,7 @@ class RideController extends Controller
         foreach ($request->pickups as $pickup){
             $pickup["traveltime"] = "N/A";
             $pickup_place_id = $pickup['place'];
-            
+
             if(!is_null($request->destination_place_id)){
                 $matrix = $this->distanceMatrix($pickup_place_id, $destination_place_id);
                 if ($matrix != null) {
