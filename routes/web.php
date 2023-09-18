@@ -24,12 +24,6 @@ $router->group(['middleware' => ['jwt.auth'], 'prefix'=>'api/auth' ], function (
 
     $router->get('user', 'AuthController@getAuthenticatedUser');
 
-    $router->post('otp', 'OtpController@sendOtp');
-
-    $router->post('resendotp', 'OtpController@resendOtp');
-
-    $router->post('otp/verify', 'OtpController@updateVerified');
-
     $router->post('publish', 'RideController@publishRide');
 
     $router->get('search', 'RideController@Search');
@@ -147,8 +141,15 @@ $router->group(['prefix'=>'api'], function () use ($router) {
 
     $router->get('electricitybillers', 'VASController@electricityBillers');
 
-
-
+    $router->get('ride-requests', 'Ride_Request_Controller@fetchPendingRides');
+    $router->post('ride-request/create', 'Ride_Request_Controller@createRideRequest');
+    $router->put('ride-request/update', 'Ride_Request_Controller@updateRideRequest');
+    $router->post('users/create', 'AuthController@register');
+    $router->post('users/auth-login', 'AuthController@authLogin');
+    $router->post('savedevicetoken', 'AuthController@updateDeviceToken');
+    $router->post('otp', 'OtpController@sendOtp');
+    $router->post('resendotp', 'OtpController@resendOtp');
+    $router->post('otp/verify', 'OtpController@updateVerified');
 
 });
 
