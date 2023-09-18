@@ -45,6 +45,14 @@ class CreateUsersTable extends Migration
 
             $table->string('device_token')->nullable();
 
+            $table->string('brand')->nullable();
+            $table->string('model')->nullable();
+            $table->string('model_year')->nullable();
+            $table->string('colour')->nullable();
+            $table->string('capacity')->nullable();
+            $table->string('plate_number')->nullable();
+            $table->string('car_picture')->nullable();
+
             $table->rememberToken();
             $table->timestamps();
         });

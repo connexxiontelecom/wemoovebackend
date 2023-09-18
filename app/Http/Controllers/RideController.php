@@ -830,7 +830,6 @@ class RideController extends Controller
 
     public function registerVehicle(Request $request)
     {
-
         $this->validate($request, [
             'brand' => 'required|string',
             'model' => 'required|string',
@@ -930,6 +929,21 @@ class RideController extends Controller
 
     }
 
+    public function findADriver(Request $request){
+        $this->validate($request, [
+            /* 'pickup1' => 'required|string', */
+            'pickups' => 'required',
+            'destination' => 'required',
+            'dropoffs' => 'required',
+            'capacity' => 'required',
+            'airconditioner' => 'required',
+            'amount' => 'required',
+            'departure' => 'required',
+            "car" => 'required',
+        ]);
+
+        $ride = new Ride();
+    }
 
     private function debit($amount, $account)
     {

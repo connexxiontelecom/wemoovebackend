@@ -122,6 +122,41 @@ class AuthController extends Controller
         return response()->json(compact('user'));
     }
 
+
+    public function authLogin(Request $request)
+    {
+        $this->validate($request, [
+            'username' => 'required',//can be email or password
+            'password' => 'required',
+        ]);
+
+        try {
+            $myTTL = 10080; //minutes
+            Auth::factory()->setTTL($myTTL);
+
+            //attempt to login with phonenumber
+            $credentials = array ('phone_number'=>$request->username, 'password'=>$request->password);
+            $token = Auth::attempt($credentials);
+            if(!$token){
+
+                $credentials = array ('email'=>$request->username, 'password'=>$request->password);
+                $token = Auth::attempt($credentials);
+                if(!$token){
+                    $message = "Login Credentials are not valid";
+                    return response()->json(compact('message'));
+                }
+            }
+        } catch (Exception $e) {
+
+            //return response()->json(['message' => 'could not create token'], 500);
+            $message = "Unable to login";
+            return response()->json(compact('message'));
+        }
+
+        $user = Auth::user();
+        return response()->json(compact('token','user'));
+    }
+
     /**
      * Register a User.
      *
@@ -151,8 +186,60 @@ class AuthController extends Controller
                 $user->email = $request->input('email');
                 $user->phone_number = $request->input('phone');
                 $user->user_type = $request->input('usertype');
+                $user->device_token = $request->input('device_token');
                 $plainPassword = $request->input('password');
                 $user->password = app('hash')->make($plainPassword);
+                $user->brand = $request->input('brand');
+                $user->model = $request->input('model');
+                $user->model_year = $request->input('model_year');
+                $user->colour = $request->input('colour');
+                $user->capacity = $request->input('capacity');
+                $user->plate_number = $request->input('plate_number');
+                $user->license = $request->input('license');
+                $user->car_picture = $request->input('carpicture');
+                $user->self_picture = $request->input('selfPictureAndLicense');
+
+
+                if (!empty($request->file('license'))) {
+                    $extension = $request->file('license');
+                    $extension = $request->file('license')->getClientOriginalExtension();
+                    //$size = $request->file('file')->getSize();
+                    $dir = 'assets/uploads/license/';
+                    $license_filename = uniqid() . '_' . time() . '_' . date('Ymd') . '.' . $extension;
+                    $request->file('license')->move($this->public_path($dir), $license_filename);
+
+                }
+
+                if (!empty($request->file('selfPictureAndLicense'))) {
+                    $extension = $request->file('selfPictureAndLicense')->getClientOriginalExtension();
+                    $dir = 'assets/uploads/license/';
+                    $license_filename = uniqid() . '_' . time() . '_' . date('Ymd') . '.' . $extension;
+                    $request->file('selfPictureAndLicense')->move($this->public_path($dir), $license_filename);
+                }
+
+               if(!empty($request->file('carpicture'))){
+                   //SAVE CAR FRONT VIEW
+                   $extension = $request->file('carpicture')->getClientOriginalExtension();
+                   //$size = $request->file('file')->getSize();
+                   $dir = 'assets/uploads/images/';
+                   $CarPicturefilename = uniqid() . '_' . time() . '_' . date('Ymd') . '.' . $extension;
+                   $request->file('carpicture')->move($this->public_path($dir), $CarPicturefilename);
+               }
+
+                //$user = User::find(Auth::user()->id);
+
+                if (!empty($request->file('profileImage'))) {
+                    $extension = $request->file('profileImage');
+                    $extension = $request->file('profileImage')->getClientOriginalExtension();
+                    //$size = $request->file('file')->getSize();
+                    $dir = 'assets/uploads/profile/';
+                    $profileImagefilename = uniqid() . '_' . time() . '_' . date('Ymd') . '.' . $extension;
+                    $request->file('profileImage')->move($this->public_path($dir), $profileImagefilename);
+                    $user->profile_image = $profileImagefilename;
+                }else{
+                    $user->profile_image = 'avatar.png';
+                }
+
                 $user->save();
             }
 
@@ -165,6 +252,10 @@ class AuthController extends Controller
                 return response()->json(['message' => 'invalid credentials, could not register user'], 409);
             }
 
+            $user->profile_image = url("/assets/uploads/profile/" . $user->profile_image);
+            $user->car_picture = url("/assets/uploads/images/" . $user->car_picture);
+            $user->license =url("/assets/uploads/license/" . $user->license);
+
             //initial credit bonus
             $this->credit(500, $user->id);
 
@@ -172,11 +263,18 @@ class AuthController extends Controller
 
         } catch (\Exception $e) {
             //return error message
-            return response()->json(['message' => 'User Registration Failed!'], 409);
+            return response()->json([ 'error'=>$e, 'message' => 'User Registration Failed!'], 409);
         }
-
-
     }
+
+
+
+
+
+
+
+
+
 
     public function registerVehicle(Request $request)
     {
@@ -395,10 +493,16 @@ class AuthController extends Controller
 
 
     public function updateDeviceToken(Request $request){
-        $userid = Auth::user()->id;
-        $user = User::find($userid);
-        $user->device_token = $request->device_token;
-        $user->save();
+      try{
+          $userid = $request->userId;//Auth::user()->id;
+          $user = User::find($userid);
+          $user->device_token = $request->token;
+          $user->save();
+          return response()->json(['message' => 'Updated Token']);
+      }
+    catch (Exception $e) {
+            return response()->json([ 'error'=>$e , 'message' => 'Could not update token'], 500);
+        }
     }
 
 
