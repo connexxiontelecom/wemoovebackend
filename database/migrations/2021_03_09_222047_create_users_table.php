@@ -52,6 +52,9 @@ class CreateUsersTable extends Migration
             $table->string('capacity')->nullable();
             $table->string('plate_number')->nullable();
             $table->string('car_picture')->nullable();
+            $table->double('longitude')->nullable();
+            $table->double('latitude')->nullable();
+            $table->string('self_picture')->nullable();
 
             $table->rememberToken();
             $table->timestamps();
