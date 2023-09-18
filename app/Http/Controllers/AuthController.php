@@ -207,14 +207,15 @@ class AuthController extends Controller
                     $dir = 'assets/uploads/license/';
                     $license_filename = uniqid() . '_' . time() . '_' . date('Ymd') . '.' . $extension;
                     $request->file('license')->move($this->public_path($dir), $license_filename);
-
+                    $user->license = $license_filename;
                 }
 
                 if (!empty($request->file('selfPictureAndLicense'))) {
                     $extension = $request->file('selfPictureAndLicense')->getClientOriginalExtension();
-                    $dir = 'assets/uploads/license/';
-                    $license_filename = uniqid() . '_' . time() . '_' . date('Ymd') . '.' . $extension;
-                    $request->file('selfPictureAndLicense')->move($this->public_path($dir), $license_filename);
+                    $dir = 'assets/uploads/images/';
+                    $self_picture_filename = uniqid() . '_' . time() . '_' . date('Ymd') . '.' . $extension;
+                    $request->file('selfPictureAndLicense')->move($this->public_path($dir), $self_picture_filename);
+                    $user->self_picture = $self_picture_filename;
                 }
 
                if(!empty($request->file('carpicture'))){
@@ -224,6 +225,7 @@ class AuthController extends Controller
                    $dir = 'assets/uploads/images/';
                    $CarPicturefilename = uniqid() . '_' . time() . '_' . date('Ymd') . '.' . $extension;
                    $request->file('carpicture')->move($this->public_path($dir), $CarPicturefilename);
+                   $user->car_picture = $CarPicturefilename;
                }
 
                 //$user = User::find(Auth::user()->id);
@@ -255,6 +257,7 @@ class AuthController extends Controller
             $user->profile_image = url("/assets/uploads/profile/" . $user->profile_image);
             $user->car_picture = url("/assets/uploads/images/" . $user->car_picture);
             $user->license =url("/assets/uploads/license/" . $user->license);
+            $user->self_picture =url("/assets/uploads/images/" . $user->self_picture);
 
             //initial credit bonus
             $this->credit(500, $user->id);
