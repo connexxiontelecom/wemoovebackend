@@ -17,6 +17,7 @@ use App\Models\Wallet;
 
 class RideController extends Controller
 {
+
     //
 
     /* *
