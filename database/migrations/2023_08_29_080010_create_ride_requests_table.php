@@ -23,6 +23,7 @@ class CreateRideRequestsTable extends Migration
             $table->string('destination_longitude');
             $table->string('destination_latitude');
             $table->string('destination_address');
+            $table->string('pickup');
             $table->string('position_latitude');
             $table->string('position_longitude');
             $table->string('distance_text');

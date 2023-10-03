@@ -144,6 +144,8 @@ $router->group(['prefix'=>'api'], function () use ($router) {
     $router->get('ride-requests', 'Ride_Request_Controller@fetchPendingRides');
     $router->post('ride-request/create', 'Ride_Request_Controller@createRideRequest');
     $router->put('ride-request/update', 'Ride_Request_Controller@updateRideRequest');
+    $router->get('ride-history/passenger/{id}', 'RideController@getRideHistory');
+    $router->get('ride-history/driver/{id}', 'RideController@getDriverRideHistory');
     $router->post('users/create', 'AuthController@register');
     $router->post('users/auth-login', 'AuthController@authLogin');
     $router->post('savedevicetoken', 'AuthController@updateDeviceToken');

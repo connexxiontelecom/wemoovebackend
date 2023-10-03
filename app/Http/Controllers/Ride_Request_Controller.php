@@ -41,60 +41,52 @@ class Ride_Request_Controller extends Controller
         try{
             $this->validate($request, [
                 'status' => 'required',
-                'user_id' => 'required',
+                'userId' => 'required',
                 'username' => 'required',
                 'destination_longitude' => 'required',
                 'destination_latitude' => 'required',
-                'position_latitude' => 'required',
-                'position_longitude' => 'required',
+                'user_latitude' => 'required',
+                'user_longitude' => 'required',
                 'distance_text' => 'required',
                 "distance_value" => 'required',
             ]);
 
             $ride = new RideRequest();
 
-            $ride->user_id = $request->user_id;
+            $ride->user_id = $request->userId;
             $ride->username = $request->username;
-            $ride->destination_address = $request->destination_address;
+            $ride->destination_address = $request->destination;
             $ride->destination_longitude = $request->destination_longitude;
             $ride->destination_latitude = $request->destination_latitude;
-            $ride->position_latitude = $request->position_latitude;
-            $ride->position_longitude = $request->position_latitude;
+            $ride->position_latitude = $request->user_latitude;
+            $ride->position_longitude = $request->user_longitude;
             $ride->distance_text = $request->distance_text;
             $ride->distance_value = $request->distance_value;
-            $ride->status = 1; //0 cancelled, 1 Pending , 2 inprogress, 3 completed
+            $ride->driver_id = $request->driver;
+            $ride->pickup = $request->pickup;
+            $ride->status = $request->status;; //Accepted
 
             $ride->save();
-
-            $rideId = $ride->id;
-
-            $message = "success";
-//
-//        $title = "Published Ride!";
-//        $body = "You just Published a Ride!";
-//        $userId = Auth::user()->id;
-//        $this->ToSpecificUser($title, $body, $userId);
-//
-//        $tk = 'eO2RZSuuR2u9Q23G3yVguW:APA91bE_I2mqqcxBUb9aCyw6a_G6Emq79EOovKyHXbGt8Ah3x--eNsOWn8C-8DdzJ4WgRu59c7IlEibijbK4rcuVwnTz5fY0Qnm2tt71Tu1ljk7Fd4A_am_Fc_pnR-TqsRzZGK3cuYM1';
-
-
-            $data = array(
-                "clickaction" => "FLUTTERNOTIFICATIONCLICK",
-                "id" => '1',
-                'type'=>'request',
-                'username'=>$ride->username,
-                'destination'=> $ride->destination_address,
-                'destination_latitude'=>$ride->destination_latitude,
-                'destination_longitude'=> $ride->destination_longitude,
-                'user_latitude' => $ride->position_latitude,
-                'user_longitude' => $ride->position_longitude,
-                'distance_text' => $ride->distance_text,
-                'distance_value'=> $ride->distance_value,
-
-            );
-            $this->notifyDrivers($data);
             return response()->json($ride, 200);
+
+//            $data = array(
+//                "clickaction" => "FLUTTERNOTIFICATIONCLICK",
+//                "id" => '1',
+//                'type'=>'request',
+//                'username'=>$ride->username,
+//                'destination'=> $ride->destination_address,
+//                'destination_latitude'=>$ride->destination_latitude,
+//                'destination_longitude'=> $ride->destination_longitude,
+//                'user_latitude' => $ride->position_latitude,
+//                'user_longitude' => $ride->position_longitude,
+//                'distance_text' => $ride->distance_text,
+//                'distance_value'=> $ride->distance_value,
+//            );
+
+            //$this->notifyDrivers($data);
+
         }
+
         catch (Exception $e) {
             return response()->json(['error'=>$e,'message' => 'Sending request failed'], 500);
         }
@@ -148,8 +140,6 @@ class Ride_Request_Controller extends Controller
         return response()->json($ride, 200);
     }
 
-
-
     public function notifyDrivers($data)
     {
         $userType = 2; //driver ride;
@@ -166,7 +156,6 @@ class Ride_Request_Controller extends Controller
 
     }
 
-
     public function notifyPassenger($data, $passenger)
     {
             $passenger = User::find(27);
@@ -178,8 +167,6 @@ class Ride_Request_Controller extends Controller
             }
 
     }
-
-
 
     public function fetchPendingRides()
     {

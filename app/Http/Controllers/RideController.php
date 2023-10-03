@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Passenger;
 use App\Models\Rating;
 use App\Models\Ride;
+use App\Models\RideRequest;
 use App\Models\User;
 use App\Models\Vehicle;
 use Illuminate\Http\Request;
@@ -670,6 +671,24 @@ class RideController extends Controller
         return $driver;
     }
 
+    public function driverInformation($id)
+    {
+        $driver = User::where('id', $id)->first();
+
+        $driver->profile_image = url("/assets/uploads/profile/" . $driver->profile_image);
+
+        //$driver->rating = $this->fetchDriverRating($id);
+
+        return $driver;
+    }
+
+    public function passengerInformation($id)
+    {
+        $passenger = User::where('id', $id)->first();
+        $passenger->profile_image = url("/assets/uploads/profile/" . $passenger->profile_image);
+        return $passenger;
+    }
+
     public function saveRatings(Request $request)
     {
         $this->validate($request, [
@@ -956,6 +975,24 @@ class RideController extends Controller
         $wallet->commission = 1;
         $wallet->credit = 0;
         $wallet->save();
+    }
+
+    public function getRideHistory($id)
+    {
+        $rides = RideRequest::where('user_id', $id)->get();
+        foreach ($rides as $ride) {
+            $ride->driver = $this->driverInformation($ride->driver_id);
+        }
+        return response()->json(compact("rides"));
+    }
+
+    public function getDriverRideHistory($id)
+    {
+        $rides = RideRequest::where('driver_id', $id)->get();
+        foreach ($rides as $ride) {
+            $ride->passenger = $this->passengerInformation($ride->user_id);
+        }
+        return response()->json(compact("rides"));
     }
 
 }
