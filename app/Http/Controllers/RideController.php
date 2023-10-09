@@ -477,7 +477,6 @@ class RideController extends Controller
 
     public function ridestatus(Request $request)
     {
-
         $this->validate($request, [
             "id" => 'required',
         ]);
@@ -501,7 +500,6 @@ class RideController extends Controller
 
     public function rideHistory(Request $request)
     {
-
         $declined = 3;
         $completed = 4;
         $in_progress = 2;
@@ -995,5 +993,6 @@ class RideController extends Controller
         }
         return response()->json(compact("rides"));
     }
+
 
 }

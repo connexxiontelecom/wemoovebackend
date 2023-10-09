@@ -148,6 +148,7 @@ $router->group(['prefix'=>'api'], function () use ($router) {
     $router->get('ride-history/driver/{id}', 'RideController@getDriverRideHistory');
     $router->post('users/create', 'AuthController@register');
     $router->post('users/auth-login', 'AuthController@authLogin');
+    $router->post('users/update-to-driver', 'UserController@updateUserToDriver');
     $router->post('savedevicetoken', 'AuthController@updateDeviceToken');
     $router->post('otp', 'OtpController@sendOtp');
     $router->post('resendotp', 'OtpController@resendOtp');

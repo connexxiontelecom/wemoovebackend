@@ -59,6 +59,9 @@ class AuthController extends Controller
         $user["current_ride_status"] = 0;
         $user["current_request_status"] = 0;
         $user["profile_image"] = url("/assets/uploads/profile/" . $user["profile_image"]);
+        $user['car_picture'] = url("/assets/uploads/images/" . $user['car_picture']);
+        $user['license'] =url("/assets/uploads/license/" . $user['license']);
+        $user['self_picture'] =url("/assets/uploads/images/" . $user['self_picture']);
         $currentRideStatus =  $this->isRidePendingOrInProgress(Auth::user()->id);
 
         $currentRequestStatus = $this->isRequestPendingOrAccepted(Auth::user()->id);
@@ -269,14 +272,6 @@ class AuthController extends Controller
             return response()->json([ 'error'=>$e, 'message' => 'User Registration Failed!'], 409);
         }
     }
-
-
-
-
-
-
-
-
 
 
     public function registerVehicle(Request $request)
@@ -534,18 +529,23 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
-        $phone = $request->phone;
-        $password = $request->password;
+       try{
+           $phone = $request->phone;
+           $password = $request->password;
 
-        $user = User::where('phone_number', $phone)->first();
+           $user = User::where('phone_number', $phone)->first();
 
-        $user->password =  app('hash')->make($password);
+           $user->password =  app('hash')->make($password);
 
-        $user->save();
+           $user->save();
 
-        $message = "success";
+           $message = "success";
 
-        return response()->json(compact("message"));
+           return response()->json(compact("message"));
+       }catch (Exception $e) {
+           $message = $e;
+           return response()->json(compact("message"));
+       }
 
     }
 

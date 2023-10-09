@@ -37,8 +37,6 @@ class Ride_Request_Controller extends Controller
 
     public function createRideRequest(Request $request)
     {
-
-        try{
             $this->validate($request, [
                 'status' => 'required',
                 'userId' => 'required',
@@ -51,49 +49,54 @@ class Ride_Request_Controller extends Controller
                 "distance_value" => 'required',
             ]);
 
-            $ride = new RideRequest();
+            $isExist  = User::where('ride_id', $request->id)->first();
 
-            $ride->user_id = $request->userId;
-            $ride->username = $request->username;
-            $ride->destination_address = $request->destination;
-            $ride->destination_longitude = $request->destination_longitude;
-            $ride->destination_latitude = $request->destination_latitude;
-            $ride->position_latitude = $request->user_latitude;
-            $ride->position_longitude = $request->user_longitude;
-            $ride->distance_text = $request->distance_text;
-            $ride->distance_value = $request->distance_value;
-            $ride->driver_id = $request->driver;
-            $ride->pickup = $request->pickup;
-            $ride->status = $request->status;; //Accepted
-
-            $ride->save();
-            return response()->json($ride, 200);
-
-//            $data = array(
-//                "clickaction" => "FLUTTERNOTIFICATIONCLICK",
-//                "id" => '1',
-//                'type'=>'request',
-//                'username'=>$ride->username,
-//                'destination'=> $ride->destination_address,
-//                'destination_latitude'=>$ride->destination_latitude,
-//                'destination_longitude'=> $ride->destination_longitude,
-//                'user_latitude' => $ride->position_latitude,
-//                'user_longitude' => $ride->position_longitude,
-//                'distance_text' => $ride->distance_text,
-//                'distance_value'=> $ride->distance_value,
-//            );
-
-            //$this->notifyDrivers($data);
-
-        }
-
-        catch (Exception $e) {
-            return response()->json(['error'=>$e,'message' => 'Sending request failed'], 500);
-        }
+            if($isExist != null){
+                return response()->json(['message' => 'Already Taken'], 409);
+            }
+            else{
+                try{
+                    $ride = new RideRequest();
+                    $ride->ride_id = $request->id;
+                    $ride->user_id = $request->userId;
+                    $ride->username = $request->username;
+                    $ride->destination_address = $request->destination;
+                    $ride->destination_longitude = $request->destination_longitude;
+                    $ride->destination_latitude = $request->destination_latitude;
+                    $ride->position_latitude = $request->user_latitude;
+                    $ride->position_longitude = $request->user_longitude;
+                    $ride->distance_text = $request->distance_text;
+                    $ride->distance_value = $request->distance_value;
+                    $ride->driver_id = $request->driver;
+                    $ride->pickup = $request->pickup;
+                    $ride->status = $request->status;; //Accepted
 
 
+                    $ride->save();
+                    return response()->json($ride, 200);
+
+                    //            $data = array(
+                    //                "clickaction" => "FLUTTERNOTIFICATIONCLICK",
+                    //                "id" => '1',
+                    //                'type'=>'request',
+                    //                'username'=>$ride->username,
+                    //                'destination'=> $ride->destination_address,
+                    //                'destination_latitude'=>$ride->destination_latitude,
+                    //                'destination_longitude'=> $ride->destination_longitude,
+                    //                'user_latitude' => $ride->position_latitude,
+                    //                'user_longitude' => $ride->position_longitude,
+                    //                'distance_text' => $ride->distance_text,
+                    //                'distance_value'=> $ride->distance_value,
+                    //            );
+
+                                        //$this->notifyDrivers($data);
+
+                }
+                catch (Exception $e) {
+                    return response()->json(['error'=>$e,'message' => 'Sending request failed'], 500);
+                }
+            }
     }
-
 
     public function updateRideRequest(Request $request)
     {
@@ -271,6 +274,17 @@ class Ride_Request_Controller extends Controller
                 $this->pushtoToken($token, $title, $body, $userId);
             }
         }
+    }
+
+    public function cancelTrip(Request $request)
+    {
+        $rideId = $request->rideId;
+        $reason =  $request->cancellation_reason;
+        $ride = RideRequest::where('id', $rideId)->first();
+        $ride->status = 3;
+        $ride->cancellation_reason = $reason;
+        $ride->save();
+        return response()->json(compact("ride"));
     }
 
 
